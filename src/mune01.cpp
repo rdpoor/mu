@@ -7,18 +7,19 @@
 #include "RtAudio.h"
 #include <math.h>
 
-typedef signed short MY_TYPE;
-#define FORMAT RTAUDIO_SINT16
-#define SCALE  32767.0
-
-/*
 typedef float MY_TYPE;
 #define FORMAT RTAUDIO_FLOAT32
 #define SCALE  1.0
 
+/*
+typedef signed short MY_TYPE;
+#define FORMAT RTAUDIO_SINT16
+#define SCALE  32767.0
+
 typedef double MY_TYPE;
 #define FORMAT RTAUDIO_FLOAT64
 #define SCALE  1.0
+
 */
 
 // Platform-dependent sleep routines.
