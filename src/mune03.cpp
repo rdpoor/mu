@@ -10,6 +10,9 @@
  * ~/Projects/Mune/tarballs/stk-4.4.4/src/RtWvOut.cpp
  * ~/Projects/Mune/tarballs/stk-4.4.4/include/FileRead.h
  * ~/Projects/Mune/tarballs/stk-4.4.4/src/FileRead.cpp
+ *
+ * ToDo: figure out how to play the last queued buffers before closing
+ * the DAC.
  */
 #include "Stk.h"
 #include "RtAudio.h"
@@ -212,7 +215,7 @@ void fillBuffers(FileRead *file, TickData *data) {
     // Request stop if end of file has been reached.  BUG: As written,
     // it stops the stream prematurely since N-1 stkFrames have yet to
     // be played.
-    if (data->startFrame > file->fileSize()) {
+    if (data->startFrame >= file->fileSize()) {
       printf("at end of sound file.  requesting stop\n");
       data->stopRequested = true;
     }
