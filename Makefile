@@ -28,5 +28,8 @@ mune02: $(SOURCE_PATH)/mune02.cpp
 mune03: $(SOURCE_PATH)/mune03.cpp
 	$(CC) $(LDFLAGS) $(CFLAGS) $(DEFS) -o $(BINARY_PATH)/$(@) $(<) $(STK_OBJECT_FILES) $(LIBRARY)
 
+mune04: $(SOURCE_PATH)/mune04.cpp
+	$(CC) $(LDFLAGS) $(CFLAGS) $(DEFS) -o $(BINARY_PATH)/$(@) $(<) $(STK_OBJECT_FILES) $(LIBRARY)
+
 clean:
 	rm -f $(PROGRAMS)
