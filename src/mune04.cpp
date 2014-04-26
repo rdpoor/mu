@@ -78,12 +78,13 @@ namespace mu {
     long int framesRemaining();
 
   protected:
-    long int frameIndex_;
+    long int frame_index_;
   };                            // class TestNode
   
   // .cpp ================
 
-  TestNode::TestNode() {
+  TestNode::TestNode() 
+    : frame_index_ (0) {
     TRACE("TestNode::TestNode()\n");
   }
 
@@ -94,8 +95,17 @@ namespace mu {
   TestNode& TestNode::step(stk::StkFrames& buffer, 
                            unsigned int frame_count, 
                            unsigned int channel_count) {
+    int i = ((frame_index_ * 2) + 1) %  (frame_count * channel_count);
     TRACE("~");
-    buffer[0] = 1.0;            // exciting waveform...
+    // Verify that frame_count and channel_count args match that of
+    // the StackFrames buffer.
+    // printf("fc=%d, cc=%d, b.fc=%d, b.cc=%d\n", 
+    //        frame_count, channel_count, buffer.frames(), buffer.channels());
+    // Yes, the buffer does not arrive zeroed out...
+    bzero(&(buffer[0]), frame_count * channel_count * sizeof(StkFloat));
+    buffer[0] = 0.9;            // exciting waveform...
+    buffer[i] = 0.9;
+    frame_index_ += 3;
     // fprintf(stderr, "step: %p %d %d\r", &buffer, frame_count, channel_count);
     return *this;
   }
