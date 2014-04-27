@@ -3,14 +3,20 @@
 An experiment in blurring the lines between music composition and sound synthesis
 
 ## todo
-* Split monolithic files into src, include, obj directories
 * Create a FileReader node.
 * Create a Mixer node.
 * Create a Loop node.
 * Add command line parsing such as argp.h
-* Fix dependencies in makefile (always makes the target)
+* Clean up test/Makefile to avoid repetition, assure that mu library
+is up to date.
+* Clean up src/Makefile to assure that stk library is up to date.
 
 ## changelog 
+
+* 2014-04-27: Split monolithic mune04 file into src and include
+library directories, created test directory for test executables.
+Created src/Makefile to remake library, test/Makefile to remake test
+files.
 
 * 2014-04-26: Rename project to mu.  Put changelog in reverse
   chronologial order.  Tested pushing to new repo.

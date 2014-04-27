@@ -3,7 +3,6 @@
 SOURCE_PATH = ./src
 OBJECT_PATH = ./obj
 BINARY_PATH = ./bin
-PROGRAMS    = $(BINARY_PATH)/mune01 $(BINARY_PATH)/mune02
 INCLUDE     = ./tarballs/stk-4.4.4/include
 
 CC       = g++
