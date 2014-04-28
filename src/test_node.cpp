@@ -12,10 +12,11 @@ namespace mu {
   }
   
   TestNode& TestNode::step(stk::StkFrames& buffer, 
-                           unsigned int frame_count, 
-                           unsigned int channel_count) {
+                           MuTime time,
+                           const Transport &transport) {
+    long int frame_count = buffer.frames();
+    int channel_count = buffer.channels();
     int i = ((frame_index_ * 2) + 1) %  (frame_count * channel_count);
-    TRACE("~");
     // The buffer does not arrive empty...
     bzero(&(buffer[0]), frame_count * channel_count * sizeof(stk::StkFloat));
     buffer[0] = 0.9;            // exciting waveform...
@@ -25,8 +26,8 @@ namespace mu {
     return *this;
   }
 
-  long int TestNode::framesRemaining() {
-    TRACE("TestNode::framesRemaining()\n");
+  MuTime TestNode::duration() {
+    TRACE("TestNode::duration()\n");
     return INDEFINITE;
   }
 

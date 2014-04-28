@@ -38,7 +38,7 @@ namespace mu {
     Transport& seek(MuTime time);
 
     // callback method
-    int readBuffer( void *buffer, unsigned int frame_count );
+    int readBuffer( void *buffer, unsigned int frame_count, double stream_time );
 
     // Get/set source of samples
     Node *get_source();

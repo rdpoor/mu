@@ -10,7 +10,7 @@ namespace mu {
                     double streamTime, 
                     RtAudioStreamStatus status, 
                     void *dataPointer ) {
-    return ( (Transport *) dataPointer )->Transport::readBuffer( outputBuffer, nBufferFrames );
+    return ( (Transport *) dataPointer )->Transport::readBuffer( outputBuffer, nBufferFrames, streamTime );
   }
   
   // Callback method for RtAudio.  buffer is an array of StkFloat
@@ -28,15 +28,17 @@ namespace mu {
   // See also:
   // ~/Projects/Mune/tarballs/stk-4.4.4/src/RtWvOut.cpp Line::36
   //
-  int Transport::readBuffer( void *buffer, unsigned int frame_count ) {
+  int Transport::readBuffer( void *buffer, unsigned int frame_count, double stream_time ) {
     TRACE(".");
     if (source_ == NULL) { return 0; };
 
     // grow the stkFrames buffer as needed
     stk_frames_.resize(frame_count, channel_count_);
 
+    MuTime time = stream_time;
+
     // ask the source to generate samples
-    source_->step(stk_frames_, frame_count, channel_count_);
+    source_->step(stk_frames_, time, *this);
 
     // copy the samples to RtAudio's buffer
     stk::StkFloat *input = (stk::StkFloat *)&stk_frames_[0];

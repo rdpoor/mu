@@ -11,6 +11,10 @@ namespace mu {
 
   typedef double MuTime;
 
+  // resolve a circular dependency
+  class Node;
+  class Transport;
+
 };
 
 #endif

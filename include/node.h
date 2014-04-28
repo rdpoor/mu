@@ -2,18 +2,21 @@
 #define MU_NODE_H
 
 #include "mu.h"
+#include "transport.h"
+#include <math.h>
 
 namespace mu {
 
   class Node {
   public:
-    const static int INDEFINITE = -1;
+    // return value for duration() signifying indefinite length
+    // stream...
+    // static constexpr MuTime kIndefinite = -MAXFLOAT;
+    #define INDEFINITE (-MAXFLOAT)
     
-    //! Write upto nFrames of interleaved sample data into buffer.
-    //! Returns number of frames written into the buffer.
     virtual Node& step(stk::StkFrames& buffer, 
-                       unsigned int frame_count, 
-                       unsigned int channel_count) = 0;
+                       MuTime time,
+                       const Transport &transport) = 0;
     
     //! reset the Node to time 0, reinitialize state.
     Node& reset();
@@ -28,10 +31,9 @@ namespace mu {
     //! starting at \c time.
     virtual Node& seek(MuTime time) = 0;
 
-    //! Return the number of frames remaining in this stream, or
-    //! INDEFINITE if the stream has an infinite or indeterminate
-    //! number of frames.
-    virtual long int framesRemaining() = 0;
+    //! Return the duration of this stream or INDEFINITE if the stream
+    //! has an infinite or indeterminate duration.
+    virtual MuTime duration() = 0;
 
   };                            // class Node
 

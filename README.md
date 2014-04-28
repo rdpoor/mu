@@ -3,15 +3,28 @@
 An experiment in blurring the lines between music composition and sound synthesis
 
 ## todo
-* Create a FileReader node.
-* Create a Mixer node.
 * Create a Loop node.
+* Create a Mixer node.
+* Can we ditch the seek() method now that step() carries time
+  information?
+* When do we release resources?  Do we need a Transport.pause() method
+  distinct from Transport.stop()?
 * Add command line parsing such as argp.h
-* Clean up test/Makefile to avoid repetition, assure that mu library
-is up to date.
-* Clean up src/Makefile to assure that stk library is up to date.
+* Clean up test/Makefile to avoid repetition, 
+* Fix test/Makefile to assure that mu library is up to date.
+* Extend src/Makefile to assure that stk library is up to date.
 
 ## changelog 
+
+* 2014-04-27: Created a FileReader subclass of Node that provides a
+step() interface to a sound file.  Needs more error checking, and we
+need to decide if and when to close the file, but it works.
+
+* 2014-04-27: Refactored step() to take different arguments:
+stk::StkFrames buffer (as before), MuTime time (current time at start
+of buffer), Transport& transport (so we can discover who is at the
+head of the graph, etc).  Ditch Node::framesRemaining() in favor of
+Node::duration().
 
 * 2014-04-27: Split monolithic mune04 file into src and include
 library directories, created test directory for test executables.
@@ -41,23 +54,16 @@ Makefile structure.
 
 ## design notes
 
-Like Chuck, synthesis is handled by a directed graph of generators and
-filters.  A node in the graph has zero or more inputs and exactly one
-output. At the root of the graph, the RtAudio object issues a tick()
-callback when it is ready for more data.  The contract for a node's
-tick() method is to fill the caller's buffer with sample data and
-return the number of frames actually written.  A return value of 0
-means that no samples were written, but more might be written on a
-subsequent call to tick().  A negative return value means that no more
-samples will be produced untit reset() or seek() is called.
+If the Transport maintains a current_time value and propagates it at
+each call to step(), should current_time be a long int or a double
+float?  If a long int, then it is in units of frames (i.e. samples).
+If a double float, then it is in units of seconds.  Which is better?
 
-    class MuNode {
-      int tick(StkFloat *buffer, unsigned int nFrames, unsigned int nChannels);
-      void reset();
-      void setup();
-      void teardown();
-      void seek(time_t t);
-
-      bool dependsOn(MuNode& other);
-    }
+Seconds may be more convenient since it is independent of sample rate,
+but how many seconds can pass and still maintain single-sample
+accuracy?  An IEEE 64 bit floating point number has a mantissa of
+52 bits; it can represent integers accurately up to 2^52, or
+4503599627370496.  Divided by sampling rate yields 102122440529
+seconds, which is adequate for most musical compositions lasting
+under 3236 years...
 
