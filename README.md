@@ -5,8 +5,6 @@ An experiment in blurring the lines between music composition and sound synthesi
 ## todo
 * Create a Loop node.
 * Create a Mixer node.
-* Can we ditch the seek() method now that step() carries time
-  information?
 * When do we release resources?  Do we need a Transport.pause() method
   distinct from Transport.stop()?
 * Add command line parsing such as argp.h
@@ -15,6 +13,12 @@ An experiment in blurring the lines between music composition and sound synthesi
 * Extend src/Makefile to assure that stk library is up to date.
 
 ## changelog 
+
+* 2014-04-28: Created SampleBuffer object that subclasses and mimics
+stk::StkFrames, but creates an offset into the underlying data buffer.
+
+* 2014-04-27: Removed the seek(), acquireResources() and
+releaseResources() methods until I decide what they should do.
 
 * 2014-04-27: Created a FileReader subclass of Node that provides a
 step() interface to a sound file.  Needs more error checking, and we
@@ -54,6 +58,8 @@ Makefile structure.
 
 ## design notes
 
+### keeping time
+
 If the Transport maintains a current_time value and propagates it at
 each call to step(), should current_time be a long int or a double
 float?  If a long int, then it is in units of frames (i.e. samples).
@@ -61,9 +67,25 @@ If a double float, then it is in units of seconds.  Which is better?
 
 Seconds may be more convenient since it is independent of sample rate,
 but how many seconds can pass and still maintain single-sample
-accuracy?  An IEEE 64 bit floating point number has a mantissa of
-52 bits; it can represent integers accurately up to 2^52, or
+accuracy?  An IEEE 64 bit floating point number has a mantissa of 52
+bits; it can represent integers accurately up to 2^52, or
 4503599627370496.  Divided by sampling rate yields 102122440529
-seconds, which is adequate for most musical compositions lasting
-under 3236 years...
+seconds, which is adequate for most musical compositions lasting under
+3236 years...
 
+### passing StkFrames buffers
+
+Many Stk library objects are written assuming that the first sample is
+written into &(buffer[0]).  In the mu world, there are many (?) cases
+where we'd like a library object to write into a buffer at some offset
+other than zero.
+
+SampleBuffer is a subclass of StkFrames that delegates most of the
+methods to an underlying StkFrames object, but adds a slice() method
+that specifies an offset.  The accessor methods, [index] and (frame,
+channel) call the underlying StkFrames object while honoring that
+offset.
+
+It may need additional work, for example, delegating all the methods
+that make sense and raising an error on those that don't, but for now
+it's enough to get started.

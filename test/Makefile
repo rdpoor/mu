@@ -1,4 +1,4 @@
-SOURCES := mune01.cpp mune02.cpp mune03.cpp mune04.cpp mune05.cpp mune06.cpp test_double_accuracy.cpp
+SOURCES := mune01.cpp mune02.cpp mune03.cpp mune04.cpp mune05.cpp mune06.cpp test_double_accuracy.cpp test_sample_buffer
 MULIB   := ../obj/*.o
 STKLIB  := ../tarballs/stk-4.4.4/src/Release/*.o
 
@@ -38,3 +38,6 @@ mune06 : mune06.cpp # | $(MULIB) $(STKLIB)
 
 test_double_accuracy: test_double_accuracy.cpp
 	$(CC) $(CFLAGS) -o $(@) $(<)
+
+test_sample_buffer: test_sample_buffer.cpp
+	$(CC) $(CFLAGS) $(INCLUDES) -o $(@) $(<) $(MULIB) $(STKLIB) $(LIBRARY)

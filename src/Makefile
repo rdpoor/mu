@@ -1,5 +1,5 @@
 # Figure out how to define SOURCES without manually naming each file
-SOURCES := mu.cpp file_reader.cpp node.cpp test_node.cpp transport.cpp
+SOURCES := mu.cpp file_reader.cpp node.cpp test_node.cpp transport.cpp sample_buffer.cpp
 OBJECT_DIR := ../obj
 INCLUDE_DIR := ../include
 

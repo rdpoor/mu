@@ -32,11 +32,6 @@ namespace mu {
     // already queued samples to finish.
     Transport& stop(bool immediately = false);
 
-    // Seek so the next sample played will be from \c time (in score
-    // time).  If the transport is currently running, the change will
-    // happen after the currently queued samples have played.
-    Transport& seek(MuTime time);
-
     // callback method
     int readBuffer( void *buffer, unsigned int frame_count, double stream_time );
 

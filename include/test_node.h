@@ -11,11 +11,10 @@ namespace mu {
 
     TestNode();
     ~TestNode( void );
-    TestNode& step(stk::StkFrames& buffer, MuTime time, const Transport& transport);
-    TestNode& acquireResources();
-    TestNode& releaseResources();
-    TestNode& seek(MuTime time);
-    MuTime duration();
+    TestNode& step(stk::StkFrames& buffer, 
+                   MuTime time, 
+                   const Transport& transport);
+    MuTime streamDuration();
 
   protected:
     long int frame_index_;

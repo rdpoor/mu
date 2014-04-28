@@ -22,28 +22,13 @@ namespace mu {
     buffer[0] = 0.9;            // exciting waveform...
     buffer[i] = 0.9;
     frame_index_ += 3;
-    // fprintf(stderr, "step: %p %d %d\r", &buffer, frame_count, channel_count);
+    // fprintf(stderr, "step: %p %f %d\r", &buffer, time, channel_count);
     return *this;
   }
 
-  MuTime TestNode::duration() {
-    TRACE("TestNode::duration()\n");
+  MuTime TestNode::streamDuration() {
+    TRACE("TestNode::streamDuration()\n");
     return INDEFINITE;
-  }
-
-  TestNode& TestNode::acquireResources() {
-    TRACE("TestNode::acquireResources()\n");
-    return *this;
-  }
-
-  TestNode& TestNode::releaseResources() {
-    TRACE("TestNode::releaseResources()\n");
-    return *this;
-  }
-
-  TestNode& TestNode::seek(MuTime time) {
-    TRACE("TestNode::seek()\n");
-    return *this;
   }
 
 }

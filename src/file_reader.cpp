@@ -40,21 +40,4 @@ namespace mu {
     return *this;
   }
 
-  FileReader& FileReader::acquireResources() {
-    TRACE("FileReader::acquireResources()\n");
-    return *this;
-  }
-
-  FileReader& FileReader::releaseResources() {
-    TRACE("FileReader::releaseResources()\n");
-    return *this;
-  }
-
-  // Not sure we need seek() any longer, since step() carries
-  // time information at each call.
-  FileReader& FileReader::seek(MuTime time) {
-    TRACE("FileReader::seek()\n");
-    return *this;
-  }
-
 }

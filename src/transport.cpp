@@ -97,14 +97,4 @@ namespace mu {
     return *this;
   }
   
-  // Seek so the next sample played will be from \c time (in score
-  // time).  If the transport is currently running, the change will
-  // happen after the currently queued samples have played.
-  Transport& Transport::seek(MuTime time) {
-    TRACE("Transport::seek()\n");
-    if (source_ != NULL) source_->seek(time);
-    return *this;
-  }
-  
-
 }
