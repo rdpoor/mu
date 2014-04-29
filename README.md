@@ -3,7 +3,7 @@
 An experiment in blurring the lines between music composition and sound synthesis
 
 ## todo
-* Create a Loop node.
+* Test/debug Loop node.
 * Create a Mixer node.
 * When do we release resources?  Do we need a Transport.pause() method
   distinct from Transport.stop()?
@@ -13,6 +13,11 @@ An experiment in blurring the lines between music composition and sound synthesi
 * Extend src/Makefile to assure that stk library is up to date.
 
 ## changelog 
+
+* 2014-04-29: Rename ValidatorStream=>MapStream, includes Player
+argument so user-supplied function can stop playback (for example).
+Needed to lose the const declaration on Player.  TODO: understand
+const arg for member functions.
 
 * 2014-04-29: step() now passes a frame counter (of type Tick) rather
 than a time (type MuTime).  This permits sample-accurate calculations.

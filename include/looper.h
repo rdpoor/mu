@@ -18,13 +18,13 @@ namespace mu {
 
     Looper& step(stk::StkFrames& buffer, 
                  Tick tick,
-                 const Player &player);
+                 Player &player);
     Tick streamDuration();
 
-    Tick getLoopDuration();
+    Tick getLoopDuration() const;
     Looper& setLoopDuration(Tick loop_duration);
 
-    Node *getSource();
+    Node *getSource() const;
     Looper& setSource(Node *source);
 
   protected:
@@ -41,13 +41,13 @@ namespace mu {
 
   inline Tick Looper::streamDuration() { return kIndefinite; }
 
-  inline Tick Looper::getLoopDuration() { return loop_duration_; }
+  inline Tick Looper::getLoopDuration() const { return loop_duration_; }
   inline Looper& Looper::setLoopDuration(Tick loop_duration) {
     TRACE("Looper::loopDuration()\n");
     loop_duration_ = loop_duration; return *this;
   }
 
-  inline Node *Looper::getSource() { return source_; }
+  inline Node *Looper::getSource() const { return source_; }
   inline Looper& Looper::setSource(Node *source) {
     TRACE("Looper::source()\n");
     source_ = source; return *this;

@@ -8,7 +8,7 @@ namespace mu {
   
   FileReader& FileReader::step(stk::StkFrames& buffer, 
                                Tick tick,
-                               const Player& player) {
+                               Player& player) {
     if (!file_read_.isOpen()) {
       file_read_.open(file_name_);
       // TODO: check format, rate, etc against buffer & player

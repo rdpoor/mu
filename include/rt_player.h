@@ -25,7 +25,7 @@ namespace mu {
     // already queued samples to finish.
     RtPlayer& stop(bool immediately = false);
 
-    int getDeviceNumber();
+    int getDeviceNumber() const;
     RtPlayer& setDeviceNumber(int device_number);
 
     // callback method for RtAudio
@@ -47,7 +47,7 @@ namespace mu {
     init();
   }
   
-  inline int RtPlayer::getDeviceNumber() { return device_number_; }
+  inline int RtPlayer::getDeviceNumber() const { return device_number_; }
   inline RtPlayer& RtPlayer::setDeviceNumber(int device_number) {
     TRACE("RtPlayer::deviceNumber()\n");
     device_number_ = device_number; return *this;

@@ -17,10 +17,10 @@ namespace mu {
 
     FileReader& step(stk::StkFrames& buffer, 
                      Tick tick,
-                     const Player &player);
+                     Player &player);
     Tick streamDuration();
 
-    std::string getFileName();
+    std::string getFileName() const;
     long int frameIndex();
 
   protected:
@@ -50,7 +50,7 @@ namespace mu {
     return (double)file_read_.fileSize() / file_read_.fileRate(); 
   }
 
-  inline std::string FileReader::getFileName() { 
+  inline std::string FileReader::getFileName() const { 
     return file_name_; 
   }
 

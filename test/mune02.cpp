@@ -52,7 +52,7 @@ int main()
 {
   // Set the global sample rate and rawwave path before creating class instances.
   Stk::setSampleRate( 44100.0 );
-  Stk::setRawwavePath( "./tarballs/stk-4.4.4/rawwaves/" );
+  Stk::setRawwavePath( "/Users/r/Projects/Mu/tarballs/stk-4.4.4/rawwaves/" );
 
   TickData data;
   RtAudio dac;

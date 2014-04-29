@@ -2,14 +2,14 @@
 SOURCES := \
 	file_reader.cpp \
 	looper.cpp \
+	map_stream.cpp \
 	mu.cpp \
 	nrt_player.cpp \
 	node.cpp \
 	player.cpp \
 	rt_player.cpp \
 	test_buzz.cpp \
-	test_stream.cpp \
-	validator_stream.cpp
+	test_stream.cpp
 
 OBJECT_DIR := ../obj
 INCLUDE_DIR := ../include

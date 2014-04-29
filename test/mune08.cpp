@@ -4,30 +4,35 @@
 #include "mu.h"
 #include "nrt_player.h"
 #include "test_stream.h"
-#include "validator_stream.h"
+#include "map_stream.h"
 #include <unistd.h>
 
-bool validate(mu::Tick tick, stk::StkFrames& buffer, long int frame_index) {
+void validate(stk::StkFrames& buffer, mu::Tick tick, mu::Player& player, mu::Tick frame_index) {
+  if (tick == 44100) {
+    printf("stopping playback at tick=%ld\n", tick);
+    // NB: this is a *request* to stop.  player will finish out the
+    // current buffer before stopping.
+    player.stop();
+  }
   mu::Tick expected = tick;
   for (int chan=0; chan<buffer.channels(); chan++) {
     mu::Tick got = (mu::Tick)round(buffer(frame_index, chan));
     if (expected != got) {
       fprintf(stderr, "at tick %ld, got %ld, expected %ld\n", tick, got, expected);
-      // if we had a handle onto player, we could stop it now
-      return false;
+      player.stop(true);        // stop immediately.
+      return;
     }
   }
-  return true;
 }
 
 int main() {
   mu::TestStream test_stream;
-  mu::ValidatorStream validator;
+  mu::MapStream map_stream;
   mu::NrtPlayer player;
 
-  validator.setCallback(validate);
-  validator.setSource(&test_stream);
-  player.setSource(&validator);
+  map_stream.setCallback(validate);
+  map_stream.setSource(&test_stream);
+  player.setSource(&map_stream);
 
   player.start();
   sleep(10);

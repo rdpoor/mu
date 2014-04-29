@@ -8,7 +8,7 @@ namespace mu {
   
   Looper& Looper::step(stk::StkFrames& buffer, 
                        Tick tick,
-                       const Player& player) {
+                       Player& player) {
     Tick te = tick + buffer.frames();
     Tick slice_start_tick = tick;
 

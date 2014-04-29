@@ -26,7 +26,7 @@ namespace mu {
     // Method called from processing thread
     void *processingLoop();
 
-    bool isRunning();
+    bool isRunning() const;
 
   protected:
     bool is_running_enabled_;
@@ -45,7 +45,7 @@ namespace mu {
     init();
   }
   
-  inline bool NrtPlayer::isRunning() { return is_running_; }
+  inline bool NrtPlayer::isRunning() const { return is_running_; }
 
 } // namespace mu
 #endif

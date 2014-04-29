@@ -15,22 +15,22 @@ namespace mu {
     Player& init();
 
     // setters and getters
-    unsigned int getChannelCount();
+    unsigned int getChannelCount() const;
     Player& setChannelCount(unsigned int channel_count);
 
-    stk::StkFloat getFrameRate();
+    stk::StkFloat getFrameRate() const;
     Player& setFrameRate(stk::StkFloat frame_rate);
 
-    unsigned int getFrameSize();
+    unsigned int getFrameSize() const;
     Player& setFrameSize(unsigned int frame_size);
 
-    Node *getSource();
+    Node *getSource() const;
     Player& setSource(Node *source);
 
-    Tick getTick();
+    Tick getTick() const;
     Player& setTick(Tick tick);
 
-    MuTime getTime();
+    MuTime getTime() const;
     Player& setTime(MuTime time);
 
     // Start the player if not already running.  Does not rewind
@@ -60,37 +60,37 @@ namespace mu {
     return *this;
   }
 
-  inline unsigned int Player::getChannelCount() { return channel_count_; };
+  inline unsigned int Player::getChannelCount() const { return channel_count_; };
   inline Player& Player::setChannelCount(unsigned int channel_count) {
     TRACE("Player::getChannelCount()\n");
     channel_count_ = channel_count; return *this;
   }
 
-  inline stk::StkFloat Player::getFrameRate() { return frame_rate_; }
+  inline stk::StkFloat Player::getFrameRate() const { return frame_rate_; }
   inline Player& Player::setFrameRate(stk::StkFloat frame_rate) {
     TRACE("Player::getFrameRate()\n");
     frame_rate_ = frame_rate; return *this;
   }
   
-  inline unsigned int Player::getFrameSize() { return frame_size_; }
+  inline unsigned int Player::getFrameSize() const { return frame_size_; }
   inline Player& Player::setFrameSize(unsigned int frame_size) {
     TRACE("Player::getFrameSize()\n");
     frame_size_ = frame_size; return *this;
   }
   
-  inline Node *Player::getSource() { return source_; }
+  inline Node *Player::getSource() const { return source_; }
   inline Player& Player::setSource(Node *source) {
     TRACE("Player::getSource()\n");
     source_ = source; return *this;
   }
 
-  inline Tick Player::getTick() { return tick_; }
+  inline Tick Player::getTick() const { return tick_; }
   inline Player& Player::setTick(Tick tick) {
     TRACE("Player::getTick()\n");
     tick_ = tick; return *this;
   }
 
-  inline MuTime Player::getTime() { return getTick() / getFrameRate(); }
+  inline MuTime Player::getTime() const { return getTick() / getFrameRate(); }
   inline Player& Player::setTime(MuTime time) {
     TRACE("Player::setTime()\n");
     setTick(time * getFrameRate()); return *this;

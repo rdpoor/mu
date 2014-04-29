@@ -12,7 +12,7 @@ namespace mu {
     
     virtual Node& step(stk::StkFrames& buffer, 
                        Tick tick,
-                       const Player &player) = 0;
+                       Player &player) = 0;
     
     //! Return the duration of this stream or kIndefinite if the
     //! stream has an infinite or indeterminate duration.

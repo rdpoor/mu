@@ -13,7 +13,7 @@ namespace mu {
   
   TestBuzz& TestBuzz::step(stk::StkFrames& buffer, 
                            Tick tick,
-                           const Player &player) {
+                           Player &player) {
     long int frame_count = buffer.frames();
     int channel_count = buffer.channels();
     int i = ((frame_index_ * 2) + 1) %  (frame_count * channel_count);

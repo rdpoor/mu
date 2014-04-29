@@ -12,7 +12,7 @@ namespace mu {
   
   TestStream& TestStream::step(stk::StkFrames& buffer, 
                                Tick tick,
-                               const Player &player) {
+                               Player &player) {
     Tick frame_count = buffer.frames();
     Tick channel_count = buffer.channels();
 
