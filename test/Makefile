@@ -1,6 +1,16 @@
-SOURCES := mune01.cpp mune02.cpp mune03.cpp mune04.cpp mune05.cpp mune06.cpp mune07 \
-           test_double_accuracy.cpp test_clamp.cpp test_subclass.cpp \
-	   test_pthread.cpp
+SOURCES := \
+	mune01.cpp \
+	mune02.cpp \
+	mune03.cpp \
+	mune04.cpp \
+	mune05.cpp \
+	mune06.cpp \
+	mune07.cpp \
+	mune08.cpp \
+	test_clamp.cpp \
+	test_double_accuracy.cpp \
+	test_pthread.cpp \
+	test_subclass.cpp
 
 MULIB   := ../obj/*.o
 STKLIB  := ../tarballs/stk-4.4.4/src/Release/*.o
@@ -40,6 +50,9 @@ mune06 : mune06.cpp # | $(MULIB) $(STKLIB)
 	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $(@) $(<) $(MULIB) $(STKLIB) $(LIBRARY)
 
 mune07 : mune07.cpp # | $(MULIB) $(STKLIB)
+	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $(@) $(<) $(MULIB) $(STKLIB) $(LIBRARY)
+
+mune08 : mune08.cpp # | $(MULIB) $(STKLIB)
 	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $(@) $(<) $(MULIB) $(STKLIB) $(LIBRARY)
 
 test_double_accuracy: test_double_accuracy.cpp

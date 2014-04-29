@@ -7,15 +7,15 @@ namespace mu {
   }
   
   FileReader& FileReader::step(stk::StkFrames& buffer, 
-                               MuTime time,
+                               Tick tick,
                                const Player& player) {
     if (!file_read_.isOpen()) {
       file_read_.open(file_name_);
       // TODO: check format, rate, etc against buffer & player
     }
-    long start_frame = time * file_read_.fileRate();
-    long frames_in_file = file_read_.fileSize() - start_frame;
-    long frames_in_buffer = buffer.frames();
+    Tick start_frame = tick;
+    Tick frames_in_file = file_read_.fileSize() - start_frame;
+    Tick frames_in_buffer = buffer.frames();
     unsigned int channel_count = buffer.channels();
 //     printf("buf=%p, data=%p, frames()=%d, channels=%d\n", 
 //            &buffer, 
@@ -39,7 +39,7 @@ namespace mu {
       bzero(&(buffer[frames_in_file]), 
             (frames_in_buffer - frames_in_file) * channel_count * sizeof(stk::StkFloat));
     } else {
-      // start_frame is past end of file -- zero the buffer
+      // start_frame is past end of file -- zero the entire buffer
       TRACE("C");
       bzero(&(buffer[0]), frames_in_buffer * channel_count * sizeof(stk::StkFloat));
     }

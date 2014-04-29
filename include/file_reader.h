@@ -16,9 +16,9 @@ namespace mu {
     FileReader& doNormalize(bool do_normalize);
 
     FileReader& step(stk::StkFrames& buffer, 
-                     MuTime time, 
+                     Tick tick,
                      const Player &player);
-    MuTime streamDuration();
+    Tick streamDuration();
 
     std::string getFileName();
     long int frameIndex();
@@ -46,7 +46,7 @@ namespace mu {
     do_normalize_ = do_normalize; return *this;
   }
 
-  inline MuTime FileReader::streamDuration() { 
+  inline Tick FileReader::streamDuration() { 
     return (double)file_read_.fileSize() / file_read_.fileRate(); 
   }
 

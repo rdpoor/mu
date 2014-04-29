@@ -14,6 +14,13 @@ An experiment in blurring the lines between music composition and sound synthesi
 
 ## changelog 
 
+* 2014-04-29: step() now passes a frame counter (of type Tick) rather
+than a time (type MuTime).  This permits sample-accurate calculations.
+Node::streamDuration() returns value in frames rather than time, 
+Looper::set/getLoopDuration is also in frames.  Renamed Player's
+sampleRate to frameRate.  mune08 tests the chain of TestStream =>
+ValidatorStream => NrtPlayer.
+
 * 2014-04-29: Renamed Transport to Player, now a virtual superclass,
 with sub-classes RtPlayer and NrtPlayer.  Flushed SampleBuffer since
 C++ semantics won't let me overload a non-virtual library class.

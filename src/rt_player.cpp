@@ -35,10 +35,11 @@ namespace mu {
     // grow the stkFrames buffer as needed
     stk_frames_.resize(frame_count, channel_count_);
 
-    MuTime time = stream_time;
-
     // ask the source to generate samples
-    source_->step(stk_frames_, time, *this);
+    source_->step(stk_frames_, tick_, *this);
+
+    // update tick counter
+    tick_ += frame_count;
 
     // copy the samples to RtAudio's buffer
     stk::StkFloat *input = (stk::StkFloat *)&stk_frames_[0];
@@ -72,7 +73,7 @@ namespace mu {
       dac_.openStream( &dac_parameters,
                        NULL,
                        ((sizeof(stk::StkFloat) == 8) ? RTAUDIO_FLOAT64 : RTAUDIO_FLOAT32),
-                       sample_rate_,
+                       frame_rate_,
                        &frame_size_,
                        &dac_callback,
                        (void *)this);

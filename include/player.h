@@ -9,8 +9,7 @@ namespace mu {
   class Player {
   public:
     static const unsigned int kDefaultChannelCount = 2u;
-    // TODO: kDefaultSampleRate not currently used
-    static const unsigned int kDefaultSampleRate = 44100u;
+    static const unsigned int kDefaultFrameRate = 44100u;
     static const unsigned int kDefaultFrameSize = 512u;
 
     Player& init();
@@ -19,14 +18,17 @@ namespace mu {
     unsigned int getChannelCount();
     Player& setChannelCount(unsigned int channel_count);
 
-    stk::StkFloat getSampleRate();
-    Player& setSampleRate(stk::StkFloat sample_rate);
+    stk::StkFloat getFrameRate();
+    Player& setFrameRate(stk::StkFloat frame_rate);
 
     unsigned int getFrameSize();
     Player& setFrameSize(unsigned int frame_size);
 
     Node *getSource();
     Player& setSource(Node *source);
+
+    Tick getTick();
+    Player& setTick(Tick tick);
 
     MuTime getTime();
     Player& setTime(MuTime time);
@@ -42,19 +44,19 @@ namespace mu {
 
   protected:
     unsigned int channel_count_;
-    stk::StkFloat sample_rate_;
+    stk::StkFloat frame_rate_;
     unsigned int frame_size_;
     Node *source_;
-    MuTime time_;
+    Tick tick_;
 
   };                            // class Player
 
   inline Player& Player::init() {
     setChannelCount(kDefaultChannelCount);
-    setSampleRate(kDefaultSampleRate);
+    setFrameRate(kDefaultFrameRate);
     setFrameSize(kDefaultFrameSize);
     setSource(NULL);
-    setTime(0.0);
+    setTick(0);
     return *this;
   }
 
@@ -64,10 +66,10 @@ namespace mu {
     channel_count_ = channel_count; return *this;
   }
 
-  inline stk::StkFloat Player::getSampleRate() { return sample_rate_; }
-  inline Player& Player::setSampleRate(stk::StkFloat sample_rate) {
-    TRACE("Player::getSampleRate()\n");
-    sample_rate_ = sample_rate; return *this;
+  inline stk::StkFloat Player::getFrameRate() { return frame_rate_; }
+  inline Player& Player::setFrameRate(stk::StkFloat frame_rate) {
+    TRACE("Player::getFrameRate()\n");
+    frame_rate_ = frame_rate; return *this;
   }
   
   inline unsigned int Player::getFrameSize() { return frame_size_; }
@@ -82,10 +84,16 @@ namespace mu {
     source_ = source; return *this;
   }
 
-  inline MuTime Player::getTime() { return time_; }
+  inline Tick Player::getTick() { return tick_; }
+  inline Player& Player::setTick(Tick tick) {
+    TRACE("Player::getTick()\n");
+    tick_ = tick; return *this;
+  }
+
+  inline MuTime Player::getTime() { return getTick() / getFrameRate(); }
   inline Player& Player::setTime(MuTime time) {
-    TRACE("Player::getTime()\n");
-    time_ = time; return *this;
+    TRACE("Player::setTime()\n");
+    setTick(time * getFrameRate()); return *this;
   }
 
 } // namespace mu

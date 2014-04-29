@@ -15,9 +15,9 @@ namespace mu {
     while (pthread_equal(current_processing_thread_, pthread_self())) {
       if (source_ == NULL) break;
       stk_frames_.resize(frame_size_, channel_count_);
-      source_->step(stk_frames_, time_, *this);
+      source_->step(stk_frames_, tick_, *this);
       // TODO: protect updating of time_ within a mutex
-      time_ += frame_size_ / sample_rate_;
+      tick_ += frame_size_;
     }
     is_running_ = false;
     return NULL;

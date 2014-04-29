@@ -7,7 +7,9 @@ SOURCES := \
 	node.cpp \
 	player.cpp \
 	rt_player.cpp \
-	test_node.cpp
+	test_buzz.cpp \
+	test_stream.cpp \
+	validator_stream.cpp
 
 OBJECT_DIR := ../obj
 INCLUDE_DIR := ../include

@@ -17,18 +17,18 @@ namespace mu {
     ~Looper( void );
 
     Looper& step(stk::StkFrames& buffer, 
-                 MuTime time, 
+                 Tick tick,
                  const Player &player);
-    MuTime streamDuration();
+    Tick streamDuration();
 
-    MuTime getLoopDuration();
-    Looper& setLoopDuration(MuTime loop_duration);
+    Tick getLoopDuration();
+    Looper& setLoopDuration(Tick loop_duration);
 
     Node *getSource();
     Looper& setSource(Node *source);
 
   protected:
-    MuTime loop_duration_;
+    Tick loop_duration_;
     stk::StkFrames buffer_;
     Node *source_;
 
@@ -39,10 +39,10 @@ namespace mu {
     TRACE("Looper::Looper()\n");
   }
 
-  inline MuTime Looper::streamDuration() { return (double)INDEFINITE; }
+  inline Tick Looper::streamDuration() { return kIndefinite; }
 
-  inline MuTime Looper::getLoopDuration() { return loop_duration_; }
-  inline Looper& Looper::setLoopDuration(MuTime loop_duration) {
+  inline Tick Looper::getLoopDuration() { return loop_duration_; }
+  inline Looper& Looper::setLoopDuration(Tick loop_duration) {
     TRACE("Looper::loopDuration()\n");
     loop_duration_ = loop_duration; return *this;
   }

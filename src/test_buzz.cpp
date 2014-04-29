@@ -1,18 +1,18 @@
-#include "test_node.h"
+#include "test_buzz.h"
 
 namespace mu {
 
-  TestNode::TestNode() 
+  TestBuzz::TestBuzz() 
     : frame_index_ (0) {
-    TRACE("TestNode::TestNode()\n");
+    TRACE("TestBuzz::TestBuzz()\n");
   }
   
-  TestNode::~TestNode() {
-    TRACE("TestNode::~TestNode()\n");
+  TestBuzz::~TestBuzz() {
+    TRACE("TestBuzz::~TestBuzz()\n");
   }
   
-  TestNode& TestNode::step(stk::StkFrames& buffer, 
-                           MuTime time,
+  TestBuzz& TestBuzz::step(stk::StkFrames& buffer, 
+                           Tick tick,
                            const Player &player) {
     long int frame_count = buffer.frames();
     int channel_count = buffer.channels();
@@ -26,9 +26,9 @@ namespace mu {
     return *this;
   }
 
-  MuTime TestNode::streamDuration() {
-    TRACE("TestNode::streamDuration()\n");
-    return INDEFINITE;
+  Tick TestBuzz::streamDuration() {
+    TRACE("TestBuzz::streamDuration()\n");
+    return kIndefinite;
   }
 
 }
