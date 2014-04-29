@@ -13,7 +13,7 @@ namespace mu {
     ~TestNode( void );
     TestNode& step(stk::StkFrames& buffer, 
                    MuTime time, 
-                   const Transport& transport);
+                   const Player& player);
     MuTime streamDuration();
 
   protected:

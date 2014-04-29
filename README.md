@@ -14,6 +14,14 @@ An experiment in blurring the lines between music composition and sound synthesi
 
 ## changelog 
 
+* 2014-04-29: Renamed Transport to Player, now a virtual superclass,
+with sub-classes RtPlayer and NrtPlayer.  Flushed SampleBuffer since
+C++ semantics won't let me overload a non-virtual library class.
+Created Looper and test/mune08 to test it.  Glitchy, but starting to
+work.  Created TestStream that outputs value N at time N -- not yet
+tested.  Got everything working to "as well as it worked before" --
+seems like a good checkpoint.
+
 * 2014-04-28: Created SampleBuffer object that subclasses and mimics
 stk::StkFrames, but creates an offset into the underlying data buffer.
 

@@ -13,7 +13,7 @@ namespace mu {
   
   TestNode& TestNode::step(stk::StkFrames& buffer, 
                            MuTime time,
-                           const Transport &transport) {
+                           const Player &player) {
     long int frame_count = buffer.frames();
     int channel_count = buffer.channels();
     int i = ((frame_index_ * 2) + 1) %  (frame_count * channel_count);

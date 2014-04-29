@@ -17,7 +17,7 @@ namespace mu {
 
     FileReader& step(stk::StkFrames& buffer, 
                      MuTime time, 
-                     const Transport &transport);
+                     const Player &player);
     MuTime streamDuration();
 
     std::string getFileName();

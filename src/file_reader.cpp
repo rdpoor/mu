@@ -8,17 +8,25 @@ namespace mu {
   
   FileReader& FileReader::step(stk::StkFrames& buffer, 
                                MuTime time,
-                               const Transport& transport) {
+                               const Player& player) {
     if (!file_read_.isOpen()) {
       file_read_.open(file_name_);
-      // TODO: check format, rate, etc against buffer & transport
+      // TODO: check format, rate, etc against buffer & player
     }
     long start_frame = time * file_read_.fileRate();
     long frames_in_file = file_read_.fileSize() - start_frame;
     long frames_in_buffer = buffer.frames();
     unsigned int channel_count = buffer.channels();
-
-    printf("sf=%ld fif=%ld fib=%ld, cc=%d\n", start_frame, frames_in_file, frames_in_buffer, channel_count);
+//     printf("buf=%p, data=%p, frames()=%d, channels=%d\n", 
+//            &buffer, 
+//            &(buffer[0]), 
+//            buffer.frames(), 
+//            buffer.channels());
+//     printf("sf=%ld fif=%ld fib=%ld, cc=%d\n", 
+//            start_frame, 
+//            frames_in_file, 
+//            frames_in_buffer, 
+//            channel_count);
 
     if (frames_in_file > frames_in_buffer) {
       // file.read() will fill entire buffer
@@ -36,7 +44,7 @@ namespace mu {
       bzero(&(buffer[0]), frames_in_buffer * channel_count * sizeof(stk::StkFloat));
     }
 
-    // fprintf(stderr, "step: %p %f %p\r", &buffer, time, &transport);
+    // fprintf(stderr, "step: %p %f %p\r", &buffer, time, &player);
     return *this;
   }
 
