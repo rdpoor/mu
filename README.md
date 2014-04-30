@@ -10,6 +10,8 @@ An experiment in blurring the lines between music composition and sound synthesi
 * Create a Delay stream (allow negative offsets) and a test file.
 * Allow ticks to be negative (i.e. signed), validate operation with 
   negative tick times.
+* Replace Stream::frameCount() with Stream()::extent (or Stream::start()
+  and Stream::end()).
 * When do we release resources?  Do we need a Transport.pause() method
   distinct from Transport.stop()?
 * Add command line parsing such as argp.h
@@ -20,6 +22,11 @@ An experiment in blurring the lines between music composition and sound synthesi
 * Extend src/Makefile to assure that stk library is up to date.
 
 ## changelog 
+
+* 2014-04-30: Stream::streamDuration() => Stream::frameCount().  Created
+MixStream and DelayStream and corresponding unit tests.  Created a unit
+test for IdentityStream.  Created a simple test/assert.c file to help
+with unit testing (could be better, but it's already useful).
 
 * 2014-04-30: Refactoring: Node => Stream.  All subclasses are now
 named XxxStream.  
@@ -131,3 +138,26 @@ purely sequential access.  In our current scheme, each call to step()
 carries its own tick time and there's no guarantee that calls will be
 sequential in time.  If a stream element wants to know (e.g. to stop
 the transport), it can examine the stream's frameCount().
+
+### more on stream extents
+
+The frameCount() method is supposed to give hints about when the stream
+starts and stops. This could be used for a variety of things, including
+optimizations in inner loops and signaling the Player when it can stop.
+
+Since streams can now start at negative times (or arbitrarily positive
+times), frameCount() doesn't capture that information.  It should be
+replaced with an extent() method that describes the starting and
+ending frames of the stream (or perhaps starting frame and duration).
+
+### on stream states
+
+Okay, so I claim that each call to step() can specify an arbitrary
+time, so streams are effectively random access.  What happens when the
+results of this buffer depends on what happened in the previous
+buffer, with the obvious example of a reverberator?  Either we go back
+to declaring that access is "usually" sequential and special case
+non-sequential access, or we make some reasonable rules for how
+stateful streams behave for sequential and non-sequential access.
+
+The latter probably makes more sense.

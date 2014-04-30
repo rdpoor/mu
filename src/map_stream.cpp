@@ -7,8 +7,8 @@ namespace mu {
   }
 
   // stream duration is inherited from the source stream
-  Tick MapStream::streamDuration() {
-    return (source_ == NULL) ? kIndefinite : source_->streamDuration();
+  Tick MapStream::frameCount() {
+    return (source_ == NULL) ? kIndefinite : source_->frameCount();
   }
 
   MapStream& MapStream::step(stk::StkFrames& buffer,

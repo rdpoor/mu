@@ -11,7 +11,10 @@ SOURCES := \
 	test_clamp.cpp \
 	test_double_accuracy.cpp \
 	test_pthread.cpp \
-	test_subclass.cpp
+	test_subclass.cpp \
+	ut_delay_stream.cpp \
+	ut_identity_stream.cpp \
+	ut_mix_stream.cpp
 
 MULIB   := ../obj/*.o
 STKLIB  := ../tarballs/stk-4.4.4/src/Release/*.o
@@ -31,6 +34,9 @@ all: $(patsubst %.cpp,%,$(SOURCES))
 
 clean:
 	rm -f $(patsubst %.cpp,%,$(SOURCES))
+
+assert.o : assert.c
+	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -c $(<) -o $(@)
 
 mune01 : mune01.cpp # | $(MULIB) $(STKLIB)
 	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $(@) $(<) $(MULIB) $(STKLIB) $(LIBRARY)
@@ -67,3 +73,13 @@ test_clamp: test_clamp.cpp
 
 test_pthread: test_pthread.cpp
 	$(CC) $(CFLAGS) -o $(@) $(<)
+
+ut_delay_stream : ut_delay_stream.cpp assert.o # | $(MULIB) $(STKLIB)
+	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $(@) $(<) assert.o $(MULIB) $(STKLIB) $(LIBRARY)
+
+ut_identity_stream : ut_identity_stream.cpp assert.o # | $(MULIB) $(STKLIB)
+	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $(@) $(<) assert.o $(MULIB) $(STKLIB) $(LIBRARY)
+
+ut_mix_stream : ut_mix_stream.cpp assert.o # | $(MULIB) $(STKLIB)
+	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $(@) $(<) assert.o $(MULIB) $(STKLIB) $(LIBRARY)
+

@@ -1,9 +1,10 @@
-# Figure out how to define SOURCES without manually naming each file
 SOURCES := \
+	delay_stream.cpp \
 	file_read_stream.cpp \
 	identity_stream.cpp \
 	loop_stream.cpp \
 	map_stream.cpp \
+	mix_stream.cpp \
 	mu.cpp \
 	nrt_player.cpp \
 	player.cpp \

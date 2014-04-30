@@ -16,7 +16,7 @@ namespace mu {
     
     //! Return the duration of this stream or kIndefinite if the
     //! stream has an infinite or indeterminate duration.
-    virtual Tick streamDuration() = 0;
+    virtual Tick frameCount() = 0;
 
   };                            // class Stream
 

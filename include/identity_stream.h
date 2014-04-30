@@ -18,7 +18,7 @@ namespace mu {
     IdentityStream& step(stk::StkFrames& buffer, 
                      Tick tick,
                      Player& player);
-    Tick streamDuration();
+    Tick frameCount();
   };                            // class IdentityStream
 
 }                               // namespace mu
