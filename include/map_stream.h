@@ -13,7 +13,7 @@
 #define MU_MAP_STREAM_H
 
 #include "mu.h"
-#include "node.h"
+#include "stream.h"
 
 namespace mu {
 
@@ -22,7 +22,7 @@ namespace mu {
                                      Player& player,
                                      Tick frame_index );
   
-  class MapStream : public Node {
+  class MapStream : public Stream {
   public:
 
     MapStream();
@@ -33,14 +33,14 @@ namespace mu {
                           Player &player);
     Tick streamDuration();
 
-    Node *getSource() const;
-    MapStream& setSource(Node *source);
+    Stream *getSource() const;
+    MapStream& setSource(Stream *source);
 
     MapStreamCallback getCallback() const;
     MapStream& setCallback(MapStreamCallback callback);
 
   protected:
-    Node *source_;
+    Stream *source_;
     MapStreamCallback callback_;
 
   };                            // class MapStream
@@ -49,8 +49,8 @@ namespace mu {
     TRACE("MapStream::MapStream()\n");
   }
 
-  inline Node *MapStream::getSource() const { return source_; }
-  inline MapStream& MapStream::setSource(Node *source) {
+  inline Stream *MapStream::getSource() const { return source_; }
+  inline MapStream& MapStream::setSource(Stream *source) {
     TRACE("MapStream::source()\n");
     source_ = source; return *this;
   }

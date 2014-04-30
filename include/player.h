@@ -24,8 +24,8 @@ namespace mu {
     unsigned int getFrameSize() const;
     Player& setFrameSize(unsigned int frame_size);
 
-    Node *getSource() const;
-    Player& setSource(Node *source);
+    Stream *getSource() const;
+    Player& setSource(Stream *source);
 
     Tick getTick() const;
     Player& setTick(Tick tick);
@@ -46,7 +46,7 @@ namespace mu {
     unsigned int channel_count_;
     stk::StkFloat frame_rate_;
     unsigned int frame_size_;
-    Node *source_;
+    Stream *source_;
     Tick tick_;
 
   };                            // class Player
@@ -78,8 +78,8 @@ namespace mu {
     frame_size_ = frame_size; return *this;
   }
   
-  inline Node *Player::getSource() const { return source_; }
-  inline Player& Player::setSource(Node *source) {
+  inline Stream *Player::getSource() const { return source_; }
+  inline Player& Player::setSource(Stream *source) {
     TRACE("Player::getSource()\n");
     source_ = source; return *this;
   }

@@ -1,12 +1,12 @@
-#include "looper.h"
+#include "loop_stream.h"
 
 namespace mu {
 
-  Looper::~Looper() {
-    TRACE("Looper::~Looper()\n");
+  LoopStream::~LoopStream() {
+    TRACE("LoopStream::~LoopStream()\n");
   }
   
-  Looper& Looper::step(stk::StkFrames& buffer, 
+  LoopStream& LoopStream::step(stk::StkFrames& buffer, 
                        Tick tick,
                        Player& player) {
     long int frames_copied = 0;

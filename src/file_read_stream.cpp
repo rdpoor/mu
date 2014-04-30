@@ -1,12 +1,12 @@
-#include "file_reader.h"
+#include "file_read_stream.h"
 
 namespace mu {
 
-  FileReader::~FileReader() {
-    TRACE("FileReader::~FileReader()\n");
+  FileReadStream::~FileReadStream() {
+    TRACE("FileReadStream::~FileReadStream()\n");
   }
   
-  FileReader& FileReader::step(stk::StkFrames& buffer, 
+  FileReadStream& FileReadStream::step(stk::StkFrames& buffer, 
                                Tick tick,
                                Player& player) {
     if (!file_read_.isOpen()) {

@@ -1,7 +1,7 @@
 /*
  * Create classes to test streaming of audio buffers using primitives
  * in our target API: step(), reset(), seek().  Implements mu:Transport,
- * mu:Node, mu:TestNode.
+ * mu:Stream, mu:IdentityStream.
  */
 
 #include "Stk.h"
@@ -21,38 +21,38 @@ namespace mu {
 
   // ================================================================
   // ================================================================
-  // Node (virtual)
+  // Stream (virtual)
 
   // .h ================
-  class Node {
+  class Stream {
   public:
     
     const static int INDEFINITE = -1;
     
     //! Write upto nFrames of interleaved sample data into buffer.
     //! Returns number of frames written into the buffer.
-    virtual Node& step(stk::StkFrames& buffer, 
+    virtual Stream& step(stk::StkFrames& buffer, 
                        unsigned int frame_count, 
                        unsigned int channel_count) = 0;
     
-    //! reset the Node to time 0, reinitialize state.
-    Node& reset() {
-      TRACE("Node::reset()\n");
+    //! reset the Stream to time 0, reinitialize state.
+    Stream& reset() {
+      TRACE("Stream::reset()\n");
       releaseResources();
       acquireResources();
       seek(0.0);
       return *this;
     }
 
-    //! allocate resources required by this node.
-    virtual Node& acquireResources() = 0;
+    //! allocate resources required by this stream.
+    virtual Stream& acquireResources() = 0;
 
-    //! release any resources used by this node
-    virtual Node& releaseResources() = 0;
+    //! release any resources used by this stream
+    virtual Stream& releaseResources() = 0;
 
-    //! condition the Node so the next call to step() will fetch samples
+    //! condition the Stream so the next call to step() will fetch samples
     //! starting at \c time.
-    virtual Node& seek(MuTime time) = 0;
+    virtual Stream& seek(MuTime time) = 0;
 
     //! Return the number of frames remaining in this stream, or
     //! INDEFINITE if the stream has an infinite or indeterminate
@@ -63,36 +63,36 @@ namespace mu {
 
   // ================================================================
   // ================================================================
-  // TestNode
+  // IdentityStream
 
   // .h ================
-  class TestNode : public Node {
+  class IdentityStream : public Stream {
   public:
 
-    TestNode();
-    ~TestNode( void );
-    TestNode& step(stk::StkFrames& buffer, unsigned int frame_count, unsigned int channel_count);
-    TestNode& acquireResources();
-    TestNode& releaseResources();
-    TestNode& seek(MuTime time);
+    IdentityStream();
+    ~IdentityStream( void );
+    IdentityStream& step(stk::StkFrames& buffer, unsigned int frame_count, unsigned int channel_count);
+    IdentityStream& acquireResources();
+    IdentityStream& releaseResources();
+    IdentityStream& seek(MuTime time);
     long int framesRemaining();
 
   protected:
     long int frame_index_;
-  };                            // class TestNode
+  };                            // class IdentityStream
   
   // .cpp ================
 
-  TestNode::TestNode() 
+  IdentityStream::IdentityStream() 
     : frame_index_ (0) {
-    TRACE("TestNode::TestNode()\n");
+    TRACE("IdentityStream::IdentityStream()\n");
   }
 
-  TestNode::~TestNode() {
-    TRACE("TestNode::~TestNode()\n");
+  IdentityStream::~IdentityStream() {
+    TRACE("IdentityStream::~IdentityStream()\n");
   }
 
-  TestNode& TestNode::step(stk::StkFrames& buffer, 
+  IdentityStream& IdentityStream::step(stk::StkFrames& buffer, 
                            unsigned int frame_count, 
                            unsigned int channel_count) {
     int i = ((frame_index_ * 2) + 1) %  (frame_count * channel_count);
@@ -110,23 +110,23 @@ namespace mu {
     return *this;
   }
 
-  long int TestNode::framesRemaining() {
-    TRACE("TestNode::framesRemaining()\n");
+  long int IdentityStream::framesRemaining() {
+    TRACE("IdentityStream::framesRemaining()\n");
     return INDEFINITE;
   }
 
-  TestNode& TestNode::acquireResources() {
-    TRACE("TestNode::acquireResources()\n");
+  IdentityStream& IdentityStream::acquireResources() {
+    TRACE("IdentityStream::acquireResources()\n");
     return *this;
   }
 
-  TestNode& TestNode::releaseResources() {
-    TRACE("TestNode::releaseResources()\n");
+  IdentityStream& IdentityStream::releaseResources() {
+    TRACE("IdentityStream::releaseResources()\n");
     return *this;
   }
 
-  TestNode& TestNode::seek(MuTime time) {
-    TRACE("TestNode::seek()\n");
+  IdentityStream& IdentityStream::seek(MuTime time) {
+    TRACE("IdentityStream::seek()\n");
     return *this;
   }
 
@@ -135,8 +135,8 @@ namespace mu {
   
   // ================================================================
   // ================================================================
-  // Transport is the root of the directed acyclic graph of Nodes.  It
-  // requests samples from nodes via the step() method (called in a
+  // Transport is the root of the directed acyclic graph of Streams.  It
+  // requests samples from streams via the step() method (called in a
   // separate thread) and passes them to the DAC for playback.
   //
   // Transport implements start, stop, seek methods to start (or
@@ -186,7 +186,7 @@ namespace mu {
       frame_size_ = frame_size; return *this;
     }
 
-    inline Transport& source(Node *source) {
+    inline Transport& source(Stream *source) {
       TRACE("Transport::source()\n");
       source_ = source; return *this;
     }
@@ -211,7 +211,7 @@ namespace mu {
     int readBuffer( void *buffer, unsigned int frame_count );
 
     // Get/set source of samples
-    inline Node *source() { return source_; }
+    inline Stream *source() { return source_; }
 
   protected:
 
@@ -222,7 +222,7 @@ namespace mu {
 
     RtAudio dac_;
     Mutex mutex_;
-    Node *source_;
+    Stream *source_;
     bool is_running_;
     StkFrames stk_frames_;
 
@@ -249,7 +249,7 @@ namespace mu {
   // taken in reading or writing any state here.
   //
   // Implementation note: RtAudio expects to receive samples in an
-  // array of doubles.  Node objects expect to be called with an
+  // array of doubles.  Stream objects expect to be called with an
   // StkFrames object.  The main work in this method is to copy data
   // out of the StkFrames object into RtAudio's buffer object.
   //
@@ -337,7 +337,7 @@ namespace mu {
 
 int main() {
   mu::Transport t1;
-  mu::TestNode tn1;
+  mu::IdentityStream tn1;
   t1.source(&tn1);
   t1.start();
   sleep(5);

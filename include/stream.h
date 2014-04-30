@@ -1,5 +1,5 @@
-#ifndef MU_NODE_H
-#define MU_NODE_H
+#ifndef MU_STREAM_H
+#define MU_STREAM_H
 
 #include "mu.h"
 #include "player.h"
@@ -7,10 +7,10 @@
 
 namespace mu {
 
-  class Node {
+  class Stream {
   public:
     
-    virtual Node& step(stk::StkFrames& buffer, 
+    virtual Stream& step(stk::StkFrames& buffer, 
                        Tick tick,
                        Player &player) = 0;
     
@@ -18,7 +18,7 @@ namespace mu {
     //! stream has an infinite or indeterminate duration.
     virtual Tick streamDuration() = 0;
 
-  };                            // class Node
+  };                            // class Stream
 
 } // namespace mu
 #endif

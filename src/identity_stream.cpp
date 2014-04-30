@@ -1,16 +1,16 @@
-#include "test_stream.h"
+#include "identity_stream.h"
 
 namespace mu {
 
-  TestStream::TestStream() {
-    TRACE("TestStream::TestStream()\n");
+  IdentityStream::IdentityStream() {
+    TRACE("IdentityStream::IdentityStream()\n");
   }
   
-  TestStream::~TestStream() {
-    TRACE("TestStream::~TestStream()\n");
+  IdentityStream::~IdentityStream() {
+    TRACE("IdentityStream::~IdentityStream()\n");
   }
   
-  TestStream& TestStream::step(stk::StkFrames& buffer, 
+  IdentityStream& IdentityStream::step(stk::StkFrames& buffer, 
                                Tick tick,
                                Player &player) {
     Tick frame_count = buffer.frames();
@@ -39,8 +39,8 @@ namespace mu {
     return *this;
   }
 
-  Tick TestStream::streamDuration() {
-    TRACE("TestStream::streamDuration()\n");
+  Tick IdentityStream::streamDuration() {
+    TRACE("IdentityStream::streamDuration()\n");
     return kIndefinite;
   }
 

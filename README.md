@@ -3,23 +3,30 @@
 An experiment in blurring the lines between music composition and sound synthesis
 
 ## todo
-* Refactor: Node => Stream (because that captures the spirit better)
-* Create a Mixer stream.
-* Create a Crop stream.
-* Create a Delay stream (allow negative offsets).
+* Create a test file for each Stream class.
+* Create a Mixer stream and a test file.
+* Create a Crop stream and a test file.
+* Create a Sequencer stream and a test file.
+* Create a Delay stream (allow negative offsets) and a test file.
 * Allow ticks to be negative (i.e. signed), validate operation with 
   negative tick times.
 * When do we release resources?  Do we need a Transport.pause() method
   distinct from Transport.stop()?
 * Add command line parsing such as argp.h
+* Investigate ways to do automated unit testing.  Create a make target.
+* Create mu/Makefile to make all sub-projects
 * Clean up test/Makefile to avoid repetition, 
 * Fix test/Makefile to assure that mu library is up to date.
 * Extend src/Makefile to assure that stk library is up to date.
 
 ## changelog 
 
+* 2014-04-30: Refactoring: Node => Stream.  All subclasses are now
+named XxxStream.  
+
 * 2014-04-29: With the help of MapSteam and mune09, tested and
 debugged Looper.  Looping is now clean.  
+
 * 2014-04-29: Rename ValidatorStream=>MapStream, includes Player
 argument so user-supplied function can stop playback (for example).
 Needed to lose the const declaration on Player.  TODO: understand
@@ -115,3 +122,12 @@ offset.
 It may need additional work, for example, delegating all the methods
 that make sense and raising an error on those that don't, but for now
 it's enough to get started.
+
+### signalling an empty stream
+
+It's tempting to think that a stream should indicate that it has been
+all used up and there are no more frames available.  But that assumes
+purely sequential access.  In our current scheme, each call to step()
+carries its own tick time and there's no guarantee that calls will be
+sequential in time.  If a stream element wants to know (e.g. to stop
+the transport), it can examine the stream's frameCount().

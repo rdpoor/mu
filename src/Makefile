@@ -1,15 +1,14 @@
 # Figure out how to define SOURCES without manually naming each file
 SOURCES := \
-	file_reader.cpp \
-	looper.cpp \
+	file_read_stream.cpp \
+	identity_stream.cpp \
+	loop_stream.cpp \
 	map_stream.cpp \
 	mu.cpp \
 	nrt_player.cpp \
-	node.cpp \
 	player.cpp \
 	rt_player.cpp \
-	test_buzz.cpp \
-	test_stream.cpp
+	stream.cpp
 
 OBJECT_DIR := ../obj
 INCLUDE_DIR := ../include

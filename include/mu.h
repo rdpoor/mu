@@ -15,7 +15,7 @@ namespace mu {
   typedef double MuTime;
 
   // resolve a circular dependency
-  class Node;
+  class Stream;
   class Player;
 
   // General purpose clamp: clamp val to lie within min...max (inclusive)

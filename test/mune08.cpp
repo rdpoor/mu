@@ -1,9 +1,9 @@
 /*
- * Test TestStream, NrtPlayer, ValidatorStream
+ * Test IdentityStream, NrtPlayer, ValidatorStream
  */
 #include "mu.h"
 #include "nrt_player.h"
-#include "test_stream.h"
+#include "identity_stream.h"
 #include "map_stream.h"
 #include <unistd.h>
 
@@ -26,12 +26,12 @@ void validate(stk::StkFrames& buffer, mu::Tick tick, mu::Player& player, mu::Tic
 }
 
 int main() {
-  mu::TestStream test_stream;
+  mu::IdentityStream identity_stream;
   mu::MapStream map_stream;
   mu::NrtPlayer player;
 
   map_stream.setCallback(validate);
-  map_stream.setSource(&test_stream);
+  map_stream.setSource(&identity_stream);
   player.setSource(&map_stream);
 
   player.start();

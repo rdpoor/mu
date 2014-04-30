@@ -2,7 +2,7 @@
 #define MU_RT_PLAYER_H
 
 #include "mu.h"
-#include "node.h"
+#include "stream.h"
 #include "player.h"
 // #include <mutex.h>
 #include "RtAudio.h"
