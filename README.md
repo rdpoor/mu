@@ -3,8 +3,12 @@
 An experiment in blurring the lines between music composition and sound synthesis
 
 ## todo
-* Test/debug Loop node.
-* Create a Mixer node.
+* Refactor: Node => Stream (because that captures the spirit better)
+* Create a Mixer stream.
+* Create a Crop stream.
+* Create a Delay stream (allow negative offsets).
+* Allow ticks to be negative (i.e. signed), validate operation with 
+  negative tick times.
 * When do we release resources?  Do we need a Transport.pause() method
   distinct from Transport.stop()?
 * Add command line parsing such as argp.h
@@ -14,6 +18,8 @@ An experiment in blurring the lines between music composition and sound synthesi
 
 ## changelog 
 
+* 2014-04-29: With the help of MapSteam and mune09, tested and
+debugged Looper.  Looping is now clean.  
 * 2014-04-29: Rename ValidatorStream=>MapStream, includes Player
 argument so user-supplied function can stop playback (for example).
 Needed to lose the const declaration on Player.  TODO: understand

@@ -9,7 +9,7 @@
 int main() {
   mu::RtPlayer player;      // allocate a real-time audio playback
   mu::Looper looper;
-  looper.setLoopDuration(11011);
+  looper.setLoopDuration(10784);
   mu::FileReader fr;
   fr.fileName("/Users/r/Projects/Musics/TNVM/sources/Chords/A.wav").doNormalize(true);
 

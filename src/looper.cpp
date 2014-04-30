@@ -9,33 +9,34 @@ namespace mu {
   Looper& Looper::step(stk::StkFrames& buffer, 
                        Tick tick,
                        Player& player) {
-    Tick te = tick + buffer.frames();
-    Tick slice_start_tick = tick;
-
-    while (slice_start_tick < te) {
-      Tick slice_end_tick = ((slice_start_tick + loop_duration_) / loop_duration_) * loop_duration_;
-      Tick slice_duration = slice_end_tick - slice_start_tick;
-      Tick slice_frame_offset = slice_start_tick - tick;
-      Tick slice_frame_length = std::min((Tick)slice_duration, (Tick)(buffer.frames() - slice_frame_offset));
-//       printf("Looper: sst=%f, sd=%f, sfo=%d, sfl=%d\n", 
-//              slice_start_time,
-//              slice_duration,
-//              slice_frame_offset,
-//              slice_frame_length);
-      if ((slice_frame_offset == 0) && (slice_frame_length == buffer.frames())) {
-        // optimize a common case: no copy needed
-        source_->step(buffer, slice_start_tick % loop_duration_, player);
+    long int frames_copied = 0;
+    while (frames_copied < buffer.frames()) {
+      Tick current_tick = frames_copied + tick;
+      // TODO: This truncates towards zero.  We really want floor()
+      // instead to allow for negative tick times.  Make it a separate
+      // function for testability.
+      Tick prev_tick_point = (current_tick / loop_duration_) * loop_duration_;
+      Tick next_tick_point = prev_tick_point + loop_duration_;
+      Tick frames_to_copy = std::min((next_tick_point - current_tick), (buffer.frames() - frames_copied));
+      // At this point:
+      // current_tick is the global time of buffer[frames_copied]
+      // frames_to_copy is how many frames we can copy before we run into a loop point
+      //   or into the end of buffer
+      // (current_tick % loop_duration_) is the time associated with buffer_[0]
+      if (frames_to_copy == buffer.frames()) {
+        // optimize the a common case: no copy needed
+        source_->step(buffer, (current_tick % loop_duration_), player);
       } else {
-        // adjust buffer_ size to receive slice_frame_length frames
-        buffer_.resize(slice_frame_length, buffer.channels());
-        // fill with source's data
-        source_->step(buffer_, slice_start_tick % loop_duration_, player);
-        // copy buffer_'s data into buffer
-        unsigned int sample_count = buffer_.size();
-        unsigned int slice_sample_offset = slice_frame_offset * buffer.channels();
-        for (int i=0; i<sample_count; i++) { buffer[i+slice_sample_offset] = buffer[i]; }
+        // resize buffer_ to receive frames_to_copy frames from source
+        buffer_.resize(frames_to_copy, buffer.channels());
+        // fill with source data
+        source_->step(buffer_, (current_tick % loop_duration_), player);
+        // copy from buffer_[0] into buffer[frames_copied] for frames_to_copy frames
+        int samples_to_copy = frames_to_copy * buffer.channels();
+        int dst = frames_copied * buffer.channels();
+        for (int src=0; src<samples_to_copy; src++, dst++) { buffer[dst] = buffer_[src]; }
       }
-      slice_start_tick += slice_duration;
+      frames_copied += frames_to_copy;
     }
 
     return *this;
