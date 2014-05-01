@@ -18,7 +18,8 @@ namespace mu {
     DelayStream& step(stk::StkFrames& buffer, 
                           Tick tick,
                           Player &player);
-    Tick frameCount();
+    Tick getStart( void );
+    Tick getEnd( void );
 
     Stream *getSource() const;
     DelayStream& setSource(Stream *source);

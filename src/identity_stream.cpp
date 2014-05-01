@@ -39,9 +39,4 @@ namespace mu {
     return *this;
   }
 
-  Tick IdentityStream::frameCount() {
-    TRACE("IdentityStream::frameCount()\n");
-    return kIndefinite;
-  }
-
 }

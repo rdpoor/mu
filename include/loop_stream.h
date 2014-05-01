@@ -19,7 +19,6 @@ namespace mu {
     LoopStream& step(stk::StkFrames& buffer, 
                  Tick tick,
                  Player &player);
-    Tick frameCount();
 
     Tick getLoopDuration() const;
     LoopStream& setLoopDuration(Tick loop_duration);
@@ -38,8 +37,6 @@ namespace mu {
     : loop_duration_ (1.0) {
     TRACE("LoopStream::LoopStream()\n");
   }
-
-  inline Tick LoopStream::frameCount() { return kIndefinite; }
 
   inline Tick LoopStream::getLoopDuration() const { return loop_duration_; }
   inline LoopStream& LoopStream::setLoopDuration(Tick loop_duration) {

@@ -31,7 +31,8 @@ namespace mu {
     MapStream& step(stk::StkFrames& buffer, 
                           Tick tick,
                           Player &player);
-    Tick frameCount();
+    Tick getStart( void );
+    Tick getEnd( void );
 
     Stream *getSource() const;
     MapStream& setSource(Stream *source);

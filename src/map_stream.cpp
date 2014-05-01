@@ -6,11 +6,6 @@ namespace mu {
     TRACE("MapStream::~MapStream()\n");
   }
 
-  // stream duration is inherited from the source stream
-  Tick MapStream::frameCount() {
-    return (source_ == NULL) ? kIndefinite : source_->frameCount();
-  }
-
   MapStream& MapStream::step(stk::StkFrames& buffer,
                              Tick tick,
                              Player& player) {
@@ -27,6 +22,15 @@ namespace mu {
     }
 
     return *this;
+  }
+
+  // stream extent is inherited from the source stream
+  Tick MapStream::getStart() {
+    return (source_ == NULL) ? kIndefinite : (source_->getStart());
+  }
+
+  Tick MapStream::getEnd() {
+    return (source_ == NULL) ? kIndefinite : (source_->getEnd());
   }
 
 

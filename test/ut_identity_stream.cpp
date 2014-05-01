@@ -28,6 +28,9 @@ int main() {
   ASSERT(buffer((FRAME_COUNT-1),0) == (FRAME_COUNT-1));
   ASSERT(buffer((FRAME_COUNT-1),1) == (FRAME_COUNT-1));
 
+  ASSERT(identity_stream.getStart() == mu::kIndefinite);
+  ASSERT(identity_stream.getEnd() == mu::kIndefinite);
+
   identity_stream.step(buffer, OFFSET_P, player);
 
   ASSERT(buffer(0,0) == OFFSET_P);

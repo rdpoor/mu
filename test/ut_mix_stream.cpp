@@ -2,6 +2,7 @@
  * Unit Test MixStream
  */
 #include "assert.h"
+#include "crop_stream.h"
 #include "mix_stream.h"
 #include "mu.h"
 #include "nrt_player.h"
@@ -15,6 +16,8 @@
 #define DELAY_M_100 (-100)
 
 int main() {
+  mu::CropStream crop_stream_a;
+  mu::CropStream crop_stream_b;
   mu::IdentityStream identity_stream_a;
   mu::IdentityStream identity_stream_b;
   mu::MixStream mix_stream;
@@ -71,6 +74,94 @@ int main() {
   ASSERT(buffer(1,1) == 2);
   ASSERT(buffer((FRAME_COUNT-1),0) == 2*(FRAME_COUNT-1));
   ASSERT(buffer((FRAME_COUNT-1),1) == 2*(FRAME_COUNT-1));
+
+  fprintf(stderr,"=== getStart() tests\n");
+  crop_stream_a.setSource(&identity_stream_a).setStart(mu::kIndefinite).setEnd(mu::kIndefinite);
+  crop_stream_b.setSource(&identity_stream_b).setStart(mu::kIndefinite).setEnd(mu::kIndefinite);
+
+  fprintf(stderr, "=== null sources\n");
+  mix_stream.setSourceA(NULL).setSourceB(NULL);
+  ASSERT(mix_stream.getStart() == mu::kIndefinite);
+
+  fprintf(stderr, "=== non-null A source, null B source\n");
+  mix_stream.setSourceA(&crop_stream_a).setSourceB(NULL);
+  crop_stream_a.setStart(mu::kIndefinite);
+  crop_stream_b.setStart(mu::kIndefinite);
+  ASSERT(mix_stream.getStart() == mu::kIndefinite);
+
+  crop_stream_a.setStart(10);
+  ASSERT(mix_stream.getStart() == 10);
+
+  fprintf(stderr, "=== null A source, non-null B source\n");
+  mix_stream.setSourceA(NULL).setSourceB(&crop_stream_b);
+  crop_stream_a.setStart(mu::kIndefinite);
+  crop_stream_b.setStart(mu::kIndefinite);
+  ASSERT(mix_stream.getStart() == mu::kIndefinite);
+
+  crop_stream_b.setStart(20);
+  ASSERT(mix_stream.getStart() == 20);
+
+  fprintf(stderr, "=== non-null A source, non-null B source\n");
+  mix_stream.setSourceA(&crop_stream_a).setSourceB(&crop_stream_b);
+  crop_stream_a.setStart(mu::kIndefinite);
+  crop_stream_b.setStart(mu::kIndefinite);
+  ASSERT(mix_stream.getStart() == mu::kIndefinite);
+
+  crop_stream_a.setStart(10);
+  crop_stream_b.setStart(mu::kIndefinite);
+  ASSERT(mix_stream.getStart() == mu::kIndefinite);
+
+  crop_stream_a.setStart(mu::kIndefinite);
+  crop_stream_b.setStart(20);
+  ASSERT(mix_stream.getStart() == mu::kIndefinite);
+
+  crop_stream_a.setStart(10);
+  crop_stream_b.setStart(20);
+  ASSERT(mix_stream.getStart() == 10);
+
+  fprintf(stderr,"=== getEnd() tests\n");
+  crop_stream_a.setSource(&identity_stream_a).setStart(mu::kIndefinite).setEnd(mu::kIndefinite);
+  crop_stream_b.setSource(&identity_stream_b).setStart(mu::kIndefinite).setEnd(mu::kIndefinite);
+
+  fprintf(stderr, "=== null sources\n");
+  mix_stream.setSourceA(NULL).setSourceB(NULL);
+  ASSERT(mix_stream.getEnd() == mu::kIndefinite);
+
+  fprintf(stderr, "=== non-null A source, null B source\n");
+  mix_stream.setSourceA(&crop_stream_a).setSourceB(NULL);
+  crop_stream_a.setEnd(mu::kIndefinite);
+  crop_stream_b.setEnd(mu::kIndefinite);
+  ASSERT(mix_stream.getEnd() == mu::kIndefinite);
+
+  crop_stream_a.setEnd(10);
+  ASSERT(mix_stream.getEnd() == 10);
+
+  fprintf(stderr, "=== null A source, non-null B source\n");
+  mix_stream.setSourceA(NULL).setSourceB(&crop_stream_b);
+  crop_stream_a.setEnd(mu::kIndefinite);
+  crop_stream_b.setEnd(mu::kIndefinite);
+  ASSERT(mix_stream.getEnd() == mu::kIndefinite);
+
+  crop_stream_b.setEnd(20);
+  ASSERT(mix_stream.getEnd() == 20);
+
+  fprintf(stderr, "=== non-null A source, non-null B source\n");
+  mix_stream.setSourceA(&crop_stream_a).setSourceB(&crop_stream_b);
+  crop_stream_a.setEnd(mu::kIndefinite);
+  crop_stream_b.setEnd(mu::kIndefinite);
+  ASSERT(mix_stream.getEnd() == mu::kIndefinite);
+
+  crop_stream_a.setEnd(10);
+  crop_stream_b.setEnd(mu::kIndefinite);
+  ASSERT(mix_stream.getEnd() == mu::kIndefinite);
+
+  crop_stream_a.setEnd(mu::kIndefinite);
+  crop_stream_b.setEnd(20);
+  ASSERT(mix_stream.getEnd() == mu::kIndefinite);
+
+  crop_stream_a.setEnd(10);
+  crop_stream_b.setEnd(20);
+  ASSERT(mix_stream.getEnd() == 20);
 
   fprintf(stderr,"=== done\n");
   return 0;

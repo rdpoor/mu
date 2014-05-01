@@ -12,9 +12,11 @@ SOURCES := \
 	test_double_accuracy.cpp \
 	test_pthread.cpp \
 	test_subclass.cpp \
+	ut_crop_stream.cpp \
 	ut_delay_stream.cpp \
 	ut_identity_stream.cpp \
-	ut_mix_stream.cpp
+	ut_mix_stream.cpp \
+	ut_stream.cpp
 
 MULIB   := ../obj/*.o
 STKLIB  := ../tarballs/stk-4.4.4/src/Release/*.o
@@ -74,6 +76,9 @@ test_clamp: test_clamp.cpp
 test_pthread: test_pthread.cpp
 	$(CC) $(CFLAGS) -o $(@) $(<)
 
+ut_crop_stream : ut_crop_stream.cpp assert.o # | $(MULIB) $(STKLIB)
+	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $(@) $(<) assert.o $(MULIB) $(STKLIB) $(LIBRARY)
+
 ut_delay_stream : ut_delay_stream.cpp assert.o # | $(MULIB) $(STKLIB)
 	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $(@) $(<) assert.o $(MULIB) $(STKLIB) $(LIBRARY)
 
@@ -81,5 +86,8 @@ ut_identity_stream : ut_identity_stream.cpp assert.o # | $(MULIB) $(STKLIB)
 	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $(@) $(<) assert.o $(MULIB) $(STKLIB) $(LIBRARY)
 
 ut_mix_stream : ut_mix_stream.cpp assert.o # | $(MULIB) $(STKLIB)
+	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $(@) $(<) assert.o $(MULIB) $(STKLIB) $(LIBRARY)
+
+ut_stream : ut_stream.cpp assert.o # | $(MULIB) $(STKLIB)
 	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $(@) $(<) assert.o $(MULIB) $(STKLIB) $(LIBRARY)
 

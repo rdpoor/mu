@@ -6,16 +6,6 @@ namespace mu {
     TRACE("DelayStream::~DelayStream()\n");
   }
 
-  // If source has a frame count, its end time is extended by delay_
-  // TODO: this is semantically odd.  We're not changing the duration
-  // of the stream, just its start and stop times.  Perhaps we need a
-  // streamExtent() method instead that returns start and end frames.
-  Tick DelayStream::frameCount() {
-    return (source_ == NULL) ? 
-      kIndefinite : 
-      ((source_->frameCount() == kIndefinite) ? kIndefinite : (source_->frameCount() + delay_));
-  }
-
   DelayStream& DelayStream::step(stk::StkFrames& buffer,
                                  Tick tick,
                                  Player& player) {
@@ -26,5 +16,17 @@ namespace mu {
     }
     return *this;
   }
+
+  Tick DelayStream::getStart() {
+    return (source_ == NULL) ? 
+      kIndefinite : 
+      ((source_->getStart() == kIndefinite) ? kIndefinite : (source_->getStart() + delay_));
+  }
+  Tick DelayStream::getEnd() {
+    return (source_ == NULL) ? 
+      kIndefinite : 
+      ((source_->getEnd() == kIndefinite) ? kIndefinite : (source_->getEnd() + delay_));
+  }
+
 
 }

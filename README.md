@@ -2,16 +2,12 @@
 
 An experiment in blurring the lines between music composition and sound synthesis
 
-## todo
-* Create a test file for each Stream class.
-* Create a Mixer stream and a test file.
-* Create a Crop stream and a test file.
+## todo 
+
+* Design a general purpose N-input stream object (e.g for mixing).
+* Abstract out common elements of a single-input stream, make into 
+  a generic super class.
 * Create a Sequencer stream and a test file.
-* Create a Delay stream (allow negative offsets) and a test file.
-* Allow ticks to be negative (i.e. signed), validate operation with 
-  negative tick times.
-* Replace Stream::frameCount() with Stream()::extent (or Stream::start()
-  and Stream::end()).
 * When do we release resources?  Do we need a Transport.pause() method
   distinct from Transport.stop()?
 * Add command line parsing such as argp.h
@@ -22,6 +18,12 @@ An experiment in blurring the lines between music composition and sound synthesi
 * Extend src/Makefile to assure that stk library is up to date.
 
 ## changelog 
+
+* 2014-05-01: Replaced Stream::frameCount() with Stream::getStart(),
+Stream::getEnd() and Stream::getDuration(), all measured in Ticks.
+Created CropStream to limit the extend of a source stream.  Created
+unit tests (including getStart() and getStop() tests) for stream
+classes: CropStream, DelayStream, IdentityStream, MixStream, Stream.
 
 * 2014-04-30: Stream::streamDuration() => Stream::frameCount().  Created
 MixStream and DelayStream and corresponding unit tests.  Created a unit

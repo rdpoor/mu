@@ -1,4 +1,5 @@
 SOURCES := \
+	crop_stream.cpp \
 	delay_stream.cpp \
 	file_read_stream.cpp \
 	identity_stream.cpp \
@@ -9,7 +10,8 @@ SOURCES := \
 	nrt_player.cpp \
 	player.cpp \
 	rt_player.cpp \
-	stream.cpp
+	stream.cpp \
+	stream_extent.cpp
 
 OBJECT_DIR := ../obj
 INCLUDE_DIR := ../include

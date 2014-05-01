@@ -18,8 +18,8 @@ namespace mu {
     FileReadStream& step(stk::StkFrames& buffer, 
                      Tick tick,
                      Player &player);
-    Tick frameCount();
-
+    Tick getStart( void );
+    Tick getEnd( void );
     std::string getFileName() const;
     long int frameIndex();
 
@@ -46,13 +46,12 @@ namespace mu {
     do_normalize_ = do_normalize; return *this;
   }
 
-  inline Tick FileReadStream::frameCount() { 
-    return (Tick)file_read_.fileSize(); 
-  }
-
   inline std::string FileReadStream::getFileName() const { 
     return file_name_; 
   }
+
+  inline Tick FileReadStream::getStart() { return 0; }
+  inline Tick FileReadStream::getEnd() { return (file_read_.fileSize()); }
 
 }                               // namespace mu
 

@@ -19,7 +19,8 @@ namespace mu {
     MixStream& step(stk::StkFrames& buffer, 
                           Tick tick,
                           Player &player);
-    Tick frameCount();
+    Tick getStart( void );
+    Tick getEnd( void );
 
     Stream *getSourceA() const;
     MixStream& setSourceA(Stream *source);
