@@ -42,13 +42,10 @@ namespace mu {
     tick_ += frame_count;
 
     // copy the samples to RtAudio's buffer
-    stk::StkFloat *input = (stk::StkFloat *)&stk_frames_[0];
-    stk::StkFloat *output = (stk::StkFloat *)buffer;
+    stk::StkFloat *src = (stk::StkFloat *)&stk_frames_[0];
+    stk::StkFloat *dst = (stk::StkFloat *)buffer;
     unsigned int sample_count = frame_count * channel_count_;
-
-    for (unsigned int i=0; i<sample_count; i++) {
-      *output++ = *input++;
-    }
+    for (unsigned int i=sample_count-1; i>=0; i--) { *dst++ = *src++; }
 
     return 0;
   }

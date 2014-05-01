@@ -32,9 +32,13 @@ namespace mu {
         // fill with source data
         source_->step(buffer_, (current_tick % loop_duration_), player);
         // copy from buffer_[0] into buffer[frames_copied] for frames_to_copy frames
+#if 1
+        copy_buffer(buffer_, 0, buffer, frames_copied, frames_to_copy);
+#else
         int samples_to_copy = frames_to_copy * buffer.channels();
         int dst = frames_copied * buffer.channels();
         for (int src=0; src<samples_to_copy; src++, dst++) { buffer[dst] = buffer_[src]; }
+#endif
       }
       frames_copied += frames_to_copy;
     }

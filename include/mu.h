@@ -10,7 +10,7 @@ namespace mu {
 #define TRACE(s) fprintf(stderr, (s))
 
   typedef long int Tick;
-  static const Tick kIndefinite = INT_MAX;
+  static const Tick kIndefinite = LONG_MAX;
 
   typedef double MuTime;
 

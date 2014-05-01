@@ -4,7 +4,16 @@ An experiment in blurring the lines between music composition and sound synthesi
 
 ## todo 
 
-* Design a general purpose N-input stream object (e.g for mixing).
+* Create ConstantStream and test file.
+* Create MultiplyStream and test file.
+* Create a stream that fiddles with time: t' = t0 + k*t.  (Oog -- am I
+  going to regret using an integer frame counter?)
+* Create F(t)Stream and test file.
+* setSource() and related should check for circular loops.
+* Think about mono to stereo (and stereo to mono) stream elements: pan.
+* Think about automatic conversion from mono to stereo -- what happens
+  when you connect a mono source to a stereo stream object?  Should that
+  be an error or expand automatically?
 * Abstract out common elements of a single-input stream, make into 
   a generic super class.
 * Create a Sequencer stream and a test file.
@@ -16,8 +25,13 @@ An experiment in blurring the lines between music composition and sound synthesi
 * Clean up test/Makefile to avoid repetition, 
 * Fix test/Makefile to assure that mu library is up to date.
 * Extend src/Makefile to assure that stk library is up to date.
+* Add __FILE__ and __LINE__ directives to ASSERT() macro, printed in a form
+  emacs recognizes an an error message.
 
 ## changelog 
+
+* 2014-05-01: Created MixNStream that takes an arbitrary number of inputs
+to sum.  Need to write ut_mix_n_stream.cpp.
 
 * 2014-05-01: Replaced Stream::frameCount() with Stream::getStart(),
 Stream::getEnd() and Stream::getDuration(), all measured in Ticks.
@@ -100,59 +114,7 @@ Makefile structure.
 
 ## design notes
 
-### keeping time
-
-If the Transport maintains a current_time value and propagates it at
-each call to step(), should current_time be a long int or a double
-float?  If a long int, then it is in units of frames (i.e. samples).
-If a double float, then it is in units of seconds.  Which is better?
-
-Seconds may be more convenient since it is independent of sample rate,
-but how many seconds can pass and still maintain single-sample
-accuracy?  An IEEE 64 bit floating point number has a mantissa of 52
-bits; it can represent integers accurately up to 2^52, or
-4503599627370496.  Divided by sampling rate yields 102122440529
-seconds, which is adequate for most musical compositions lasting under
-3236 years...
-
-### passing StkFrames buffers
-
-Many Stk library objects are written assuming that the first sample is
-written into &(buffer[0]).  In the mu world, there are many (?) cases
-where we'd like a library object to write into a buffer at some offset
-other than zero.
-
-SampleBuffer is a subclass of StkFrames that delegates most of the
-methods to an underlying StkFrames object, but adds a slice() method
-that specifies an offset.  The accessor methods, [index] and (frame,
-channel) call the underlying StkFrames object while honoring that
-offset.
-
-It may need additional work, for example, delegating all the methods
-that make sense and raising an error on those that don't, but for now
-it's enough to get started.
-
-### signalling an empty stream
-
-It's tempting to think that a stream should indicate that it has been
-all used up and there are no more frames available.  But that assumes
-purely sequential access.  In our current scheme, each call to step()
-carries its own tick time and there's no guarantee that calls will be
-sequential in time.  If a stream element wants to know (e.g. to stop
-the transport), it can examine the stream's frameCount().
-
-### more on stream extents
-
-The frameCount() method is supposed to give hints about when the stream
-starts and stops. This could be used for a variety of things, including
-optimizations in inner loops and signaling the Player when it can stop.
-
-Since streams can now start at negative times (or arbitrarily positive
-times), frameCount() doesn't capture that information.  It should be
-replaced with an extent() method that describes the starting and
-ending frames of the stream (or perhaps starting frame and duration).
-
-### on stream states
+### on stateful stream elements
 
 Okay, so I claim that each call to step() can specify an arbitrary
 time, so streams are effectively random access.  What happens when the
@@ -163,3 +125,19 @@ non-sequential access, or we make some reasonable rules for how
 stateful streams behave for sequential and non-sequential access.
 
 The latter probably makes more sense.
+
+### thought exercise
+
+Compose a bit of music.  Figure out what pieces of the system are
+missing and write them in order to make the music.  Don't worry about
+making it clean -- cleanup can happen after lessons learned.
+
+I can tell now that I'll need an extensible vector-like object.  C++
+must have such a thing in its library.  Else I can create one easily
+enough.
+
+Towards a SequencerStream class: imagine I have a Stream object that
+plays some motif (of any complexity) at time 0.  I want to be able to
+say "play that motif at time A, B, and C" (Now that a stream has
+distinct getStart() and getEnd() methods, it can start before time 0,
+but use time 0 as a downbeat.  That should prove to be handy.)

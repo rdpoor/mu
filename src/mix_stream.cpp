@@ -9,22 +9,19 @@ namespace mu {
   MixStream& MixStream::step(stk::StkFrames& buffer,
                                  Tick tick,
                                  Player& player) {
-    if (source_a_ == NULL) {
-      if (source_b_ == NULL) {
-        bzero(&(buffer[0]), buffer.frames() * buffer.channels() * sizeof(stk::StkFloat));
-      } else {
-        source_b_->step(buffer, tick, player);
-      }
+    if ((source_a_ == NULL) && (source_b_ == NULL)) {
+      zero_buffer(buffer);
+    } else if (source_b_ == NULL) {
+      source_a_->step(buffer, tick, player);
+    } else if (source_a_ == NULL) {
+      source_b_->step(buffer, tick, player);
     } else {
-      if (source_b_ == NULL) {
-        source_a_->step(buffer, tick, player);
-      } else {
-        source_a_->step(buffer, tick, player);
-        buffer_.resize(buffer.frames(), buffer.channels());
-        source_b_->step(buffer_, tick, player);
-        int sample_count = buffer.size();
-        for (int i=0; i<sample_count; i++) { buffer[i] += buffer_[i]; }
-      }
+      buffer_.resize(buffer.frames(), buffer.channels());
+      source_a_->step(buffer, tick, player);
+      source_b_->step(buffer_, tick, player);
+      stk::StkFloat *dst = &(buffer[0]);
+      stk::StkFloat *src = &(buffer_[0]);
+      for (int i=buffer.size()-1; i>=0; i--) { *dst++ += *src++; }
     }
     return *this;
   }

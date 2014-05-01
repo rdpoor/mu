@@ -5,6 +5,7 @@ SOURCES := \
 	identity_stream.cpp \
 	loop_stream.cpp \
 	map_stream.cpp \
+	mix_n_stream.cpp \
 	mix_stream.cpp \
 	mu.cpp \
 	nrt_player.cpp \
