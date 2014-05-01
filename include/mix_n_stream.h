@@ -25,6 +25,7 @@ namespace mu {
 
     MixNStream& addSource(Stream *source);
     MixNStream& removeSource(Stream *source);
+    MixNStream& removeAllSources();
 
   protected:
     StreamVector sources_;

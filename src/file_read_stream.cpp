@@ -30,17 +30,14 @@ namespace mu {
 
     if (frames_in_file > frames_in_buffer) {
       // file.read() will fill entire buffer
-      TRACE("A");
       file_read_.read(buffer, start_frame, do_normalize_);
     } else if (frames_in_file > 0) {
       // file.read() will partially fill the buffer
-      TRACE("B");
       file_read_.read(buffer, start_frame);
       bzero(&(buffer[frames_in_file]), 
             (frames_in_buffer - frames_in_file) * channel_count * sizeof(stk::StkFloat));
     } else {
       // start_frame is past end of file -- zero the entire buffer
-      TRACE("C");
       bzero(&(buffer[0]), frames_in_buffer * channel_count * sizeof(stk::StkFloat));
     }
 

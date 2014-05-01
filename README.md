@@ -9,6 +9,7 @@ An experiment in blurring the lines between music composition and sound synthesi
 * Create a stream that fiddles with time: t' = t0 + k*t.  (Oog -- am I
   going to regret using an integer frame counter?)
 * Create F(t)Stream and test file.
+* setSource() and related should check for compatible frameRate(), channelCount()
 * setSource() and related should check for circular loops.
 * Think about mono to stereo (and stereo to mono) stream elements: pan.
 * Think about automatic conversion from mono to stereo -- what happens
@@ -31,7 +32,8 @@ An experiment in blurring the lines between music composition and sound synthesi
 ## changelog 
 
 * 2014-05-01: Created MixNStream that takes an arbitrary number of inputs
-to sum.  Need to write ut_mix_n_stream.cpp.
+to sum.  Created ut_mix_n_stream and debugged class.  Wrote a fun little
+musical bit mune10, reminiscent of Steve Reich's Violin Phase.
 
 * 2014-05-01: Replaced Stream::frameCount() with Stream::getStart(),
 Stream::getEnd() and Stream::getDuration(), all measured in Ticks.
@@ -136,8 +138,26 @@ I can tell now that I'll need an extensible vector-like object.  C++
 must have such a thing in its library.  Else I can create one easily
 enough.
 
-Towards a SequencerStream class: imagine I have a Stream object that
+Towards a SequenceStream class: imagine I have a Stream object that
 plays some motif (of any complexity) at time 0.  I want to be able to
 say "play that motif at time A, B, and C" (Now that a stream has
 distinct getStart() and getEnd() methods, it can start before time 0,
 but use time 0 as a downbeat.  That should prove to be handy.)
+
+On that topic, a FileReadStream object could carry an offset parameter
+that defines the "downbeat" of a sound file, assuming it doesn't
+happen exactly at 0.  This is somewhat analagous to the baseline value
+for a font.
+
+### Thoughts on a SequenceStream
+
+A sequence stream takes N sources, where each stream is offset by a
+different time, and mixes them together.  We could choose to abut
+streams (not start one until another has finished) so we're only
+playing one stream at a time, but we shouldn't go that route until
+computation time becomes an issue.
+
+A SequenceStream could be quickly built out of existing stream
+objects: a DelayStream for each input and a single MixNStream.  That
+might be a good exercise in figuring out how to reuse components.
+

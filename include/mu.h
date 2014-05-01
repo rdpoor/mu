@@ -6,8 +6,8 @@
 
 namespace mu {
 
-  // #define TRACE(s)
-#define TRACE(s) fprintf(stderr, (s))
+#define TRACE(s)
+  // #define TRACE(s) fprintf(stderr, (s))
 
   typedef long int Tick;
   static const Tick kIndefinite = LONG_MAX;

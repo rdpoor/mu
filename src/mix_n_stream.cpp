@@ -28,6 +28,7 @@ namespace mu {
         // TODO: write general Stream::has_overlap() method
         if (((source_start == kIndefinite) || (source_start < buffer_end)) &&
             ((source_end == kIndefinite) || (source_end > buffer_start))) {
+          buffer_.resize(buffer.frames(), buffer.channels());
           source->step(buffer_, tick, player);
           stk::StkFloat *dst = &(buffer[0]);
           stk::StkFloat *src = &(buffer_[0]);
@@ -74,5 +75,24 @@ namespace mu {
     }
   }
 
-
+  MixNStream& MixNStream::addSource(Stream *source) {
+    sources_.push_back(source);
+    return *this;
+  }
+  
+  MixNStream& MixNStream::removeSource(Stream *source) {
+    for (int i=0; i<sources_.size(); i++) {
+      if (sources_.at(i) == source) {
+        sources_.erase(sources_.begin()+i);
+        return *this;
+      }
+    }
+    return *this;
+  }
+  
+  MixNStream& MixNStream::removeAllSources() {
+    sources_.clear();
+    return *this;
+  }
+  
 }

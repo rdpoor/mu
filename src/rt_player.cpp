@@ -29,7 +29,6 @@ namespace mu {
   // ~/Projects/Mune/tarballs/stk-4.4.4/src/RtWvOut.cpp Line::36
   //
   int RtPlayer::readBuffer( void *buffer, unsigned int frame_count, double stream_time ) {
-    TRACE(".");
     if (source_ == NULL) { return 0; };
 
     // grow the stkFrames buffer as needed
@@ -45,7 +44,7 @@ namespace mu {
     stk::StkFloat *src = (stk::StkFloat *)&stk_frames_[0];
     stk::StkFloat *dst = (stk::StkFloat *)buffer;
     unsigned int sample_count = frame_count * channel_count_;
-    for (unsigned int i=sample_count-1; i>=0; i--) { *dst++ = *src++; }
+    for (int i=sample_count-1; i>=0; i--) { *dst++ = *src++; }
 
     return 0;
   }

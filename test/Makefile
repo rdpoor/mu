@@ -8,6 +8,7 @@ SOURCES := \
 	mune07.cpp \
 	mune08.cpp \
 	mune09.cpp \
+	mune10.cpp \
 	test_clamp.cpp \
 	test_double_accuracy.cpp \
 	test_pthread.cpp \
@@ -16,6 +17,7 @@ SOURCES := \
 	ut_crop_stream.cpp \
 	ut_delay_stream.cpp \
 	ut_identity_stream.cpp \
+	ut_mix_n_stream.cpp \
 	ut_mix_stream.cpp \
 	ut_stream.cpp
 
@@ -75,6 +77,9 @@ mune08 : mune08.cpp # | $(MULIB) $(STKLIB)
 mune09 : mune09.cpp # | $(MULIB) $(STKLIB)
 	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $(@) $(<) $(MULIB) $(STKLIB) $(LIBRARY)
 
+mune10 : mune10.cpp # | $(MULIB) $(STKLIB)
+	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $(@) $(<) $(MULIB) $(STKLIB) $(LIBRARY)
+
 test_double_accuracy: test_double_accuracy.cpp
 	$(CC) $(CFLAGS) -o $(@) $(<)
 
@@ -94,6 +99,9 @@ ut_delay_stream : ut_delay_stream.cpp assert.o # | $(MULIB) $(STKLIB)
 	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $(@) $(<) assert.o $(MULIB) $(STKLIB) $(LIBRARY)
 
 ut_identity_stream : ut_identity_stream.cpp assert.o # | $(MULIB) $(STKLIB)
+	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $(@) $(<) assert.o $(MULIB) $(STKLIB) $(LIBRARY)
+
+ut_mix_n_stream : ut_mix_n_stream.cpp assert.o # | $(MULIB) $(STKLIB)
 	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $(@) $(<) assert.o $(MULIB) $(STKLIB) $(LIBRARY)
 
 ut_mix_stream : ut_mix_stream.cpp assert.o # | $(MULIB) $(STKLIB)
