@@ -3,7 +3,7 @@
  */
 #include "assert.h"
 #include "crop_stream.h"
-#include "mix_n_stream.h"
+#include "add_stream.h"
 #include "mu.h"
 #include "nrt_player.h"
 #include "identity_stream.h"
@@ -16,7 +16,7 @@
 #define DELAY_M_100 (-100)
 
 int main() {
-  mu::MixNStream mix_n_stream;
+  mu::AddStream add_stream;
   mu::NrtPlayer player;
   stk::StkFrames buffer;
 
@@ -47,36 +47,36 @@ int main() {
   fprintf(stderr, "stream4->getStart()=%ld, getEnd()=%ld\n", stream4->getStart(), stream4->getEnd());
 
   fprintf(stderr, "=== no inputs\n");
-  mix_n_stream.removeAllSources();
-  mix_n_stream.step(buffer, 0, player);
+  add_stream.removeAllSources();
+  add_stream.step(buffer, 0, player);
 
   ASSERT(buffer(0,0) == 0);
   ASSERT(buffer(0,1) == 0);
   ASSERT(buffer((FRAME_COUNT-1),0) == 0);
   ASSERT(buffer((FRAME_COUNT-1),1) == 0);
 
-  ASSERT(mix_n_stream.getStart()==mu::kIndefinite);
-  ASSERT(mix_n_stream.getEnd()==mu::kIndefinite);
+  ASSERT(add_stream.getStart()==mu::kIndefinite);
+  ASSERT(add_stream.getEnd()==mu::kIndefinite);
 
   // ================================================================
   fprintf(stderr, "=== stream1 only\n");
-  mix_n_stream.removeAllSources();
-  mix_n_stream.addSource(stream1);
-  mix_n_stream.step(buffer, 0, player);
+  add_stream.removeAllSources();
+  add_stream.addSource(stream1);
+  add_stream.step(buffer, 0, player);
 
   ASSERT(buffer(0,0) == 0);
   ASSERT(buffer(0,1) == 0);
   ASSERT(buffer((FRAME_COUNT-1),0) == (FRAME_COUNT-1));
   ASSERT(buffer((FRAME_COUNT-1),1) == (FRAME_COUNT-1));
 
-  ASSERT(mix_n_stream.getStart()==mu::kIndefinite);
-  ASSERT(mix_n_stream.getEnd()==mu::kIndefinite);
+  ASSERT(add_stream.getStart()==mu::kIndefinite);
+  ASSERT(add_stream.getEnd()==mu::kIndefinite);
 
   // ================================================================
   fprintf(stderr, "=== stream2 only\n");
-  mix_n_stream.removeAllSources();
-  mix_n_stream.addSource(stream2);
-  mix_n_stream.step(buffer, 0, player);
+  add_stream.removeAllSources();
+  add_stream.addSource(stream2);
+  add_stream.step(buffer, 0, player);
 
   ASSERT(buffer(0,0) == 0);
   ASSERT(buffer(0,1) == 0);
@@ -87,14 +87,14 @@ int main() {
   ASSERT(buffer((FRAME_COUNT-1),0) == 0);
   ASSERT(buffer((FRAME_COUNT-1),1) == 0);
 
-  ASSERT(mix_n_stream.getStart() == 0);
-  ASSERT(mix_n_stream.getEnd() == 8);
+  ASSERT(add_stream.getStart() == 0);
+  ASSERT(add_stream.getEnd() == 8);
 
   // ================================================================
   fprintf(stderr, "=== stream3 only\n");
-  mix_n_stream.removeAllSources();
-  mix_n_stream.addSource(stream3);
-  mix_n_stream.step(buffer, 0, player);
+  add_stream.removeAllSources();
+  add_stream.addSource(stream3);
+  add_stream.step(buffer, 0, player);
 
   ASSERT(buffer(0,0) == 0);
   ASSERT(buffer(0,1) == 0);
@@ -109,14 +109,14 @@ int main() {
   ASSERT(buffer((FRAME_COUNT-1),0) == 0);
   ASSERT(buffer((FRAME_COUNT-1),1) == 0);
 
-  ASSERT(mix_n_stream.getStart() == 6);
-  ASSERT(mix_n_stream.getEnd() == 14);
+  ASSERT(add_stream.getStart() == 6);
+  ASSERT(add_stream.getEnd() == 14);
 
   // ================================================================
   fprintf(stderr, "=== stream4 only\n");
-  mix_n_stream.removeAllSources();
-  mix_n_stream.addSource(stream4);
-  mix_n_stream.step(buffer, 0, player);
+  add_stream.removeAllSources();
+  add_stream.addSource(stream4);
+  add_stream.step(buffer, 0, player);
 
   ASSERT(buffer(0,0) == 0);
   ASSERT(buffer(0,1) == 0);
@@ -131,15 +131,15 @@ int main() {
   ASSERT(buffer((FRAME_COUNT-1),0) == 0);
   ASSERT(buffer((FRAME_COUNT-1),1) == 0);
 
-  ASSERT(mix_n_stream.getStart() == 12);
-  ASSERT(mix_n_stream.getEnd() == 20);
+  ASSERT(add_stream.getStart() == 12);
+  ASSERT(add_stream.getEnd() == 20);
 
   // ================================================================
   fprintf(stderr, "=== stream1 + stream2\n");
-  mix_n_stream.removeAllSources();
-  mix_n_stream.addSource(stream1);
-  mix_n_stream.addSource(stream2);
-  mix_n_stream.step(buffer, 0, player);
+  add_stream.removeAllSources();
+  add_stream.addSource(stream1);
+  add_stream.addSource(stream2);
+  add_stream.step(buffer, 0, player);
 
   ASSERT(buffer(0,0) == 0);
   ASSERT(buffer(0,1) == 0);
@@ -167,15 +167,15 @@ int main() {
   ASSERT(buffer((FRAME_COUNT-1),0) == (FRAME_COUNT-1));
   ASSERT(buffer((FRAME_COUNT-1),1) == (FRAME_COUNT-1));
 
-  ASSERT(mix_n_stream.getStart() == mu::kIndefinite);
-  ASSERT(mix_n_stream.getEnd() == mu::kIndefinite);
+  ASSERT(add_stream.getStart() == mu::kIndefinite);
+  ASSERT(add_stream.getEnd() == mu::kIndefinite);
 
   // ================================================================
   fprintf(stderr, "=== stream1 + stream3\n");
-  mix_n_stream.removeAllSources();
-  mix_n_stream.addSource(stream1);
-  mix_n_stream.addSource(stream3);
-  mix_n_stream.step(buffer, 0, player);
+  add_stream.removeAllSources();
+  add_stream.addSource(stream1);
+  add_stream.addSource(stream3);
+  add_stream.step(buffer, 0, player);
 
   ASSERT(buffer(0,0) == 0);
   ASSERT(buffer(0,1) == 0);
@@ -203,15 +203,15 @@ int main() {
   ASSERT(buffer((FRAME_COUNT-1),0) == (FRAME_COUNT-1));
   ASSERT(buffer((FRAME_COUNT-1),1) == (FRAME_COUNT-1));
 
-  ASSERT(mix_n_stream.getStart() == mu::kIndefinite);
-  ASSERT(mix_n_stream.getEnd() == mu::kIndefinite);
+  ASSERT(add_stream.getStart() == mu::kIndefinite);
+  ASSERT(add_stream.getEnd() == mu::kIndefinite);
 
   // ================================================================
   fprintf(stderr, "=== stream1 + stream4\n");
-  mix_n_stream.removeAllSources();
-  mix_n_stream.addSource(stream1);
-  mix_n_stream.addSource(stream4);
-  mix_n_stream.step(buffer, 0, player);
+  add_stream.removeAllSources();
+  add_stream.addSource(stream1);
+  add_stream.addSource(stream4);
+  add_stream.step(buffer, 0, player);
 
   ASSERT(buffer(0,0) == 0);
   ASSERT(buffer(0,1) == 0);
@@ -239,15 +239,15 @@ int main() {
   ASSERT(buffer((FRAME_COUNT-1),0) == (FRAME_COUNT-1));
   ASSERT(buffer((FRAME_COUNT-1),1) == (FRAME_COUNT-1));
 
-  ASSERT(mix_n_stream.getStart() == mu::kIndefinite);
-  ASSERT(mix_n_stream.getEnd() == mu::kIndefinite);
+  ASSERT(add_stream.getStart() == mu::kIndefinite);
+  ASSERT(add_stream.getEnd() == mu::kIndefinite);
 
   // ================================================================
   fprintf(stderr, "=== stream2 + stream3\n");
-  mix_n_stream.removeAllSources();
-  mix_n_stream.addSource(stream2);
-  mix_n_stream.addSource(stream3);
-  mix_n_stream.step(buffer, 0, player);
+  add_stream.removeAllSources();
+  add_stream.addSource(stream2);
+  add_stream.addSource(stream3);
+  add_stream.step(buffer, 0, player);
 
   ASSERT(buffer(0,0) == 0);
   ASSERT(buffer(0,1) == 0);
@@ -275,15 +275,15 @@ int main() {
   ASSERT(buffer((FRAME_COUNT-1),0) == 0);
   ASSERT(buffer((FRAME_COUNT-1),1) == 0);
 
-  ASSERT(mix_n_stream.getStart() == 0);
-  ASSERT(mix_n_stream.getEnd() == 14);
+  ASSERT(add_stream.getStart() == 0);
+  ASSERT(add_stream.getEnd() == 14);
 
   // ================================================================
   fprintf(stderr, "=== stream2 + stream4\n");
-  mix_n_stream.removeAllSources();
-  mix_n_stream.addSource(stream2);
-  mix_n_stream.addSource(stream4);
-  mix_n_stream.step(buffer, 0, player);
+  add_stream.removeAllSources();
+  add_stream.addSource(stream2);
+  add_stream.addSource(stream4);
+  add_stream.step(buffer, 0, player);
 
   ASSERT(buffer(0,0) == 0);
   ASSERT(buffer(0,1) == 0);
@@ -311,15 +311,15 @@ int main() {
   ASSERT(buffer((FRAME_COUNT-1),0) == 0);
   ASSERT(buffer((FRAME_COUNT-1),1) == 0);
 
-  ASSERT(mix_n_stream.getStart() == 0);
-  ASSERT(mix_n_stream.getEnd() == 20);
+  ASSERT(add_stream.getStart() == 0);
+  ASSERT(add_stream.getEnd() == 20);
 
   // ================================================================
   fprintf(stderr, "=== stream3 + stream4\n");
-  mix_n_stream.removeAllSources();
-  mix_n_stream.addSource(stream3);
-  mix_n_stream.addSource(stream4);
-  mix_n_stream.step(buffer, 0, player);
+  add_stream.removeAllSources();
+  add_stream.addSource(stream3);
+  add_stream.addSource(stream4);
+  add_stream.step(buffer, 0, player);
 
   ASSERT(buffer(0,0) == 0);
   ASSERT(buffer(0,1) == 0);
@@ -347,8 +347,8 @@ int main() {
   ASSERT(buffer((FRAME_COUNT-1),0) == 0);
   ASSERT(buffer((FRAME_COUNT-1),1) == 0);
 
-  ASSERT(mix_n_stream.getStart() == 6);
-  ASSERT(mix_n_stream.getEnd() == 20);
+  ASSERT(add_stream.getStart() == 6);
+  ASSERT(add_stream.getEnd() == 20);
 
   // ================================================================
   fprintf(stderr,"=== done\n");

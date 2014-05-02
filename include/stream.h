@@ -6,6 +6,7 @@
 
 namespace mu {
 
+  
   class Stream {
   public:
 

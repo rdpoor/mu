@@ -18,6 +18,9 @@ namespace mu {
   class Stream;
   class Player;
 
+  // Type definition for a vector of Stream pointers
+  typedef std::vector<mu::Stream *> StreamVector;
+
   // General purpose clamp: clamp val to lie within min...max (inclusive)
   template <class T> const T& clamp(const T& min, const T& val, const T& max) {
     return (val < min) ? min : ((val > max) ? max : val);

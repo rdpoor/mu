@@ -14,11 +14,12 @@ SOURCES := \
 	test_pthread.cpp \
 	test_subclass.cpp \
 	test_vector.cpp \
+	ut_add_stream.cpp \
+	ut_constant_stream.cpp \
 	ut_crop_stream.cpp \
 	ut_delay_stream.cpp \
 	ut_identity_stream.cpp \
-	ut_mix_n_stream.cpp \
-	ut_mix_stream.cpp \
+	ut_multiply_stream.cpp \
 	ut_stream.cpp
 
 MULIB   := ../obj/*.o
@@ -92,6 +93,12 @@ test_pthread: test_pthread.cpp
 test_vector: test_vector.cpp
 	$(CC) $(CFLAGS) $(INCLUDES) -o $(@) $(<) $(MULIB) $(STKLIB) $(LIBRARY)
 
+ut_add_stream : ut_add_stream.cpp assert.o # | $(MULIB) $(STKLIB)
+	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $(@) $(<) assert.o $(MULIB) $(STKLIB) $(LIBRARY)
+
+ut_constant_stream : ut_constant_stream.cpp assert.o # | $(MULIB) $(STKLIB)
+	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $(@) $(<) assert.o $(MULIB) $(STKLIB) $(LIBRARY)
+
 ut_crop_stream : ut_crop_stream.cpp assert.o # | $(MULIB) $(STKLIB)
 	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $(@) $(<) assert.o $(MULIB) $(STKLIB) $(LIBRARY)
 
@@ -101,10 +108,10 @@ ut_delay_stream : ut_delay_stream.cpp assert.o # | $(MULIB) $(STKLIB)
 ut_identity_stream : ut_identity_stream.cpp assert.o # | $(MULIB) $(STKLIB)
 	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $(@) $(<) assert.o $(MULIB) $(STKLIB) $(LIBRARY)
 
-ut_mix_n_stream : ut_mix_n_stream.cpp assert.o # | $(MULIB) $(STKLIB)
+ut_mix_stream : ut_mix_stream.cpp assert.o # | $(MULIB) $(STKLIB)
 	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $(@) $(<) assert.o $(MULIB) $(STKLIB) $(LIBRARY)
 
-ut_mix_stream : ut_mix_stream.cpp assert.o # | $(MULIB) $(STKLIB)
+ut_multiply_stream : ut_multiply_stream.cpp assert.o # | $(MULIB) $(STKLIB)
 	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $(@) $(<) assert.o $(MULIB) $(STKLIB) $(LIBRARY)
 
 ut_stream : ut_stream.cpp assert.o # | $(MULIB) $(STKLIB)

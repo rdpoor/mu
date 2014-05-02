@@ -4,8 +4,7 @@ An experiment in blurring the lines between music composition and sound synthesi
 
 ## todo 
 
-* Create ConstantStream and test file.
-* Create MultiplyStream and test file.
+* Create SequenceStream and test file.
 * Create a stream that fiddles with time: t' = t0 + k*t.  (Oog -- am I
   going to regret using an integer frame counter?)
 * Create F(t)Stream and test file.
@@ -17,7 +16,6 @@ An experiment in blurring the lines between music composition and sound synthesi
   be an error or expand automatically?
 * Abstract out common elements of a single-input stream, make into 
   a generic super class.
-* Create a Sequencer stream and a test file.
 * When do we release resources?  Do we need a Transport.pause() method
   distinct from Transport.stop()?
 * Add command line parsing such as argp.h
@@ -33,7 +31,10 @@ An experiment in blurring the lines between music composition and sound synthesi
 
 * 2014-05-01: Created MixNStream that takes an arbitrary number of inputs
 to sum.  Created ut_mix_n_stream and debugged class.  Wrote a fun little
-musical bit mune10, reminiscent of Steve Reich's Violin Phase.
+musical bit mune10, reminiscent of Steve Reich's Violin Phase.  Factored
+MultiStream out of MixNStream to provide generalized N-source stream
+support.  Deleted MixStream.  Renamed MixNStream to AddStream.  Created
+MultiplyStream.
 
 * 2014-05-01: Replaced Stream::frameCount() with Stream::getStart(),
 Stream::getEnd() and Stream::getDuration(), all measured in Ticks.

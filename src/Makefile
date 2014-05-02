@@ -1,18 +1,19 @@
 SOURCES := \
+	add_stream.cpp \
+	constant_stream.cpp \
 	crop_stream.cpp \
 	delay_stream.cpp \
 	file_read_stream.cpp \
 	identity_stream.cpp \
 	loop_stream.cpp \
 	map_stream.cpp \
-	mix_n_stream.cpp \
-	mix_stream.cpp \
 	mu.cpp \
+	multi_stream.cpp \
+	multiply_stream.cpp \
 	nrt_player.cpp \
 	player.cpp \
 	rt_player.cpp \
-	stream.cpp \
-	stream_extent.cpp
+	stream.cpp
 
 OBJECT_DIR := ../obj
 INCLUDE_DIR := ../include
