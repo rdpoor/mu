@@ -9,6 +9,7 @@ SOURCES := \
 	mune08.cpp \
 	mune09.cpp \
 	mune10.cpp \
+	mune11.cpp \
 	test_clamp.cpp \
 	test_double_accuracy.cpp \
 	test_pthread.cpp \
@@ -79,6 +80,9 @@ mune09 : mune09.cpp # | $(MULIB) $(STKLIB)
 	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $(@) $(<) $(MULIB) $(STKLIB) $(LIBRARY)
 
 mune10 : mune10.cpp # | $(MULIB) $(STKLIB)
+	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $(@) $(<) $(MULIB) $(STKLIB) $(LIBRARY)
+
+mune11 : mune11.cpp # | $(MULIB) $(STKLIB)
 	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $(@) $(<) $(MULIB) $(STKLIB) $(LIBRARY)
 
 test_double_accuracy: test_double_accuracy.cpp

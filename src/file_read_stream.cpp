@@ -33,7 +33,7 @@ namespace mu {
       file_read_.read(buffer, start_frame, do_normalize_);
     } else if (frames_in_file > 0) {
       // file.read() will partially fill the buffer
-      file_read_.read(buffer, start_frame);
+      file_read_.read(buffer, start_frame, do_normalize_);
       bzero(&(buffer[frames_in_file]), 
             (frames_in_buffer - frames_in_file) * channel_count * sizeof(stk::StkFloat));
     } else {
@@ -44,5 +44,15 @@ namespace mu {
     // fprintf(stderr, "step: %p %f %p\r", &buffer, time, &player);
     return *this;
   }
+
+  Tick FileReadStream::getStart() { return 0; }
+  Tick FileReadStream::getEnd() { 
+    if (!file_read_.isOpen()) {
+      // TODO: how best to handle errors, e.g. nonexistent file?
+      file_read_.open(file_name_);
+    }
+    return (file_read_.fileSize()); 
+  }
+
 
 }

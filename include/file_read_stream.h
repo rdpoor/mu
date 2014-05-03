@@ -50,9 +50,6 @@ namespace mu {
     return file_name_; 
   }
 
-  inline Tick FileReadStream::getStart() { return 0; }
-  inline Tick FileReadStream::getEnd() { return (file_read_.fileSize()); }
-
 }                               // namespace mu
 
 #endif

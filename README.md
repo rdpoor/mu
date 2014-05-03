@@ -4,6 +4,7 @@ An experiment in blurring the lines between music composition and sound synthesi
 
 ## todo 
 
+* FileReadStream should allow negative Tick times
 * Create SequenceStream and test file.
 * Create a stream that fiddles with time: t' = t0 + k*t.  (Oog -- am I
   going to regret using an integer frame counter?)
@@ -24,11 +25,11 @@ An experiment in blurring the lines between music composition and sound synthesi
 * Clean up test/Makefile to avoid repetition, 
 * Fix test/Makefile to assure that mu library is up to date.
 * Extend src/Makefile to assure that stk library is up to date.
-* Add __FILE__ and __LINE__ directives to ASSERT() macro, printed in a form
-  emacs recognizes an an error message.
 
 ## changelog 
 
+* 2014-05-02: Beefed up ASSERT macro to report filename and line
+number so tests can be run in an emacs compile window.
 * 2014-05-01: Created MixNStream that takes an arbitrary number of inputs
 to sum.  Created ut_mix_n_stream and debugged class.  Wrote a fun little
 musical bit mune10, reminiscent of Steve Reich's Violin Phase.  Factored
@@ -117,19 +118,7 @@ Makefile structure.
 
 ## design notes
 
-### on stateful stream elements
-
-Okay, so I claim that each call to step() can specify an arbitrary
-time, so streams are effectively random access.  What happens when the
-results of this buffer depends on what happened in the previous
-buffer, with the obvious example of a reverberator?  Either we go back
-to declaring that access is "usually" sequential and special case
-non-sequential access, or we make some reasonable rules for how
-stateful streams behave for sequential and non-sequential access.
-
-The latter probably makes more sense.
-
-### thought exercise
+### Thought exercise
 
 Compose a bit of music.  Figure out what pieces of the system are
 missing and write them in order to make the music.  Don't worry about
@@ -161,4 +150,70 @@ computation time becomes an issue.
 A SequenceStream could be quickly built out of existing stream
 objects: a DelayStream for each input and a single MixNStream.  That
 might be a good exercise in figuring out how to reuse components.
+
+### Stateless vs Stateful Streams
+
+A stateless stream is one that will always produce the same output
+when given the same Tick, regardless of order.
+
+A stateful stream may produce different output when given the same
+tick, e.g. it may not be possible to "back up" a Reverberator, as its
+output depends on previous input.  It's worth pointing out that any
+stream object has acess to the Player, so it can discover the global
+time at each call to step() and change its behavior accordingly  This
+is another way a node could become stateful.
+
+The distinction between stateful and stateless streams may be useful:
+a stateless stream can be used as input to an arbitrary number of
+downstream streams.  Stateful streams may only be used as an input
+to a single downstream stream.
+
+This makes me thing that we should define a Patch or Wire class that
+connects the output of one Stream object to the input of another.
+This way, a single output could connect to mutliple inputs.  And
+presumably, the act of patching would verify whether or not the
+upstream object is stateful or not, and warn if its output is being
+connected to more than one input.
+
+### Thoughts on a strummed instrument
+
+A strummed instrument has N strings.  Each string has an input that
+dictates a fret number (or damped).  The string is responsible for
+mapping fret number into an appropriate sound file or synthesis
+technique.  Doing a step(b, tick, player) gets the pitch information
+from the input for the given tick time.  
+
+Hmm...this means that the string can only ever play one note in its
+lifetime, that is, the tick given to the string is the same tick given
+to the pitch source.  Is that okay?  What does it mean to play a
+sequence of notes?  If we create a different string object for each
+note, it may feel like a lot more work but it has the advantage that
+everything is entirely deterministic (and you can dependibly rewind to
+a specific point).  [NOTE: this determinism does not hold for stream
+objects that preserve state from one step() to the next.  We'll deal
+with those later.]
+
+Stated another way, a stream can really only play one thing.  It can
+be repeated, it can be shifted in time, but since the only external
+state passed to it is the current tick, everything it plays is a 
+function of the current tick.
+
+### mune11
+
+Created a simple arpeggiated chord.  This required:
+
+* 4 file_read_stream (for the sound sources)
+* 4 crop_stream (because file_read_stream can't tolerate negative tick times)
+* 4 delay_stream (to offset the start times)
+* 1 add_stream (to sum them together)
+* 1 loop_stream (to make it interesting to listen do)
+
+Once stream elements are connected together, you have to pay attention
+to the order of setting things up.  In this case, you can't find the
+end time of a delay_stream until you've set the file name for the
+file_read_stream, since the former depends upon the latter.
+
+Perhaps a reasonable discipline is to (1) connect stream element to
+its sub-tree then (2) configure that stream element, starting with the
+leaf nodes and working towards the root.
 
