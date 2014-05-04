@@ -27,6 +27,8 @@ An experiment in blurring the lines between music composition and sound synthesi
 
 ## changelog 
 
+* 2014-05-04: Created mune14: when tick counter decreases (e.g. at a
+loop point), randomly choose an input stream to start playing.
 * 2014-05-03: Created mune11, mune12 to play arpeggiated chords.
 Created mune13 to play a melody.
 * 2014-05-02: Beefed up ASSERT macro to report filename and line
@@ -243,4 +245,12 @@ But we really don't always want that.  Sometimes, for example, you
 want a note to sound slightly different each time you play it. So
 maybe there's some concept of "start a note" which allows a stream to
 select some parameters that remain invariant until the note ends.
+
+### Varying notes on each playback
+
+I woke up this AM and realized there's a simple heuristic: if the tick
+counter decreases, assume that you are starting a "new" note.  I wrote
+mune14 to test this: at each loop, pick a different sound to play.
+Works great.  Going this route, we need to go back to the idea of "one
+source per input", that is, can't share streams across multiple sinks.
 
