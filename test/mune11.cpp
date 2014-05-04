@@ -69,30 +69,15 @@ int main() {
   file_read_stream_2.fileName(SOUND_DIR SOUND_2 ".wav").doNormalize(true);
   file_read_stream_3.fileName(SOUND_DIR SOUND_3 ".wav").doNormalize(true);
 
-  fprintf(stderr, "file_read_stream_0.getEnd() = %ld\n", file_read_stream_0.getEnd());
-  fprintf(stderr, "file_read_stream_1.getEnd() = %ld\n", file_read_stream_1.getEnd());
-  fprintf(stderr, "file_read_stream_2.getEnd() = %ld\n", file_read_stream_2.getEnd());
-  fprintf(stderr, "file_read_stream_3.getEnd() = %ld\n", file_read_stream_3.getEnd());
-
   crop_stream_0.setStart(0);    // because FileReadStream can't tolerate negative tick times
   crop_stream_1.setStart(0);
   crop_stream_2.setStart(0);
   crop_stream_3.setStart(0);
 
-  fprintf(stderr, "crop_stream_0.getEnd() = %ld\n", crop_stream_0.getEnd());
-  fprintf(stderr, "crop_stream_1.getEnd() = %ld\n", crop_stream_1.getEnd());
-  fprintf(stderr, "crop_stream_2.getEnd() = %ld\n", crop_stream_2.getEnd());
-  fprintf(stderr, "crop_stream_3.getEnd() = %ld\n", crop_stream_3.getEnd());
-
   delay_stream_0.setDelay(882 * 1); // make this relative to player.getFrameRate()
   delay_stream_1.setDelay(882 * 2);
   delay_stream_2.setDelay(882 * 3);
   delay_stream_3.setDelay(882 * 4);
-
-  fprintf(stderr, "delay_stream_0.getEnd() = %ld\n", delay_stream_0.getEnd());
-  fprintf(stderr, "delay_stream_1.getEnd() = %ld\n", delay_stream_1.getEnd());
-  fprintf(stderr, "delay_stream_2.getEnd() = %ld\n", delay_stream_2.getEnd());
-  fprintf(stderr, "delay_stream_3.getEnd() = %ld\n", delay_stream_3.getEnd());
 
   fprintf(stderr, "dly = %ld\n", delay_stream_1.getDelay());
 
@@ -103,7 +88,7 @@ int main() {
 
   fprintf(stderr, "dur = %ld\n", dur);
 
-  loop_stream.setLoopDuration(dur);
+  loop_stream.setLoopDuration(dur/2);
 
   // connect them
 

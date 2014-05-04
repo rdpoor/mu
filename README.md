@@ -5,7 +5,6 @@ An experiment in blurring the lines between music composition and sound synthesi
 ## todo 
 
 * FileReadStream should allow negative Tick times
-* Create SequenceStream and test file.
 * Create a stream that fiddles with time: t' = t0 + k*t.  (Oog -- am I
   going to regret using an integer frame counter?)
 * Create F(t)Stream and test file.
@@ -28,6 +27,8 @@ An experiment in blurring the lines between music composition and sound synthesi
 
 ## changelog 
 
+* 2014-05-03: Created mune11, mune12 to play arpeggiated chords.
+Created mune13 to play a melody.
 * 2014-05-02: Beefed up ASSERT macro to report filename and line
 number so tests can be run in an emacs compile window.
 * 2014-05-01: Created MixNStream that takes an arbitrary number of inputs
@@ -216,4 +217,30 @@ file_read_stream, since the former depends upon the latter.
 Perhaps a reasonable discipline is to (1) connect stream element to
 its sub-tree then (2) configure that stream element, starting with the
 leaf nodes and working towards the root.
+
+### mune12
+
+Created a relatively simple ArpeggiateStream class that encapsulates
+all the pieces in mune11.  Using it is as simple as:
+
+      arpeggiate_stream.setArpeggioDelay(882);
+      arpeggiate_stream.addFile(SOUND_DIR SOUND_0 ".wav");
+      arpeggiate_stream.addFile(SOUND_DIR SOUND_1 ".wav");
+      arpeggiate_stream.addFile(SOUND_DIR SOUND_2 ".wav");
+      arpeggiate_stream.addFile(SOUND_DIR SOUND_3 ".wav");
+      loop_stream.setSource(&arpeggiate_stream);
+      loop_stream.setLoopDuration(arpeggiate_stream.getEnd()/2);
+      player.setSource(&loop_stream);
+      player.start();
+      sleep(30);
+      player.stop();
+
+### Half-baked idea on deterministic vs non-deterministic streams
+
+So far, we've made a big deal about how streams are deterministic: if
+you call step() for a given tick, you always get the same results.
+But we really don't always want that.  Sometimes, for example, you
+want a note to sound slightly different each time you play it. So
+maybe there's some concept of "start a note" which allows a stream to
+select some parameters that remain invariant until the note ends.
 

@@ -22,6 +22,7 @@ namespace mu {
     MultiStream& addSource(Stream *source);
     MultiStream& removeSource(Stream *source);
     MultiStream& removeAllSources();
+    size_t getSourceCount() { return sources_.size(); }
 
   protected:
     StreamVector sources_;
