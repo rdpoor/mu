@@ -5,6 +5,7 @@ SOURCES := \
 	delay_stream.cpp \
 	file_read_stream.cpp \
 	identity_stream.cpp \
+	linseg_stream.cpp \
 	loop_stream.cpp \
 	map_stream.cpp \
 	mu.cpp \

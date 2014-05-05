@@ -4,6 +4,7 @@ An experiment in blurring the lines between music composition and sound synthesi
 
 ## todo 
 
+* Create a line segment stream
 * Create a set of arithmetic operations on Tick times that honor kIndefinite:
   x + kIndefinite = kIndefinite, x * kIndefinite = kIndefinite, etc.
 * FileReadStream should allow negative Tick times

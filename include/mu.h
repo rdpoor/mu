@@ -18,7 +18,7 @@ namespace mu {
 
   typedef double MuTime;
 
-  // resolve a circular dependency
+  // resolve circular dependencies
   class Stream;
   class Player;
 

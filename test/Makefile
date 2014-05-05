@@ -17,6 +17,7 @@ SOURCES := \
 	mune16.cpp \
 	test_clamp.cpp \
 	test_double_accuracy.cpp \
+	test_map.cpp \
 	test_pthread.cpp \
 	test_subclass.cpp \
 	test_vector.cpp \
@@ -25,6 +26,7 @@ SOURCES := \
 	ut_crop_stream.cpp \
 	ut_delay_stream.cpp \
 	ut_identity_stream.cpp \
+	ut_linseg_stream.cpp \
 	ut_multiply_stream.cpp \
 	ut_stream.cpp \
 	ut_tick_indefinite.cpp
@@ -112,6 +114,9 @@ test_double_accuracy: test_double_accuracy.cpp
 test_clamp: test_clamp.cpp
 	$(CC) $(CFLAGS) $(INCLUDES) -o $(@) $(<) $(MULIB) $(STKLIB) $(LIBRARY)
 
+test_map: test_map.cpp
+	$(CC) $(CFLAGS) $(INCLUDES) -o $(@) $(<) $(MULIB) $(STKLIB) $(LIBRARY)
+
 test_pthread: test_pthread.cpp
 	$(CC) $(CFLAGS) -o $(@) $(<)
 
@@ -133,7 +138,7 @@ ut_delay_stream : ut_delay_stream.cpp assert.o # | $(MULIB) $(STKLIB)
 ut_identity_stream : ut_identity_stream.cpp assert.o # | $(MULIB) $(STKLIB)
 	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $(@) $(<) assert.o $(MULIB) $(STKLIB) $(LIBRARY)
 
-ut_mix_stream : ut_mix_stream.cpp assert.o # | $(MULIB) $(STKLIB)
+ut_linseg_stream : ut_linseg_stream.cpp assert.o # | $(MULIB) $(STKLIB)
 	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $(@) $(<) assert.o $(MULIB) $(STKLIB) $(LIBRARY)
 
 ut_multiply_stream : ut_multiply_stream.cpp assert.o # | $(MULIB) $(STKLIB)
