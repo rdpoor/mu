@@ -1,8 +1,8 @@
-#include "multi_stream.h"
+#include "multi_source_stream.h"
 
 namespace mu {
 
-  Tick MultiStream::getStart() {
+  Tick MultiSourceStream::getStart() {
     if (sources_.size() == 0) {
       return kIndefinite;
     } else {
@@ -20,7 +20,7 @@ namespace mu {
     }
   }
 
-  Tick MultiStream::getEnd() {
+  Tick MultiSourceStream::getEnd() {
     if (sources_.size() == 0) {
       return kIndefinite;
     } else {
@@ -38,12 +38,12 @@ namespace mu {
     }
   }
 
-  MultiStream& MultiStream::addSource(Stream *source) {
+  MultiSourceStream& MultiSourceStream::addSource(Stream *source) {
     sources_.push_back(source);
     return *this;
   }
   
-  MultiStream& MultiStream::removeSource(Stream *source) {
+  MultiSourceStream& MultiSourceStream::removeSource(Stream *source) {
     for (int i=0; i<sources_.size(); i++) {
       if (sources_.at(i) == source) {
         sources_.erase(sources_.begin()+i);
@@ -53,7 +53,7 @@ namespace mu {
     return *this;
   }
   
-  MultiStream& MultiStream::removeAllSources() {
+  MultiSourceStream& MultiSourceStream::removeAllSources() {
     sources_.clear();
     return *this;
   }

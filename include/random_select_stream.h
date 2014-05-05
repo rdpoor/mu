@@ -8,11 +8,11 @@
 #define MU_RANDOM_SELECT_STREAM_H
 
 #include "mu.h"
-#include "multi_stream.h"
+#include "multi_source_stream.h"
 
 namespace mu {
 
-  class RandomSelectStream : public MultiStream {
+  class RandomSelectStream : public MultiSourceStream {
   public:
     
     RandomSelectStream( void );

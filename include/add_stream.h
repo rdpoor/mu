@@ -5,11 +5,11 @@
 #define MU_ADD_STREAM_H
 
 #include "mu.h"
-#include "multi_stream.h"
+#include "multi_source_stream.h"
 
 namespace mu {
 
-  class AddStream : public MultiStream {
+  class AddStream : public MultiSourceStream {
   public:
 
     AddStream();

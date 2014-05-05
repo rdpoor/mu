@@ -9,13 +9,14 @@ SOURCES := \
 	loop_stream.cpp \
 	map_stream.cpp \
 	mu.cpp \
-	multi_stream.cpp \
+	multi_source_stream.cpp \
 	multiply_stream.cpp \
 	nrt_player.cpp \
 	player.cpp \
 	random_select_stream.cpp \
 	rt_player.cpp \
 	sequence_stream.cpp \
+	single_source_stream.cpp \
 	stream.cpp \
 	tik.cpp
 

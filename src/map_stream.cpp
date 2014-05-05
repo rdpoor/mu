@@ -24,14 +24,4 @@ namespace mu {
     return *this;
   }
 
-  // stream extent is inherited from the source stream
-  Tick MapStream::getStart() {
-    return (source_ == NULL) ? kIndefinite : (source_->getStart());
-  }
-
-  Tick MapStream::getEnd() {
-    return (source_ == NULL) ? kIndefinite : (source_->getEnd());
-  }
-
-
 }

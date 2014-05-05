@@ -2,7 +2,7 @@
  * Experiment: when Ticks counter decreases, randomly pick
  * a new sound sample to play back.
  */
-#include "multi_stream.h"
+#include "multi_source_stream.h"
 #include "crop_stream.h"
 #include "file_read_stream.h"
 #include "loop_stream.h"
@@ -16,7 +16,7 @@
  * Maintain a collection of input streams.  Every time the tick counter
  * backs up, select a different input stream as the current stream.
  */
-class ResetStream : public mu::MultiStream {
+class ResetStream : public mu::MultiSourceStream {
 public:
   
   ResetStream() : prev_tick_ (mu::kIndefinite) { }
@@ -33,8 +33,8 @@ public:
     }
     return *this;
   }
-  MultiStream& addSource(Stream *source) {
-    return MultiStream::addSource(source);
+  MultiSourceStream& addSource(Stream *source) {
+    return MultiSourceStream::addSource(source);
   }
 
   mu::Tick getStart(){ return current_stream_->getStart(); }

@@ -6,13 +6,11 @@ namespace mu {
     TRACE("DelayStream::~DelayStream()\n");
   }
 
-  DelayStream& DelayStream::step(stk::StkFrames& buffer,
-                                 Tick tick,
-                                 Player& player) {
-    if (source_ != NULL) {
-      source_->step(buffer, tick - delay_, player);
+  DelayStream& DelayStream::step(stk::StkFrames& buffer, Tick tick, Player& player) {
+    if (source_ == NULL) {
+      zero_buffer(buffer);
     } else {
-      bzero(&(buffer[0]), buffer.frames() * buffer.channels() * sizeof(stk::StkFloat));
+      source_->step(buffer, tick - delay_, player);
     }
     return *this;
   }
@@ -22,6 +20,7 @@ namespace mu {
       kIndefinite : 
       ((source_->getStart() == kIndefinite) ? kIndefinite : (source_->getStart() + delay_));
   }
+
   Tick DelayStream::getEnd() {
     return (source_ == NULL) ? 
       kIndefinite : 

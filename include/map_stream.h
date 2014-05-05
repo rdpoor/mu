@@ -13,7 +13,7 @@
 #define MU_MAP_STREAM_H
 
 #include "mu.h"
-#include "stream.h"
+#include "single_source_stream.h"
 
 namespace mu {
 
@@ -22,26 +22,21 @@ namespace mu {
                                      Player& player,
                                      Tick frame_index );
   
-  class MapStream : public Stream {
+  class MapStream : public SingleSourceStream {
   public:
 
     MapStream();
     ~MapStream( void );
 
-    MapStream& step(stk::StkFrames& buffer, 
-                          Tick tick,
-                          Player &player);
-    Tick getStart( void );
-    Tick getEnd( void );
+    MapStream& step(stk::StkFrames& buffer, Tick tick, Player &player);
 
-    Stream *getSource() const;
-    MapStream& setSource(Stream *source);
+    // needed(??) so setSource() returns a MapStream and not a SingleSourceStream
+    MapStream& setSource(Stream *source) { source_ = source; return *this; }
 
     MapStreamCallback getCallback() const;
     MapStream& setCallback(MapStreamCallback callback);
 
   protected:
-    Stream *source_;
     MapStreamCallback callback_;
 
   };                            // class MapStream
@@ -50,12 +45,6 @@ namespace mu {
     TRACE("MapStream::MapStream()\n");
   }
 
-  inline Stream *MapStream::getSource() const { return source_; }
-  inline MapStream& MapStream::setSource(Stream *source) {
-    TRACE("MapStream::source()\n");
-    source_ = source; return *this;
-  }
-  
   inline MapStreamCallback MapStream::getCallback() const { return callback_; }
   inline MapStream& MapStream::setCallback(MapStreamCallback callback) {
     TRACE("MapStream::setCallback()\n");
