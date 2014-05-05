@@ -13,6 +13,8 @@ SOURCES := \
 	mune12.cpp \
 	mune13.cpp \
 	mune14.cpp \
+	mune15.cpp \
+	mune16.cpp \
 	test_clamp.cpp \
 	test_double_accuracy.cpp \
 	test_pthread.cpp \
@@ -24,7 +26,8 @@ SOURCES := \
 	ut_delay_stream.cpp \
 	ut_identity_stream.cpp \
 	ut_multiply_stream.cpp \
-	ut_stream.cpp
+	ut_stream.cpp \
+	ut_tick_indefinite.cpp
 
 MULIB   := ../obj/*.o
 STKLIB  := ../tarballs/stk-4.4.4/src/Release/*.o
@@ -97,6 +100,12 @@ mune13 : mune13.cpp # | $(MULIB) $(STKLIB)
 mune14 : mune14.cpp # | $(MULIB) $(STKLIB)
 	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $(@) $(<) $(MULIB) $(STKLIB) $(LIBRARY)
 
+mune15 : mune15.cpp # | $(MULIB) $(STKLIB)
+	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $(@) $(<) $(MULIB) $(STKLIB) $(LIBRARY)
+
+mune16 : mune16.cpp # | $(MULIB) $(STKLIB)
+	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $(@) $(<) $(MULIB) $(STKLIB) $(LIBRARY)
+
 test_double_accuracy: test_double_accuracy.cpp
 	$(CC) $(CFLAGS) -o $(@) $(<)
 
@@ -131,5 +140,8 @@ ut_multiply_stream : ut_multiply_stream.cpp assert.o # | $(MULIB) $(STKLIB)
 	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $(@) $(<) assert.o $(MULIB) $(STKLIB) $(LIBRARY)
 
 ut_stream : ut_stream.cpp assert.o # | $(MULIB) $(STKLIB)
+	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $(@) $(<) assert.o $(MULIB) $(STKLIB) $(LIBRARY)
+
+ut_tick_indefinite : ut_tick_indefinite.cpp assert.o # | $(MULIB) $(STKLIB)
 	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $(@) $(<) assert.o $(MULIB) $(STKLIB) $(LIBRARY)
 

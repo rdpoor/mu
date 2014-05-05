@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include "Stk.h"
+#include "tick_indefinite.h"
 
 namespace mu {
 
@@ -11,6 +12,9 @@ namespace mu {
 
   typedef long int Tick;
   static const Tick kIndefinite = LONG_MAX;
+  // Perhaps someday Tick will be a full-fledged class that allows an
+  // indefinite value.  For now, that would require a lot of retrofits...
+  // static const TickIndefinite kIndefinite = TickIndefinite::kIndefinite;
 
   typedef double MuTime;
 

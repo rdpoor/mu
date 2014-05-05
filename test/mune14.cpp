@@ -39,7 +39,6 @@ public:
 
   mu::Tick getStart(){ return current_stream_->getStart(); }
   mu::Tick getEnd(){ return current_stream_->getEnd(); }
-  ResetStream& addElement(mu::Stream& s, mu::Tick start, mu::Tick duration, double legato = 1.0);
 
 protected:
   ResetStream& reset();
@@ -83,7 +82,7 @@ int main() {
   reset_stream.addSource(getSound(SOUND_DIR "s15.wav"));
   reset_stream.addSource(getSound(SOUND_DIR "s16.wav"));
 
-  loop_stream.setSource(&reset_stream).setLoopDuration(44100/2);
+  loop_stream.setSource(&reset_stream).setLoopDuration(44100/3);
   player.setSource(&loop_stream);
   player.start();
   sleep(30);

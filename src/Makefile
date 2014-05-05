@@ -12,8 +12,11 @@ SOURCES := \
 	multiply_stream.cpp \
 	nrt_player.cpp \
 	player.cpp \
+	random_select_stream.cpp \
 	rt_player.cpp \
-	stream.cpp
+	sequence_stream.cpp \
+	stream.cpp \
+	tik.cpp
 
 OBJECT_DIR := ../obj
 INCLUDE_DIR := ../include

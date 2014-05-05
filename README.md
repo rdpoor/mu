@@ -4,6 +4,8 @@ An experiment in blurring the lines between music composition and sound synthesi
 
 ## todo 
 
+* Create a set of arithmetic operations on Tick times that honor kIndefinite:
+  x + kIndefinite = kIndefinite, x * kIndefinite = kIndefinite, etc.
 * FileReadStream should allow negative Tick times
 * Create a stream that fiddles with time: t' = t0 + k*t.  (Oog -- am I
   going to regret using an integer frame counter?)
@@ -27,6 +29,14 @@ An experiment in blurring the lines between music composition and sound synthesi
 
 ## changelog 
 
+* 2014-05-04: Created library class RandomSelectStream that does
+exactly what mune14 does: when tick counter decreases, randomly
+chooses an input stream to start playing.  Created mune15 based on the
+library function.  Created SequenceStream, subclass of AddStream, that
+interposes a DelayStream on each input.  Replicated mune13; plays
+identical melody, but (by design) doesn't crop each note to stop when
+the next one starts (though that would be a possible extention to the
+design of SequenceStream).
 * 2014-05-04: Created mune14: when tick counter decreases (e.g. at a
 loop point), randomly choose an input stream to start playing.
 * 2014-05-03: Created mune11, mune12 to play arpeggiated chords.
@@ -254,3 +264,29 @@ mune14 to test this: at each loop, pick a different sound to play.
 Works great.  Going this route, we need to go back to the idea of "one
 source per input", that is, can't share streams across multiple sinks.
 
+mune15 is the same thing, but uses a library class, RandomSelectPlayer
+to accomplish the same thing.
+
+### Maybe the right way to do a sequencer
+
+std::map is a C++ class that associates keys with values.  Keys are
+kept sorted in a b-tree, so key access is relatively fast.  
+
+So we could create a Stream object whose keys are starting times (in
+ticks) and whose values are stream objects.  We might optionally crop
+each stream to stop when the next stream starts, or otherwise let each
+stream play out to its natural end.
+
+Correspondingly, when does a stream really start?  We've agreed that a
+stream can have a negative start time, meaning it "starts before the
+downbeat".  In fact, it could start arbitrarily early.
+
+Extending this idea all the way, a SequenceStream becomes an AddStream
+where each input has its own offset; there's no real switching from
+one stream to the next.
+
+At at that point, there's no need to keep a std::map, since the delay
+offsets are embodied in DelayStream objects.
+
+Suggestion: retrofit mune13 to use a SequenceStream class built using
+this.
