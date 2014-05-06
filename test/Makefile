@@ -17,6 +17,7 @@ SOURCES := \
 	mune16.cpp \
 	mune17.cpp \
 	mune18.cpp \
+	mune19.cpp \
 	test_clamp.cpp \
 	test_double_accuracy.cpp \
 	test_map.cpp \
@@ -115,6 +116,9 @@ mune17 : mune17.cpp # | $(MULIB) $(STKLIB)
 	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $(@) $(<) $(MULIB) $(STKLIB) $(LIBRARY)
 
 mune18 : mune18.cpp # | $(MULIB) $(STKLIB)
+	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $(@) $(<) $(MULIB) $(STKLIB) $(LIBRARY)
+
+mune19 : mune19.cpp # | $(MULIB) $(STKLIB)
 	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $(@) $(<) $(MULIB) $(STKLIB) $(LIBRARY)
 
 test_double_accuracy: test_double_accuracy.cpp

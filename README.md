@@ -29,6 +29,8 @@ An experiment in blurring the lines between music composition and sound synthesi
 
 ## changelog 
 
+* 2014-05-06: Created mune19 to test fade in/out using LinsegStream
+and MultiplyStream.
 * 2014-05-05: Created mune18 which connects to stk::PitShift (or
 LentPitShift) and does real-time pitch shifting.
 * 2014-05-05: Created mune17, identical to mune12 to play an
