@@ -4,7 +4,6 @@ An experiment in blurring the lines between music composition and sound synthesi
 
 ## todo 
 
-* Create a line segment stream
 * Create a set of arithmetic operations on Tick times that honor kIndefinite:
   x + kIndefinite = kIndefinite, x * kIndefinite = kIndefinite, etc.
 * FileReadStream should allow negative Tick times
@@ -30,6 +29,12 @@ An experiment in blurring the lines between music composition and sound synthesi
 
 ## changelog 
 
+* 2014-05-05: Created mune18 which connects to stk::PitShift (or
+LentPitShift) and does real-time pitch shifting.
+* 2014-05-05: Created mune17, identical to mune12 to play an
+arpeggiated chord, but using SequenceStream.  Very short.
+* 2014-05-05: Created LinsegStream that generates interpolated line
+segments as a function of tick time.
 * 2014-05-04: Created library class RandomSelectStream that does
 exactly what mune14 does: when tick counter decreases, randomly
 chooses an input stream to start playing.  Created mune15 based on the
@@ -132,39 +137,6 @@ Makefile structure.
 
 ## design notes
 
-### Thought exercise
-
-Compose a bit of music.  Figure out what pieces of the system are
-missing and write them in order to make the music.  Don't worry about
-making it clean -- cleanup can happen after lessons learned.
-
-I can tell now that I'll need an extensible vector-like object.  C++
-must have such a thing in its library.  Else I can create one easily
-enough.
-
-Towards a SequenceStream class: imagine I have a Stream object that
-plays some motif (of any complexity) at time 0.  I want to be able to
-say "play that motif at time A, B, and C" (Now that a stream has
-distinct getStart() and getEnd() methods, it can start before time 0,
-but use time 0 as a downbeat.  That should prove to be handy.)
-
-On that topic, a FileReadStream object could carry an offset parameter
-that defines the "downbeat" of a sound file, assuming it doesn't
-happen exactly at 0.  This is somewhat analagous to the baseline value
-for a font.
-
-### Thoughts on a SequenceStream
-
-A sequence stream takes N sources, where each stream is offset by a
-different time, and mixes them together.  We could choose to abut
-streams (not start one until another has finished) so we're only
-playing one stream at a time, but we shouldn't go that route until
-computation time becomes an issue.
-
-A SequenceStream could be quickly built out of existing stream
-objects: a DelayStream for each input and a single MixNStream.  That
-might be a good exercise in figuring out how to reuse components.
-
 ### Stateless vs Stateful Streams
 
 A stateless stream is one that will always produce the same output
@@ -189,105 +161,15 @@ presumably, the act of patching would verify whether or not the
 upstream object is stateful or not, and warn if its output is being
 connected to more than one input.
 
-### Thoughts on a strummed instrument
-
-A strummed instrument has N strings.  Each string has an input that
-dictates a fret number (or damped).  The string is responsible for
-mapping fret number into an appropriate sound file or synthesis
-technique.  Doing a step(b, tick, player) gets the pitch information
-from the input for the given tick time.  
-
-Hmm...this means that the string can only ever play one note in its
-lifetime, that is, the tick given to the string is the same tick given
-to the pitch source.  Is that okay?  What does it mean to play a
-sequence of notes?  If we create a different string object for each
-note, it may feel like a lot more work but it has the advantage that
-everything is entirely deterministic (and you can dependibly rewind to
-a specific point).  [NOTE: this determinism does not hold for stream
-objects that preserve state from one step() to the next.  We'll deal
-with those later.]
-
-Stated another way, a stream can really only play one thing.  It can
-be repeated, it can be shifted in time, but since the only external
-state passed to it is the current tick, everything it plays is a 
-function of the current tick.
-
-### mune11
-
-Created a simple arpeggiated chord.  This required:
-
-* 4 file_read_stream (for the sound sources)
-* 4 crop_stream (because file_read_stream can't tolerate negative tick times)
-* 4 delay_stream (to offset the start times)
-* 1 add_stream (to sum them together)
-* 1 loop_stream (to make it interesting to listen do)
-
-Once stream elements are connected together, you have to pay attention
-to the order of setting things up.  In this case, you can't find the
-end time of a delay_stream until you've set the file name for the
-file_read_stream, since the former depends upon the latter.
-
-Perhaps a reasonable discipline is to (1) connect stream element to
-its sub-tree then (2) configure that stream element, starting with the
-leaf nodes and working towards the root.
-
-### mune12
-
-Created a relatively simple ArpeggiateStream class that encapsulates
-all the pieces in mune11.  Using it is as simple as:
-
-      arpeggiate_stream.setArpeggioDelay(882);
-      arpeggiate_stream.addFile(SOUND_DIR SOUND_0 ".wav");
-      arpeggiate_stream.addFile(SOUND_DIR SOUND_1 ".wav");
-      arpeggiate_stream.addFile(SOUND_DIR SOUND_2 ".wav");
-      arpeggiate_stream.addFile(SOUND_DIR SOUND_3 ".wav");
-      loop_stream.setSource(&arpeggiate_stream);
-      loop_stream.setLoopDuration(arpeggiate_stream.getEnd()/2);
-      player.setSource(&loop_stream);
-      player.start();
-      sleep(30);
-      player.stop();
-
-### Half-baked idea on deterministic vs non-deterministic streams
-
-So far, we've made a big deal about how streams are deterministic: if
-you call step() for a given tick, you always get the same results.
-But we really don't always want that.  Sometimes, for example, you
-want a note to sound slightly different each time you play it. So
-maybe there's some concept of "start a note" which allows a stream to
-select some parameters that remain invariant until the note ends.
-
 ### Varying notes on each playback
 
-I woke up this AM and realized there's a simple heuristic: if the tick
-counter decreases, assume that you are starting a "new" note.  I wrote
-mune14 to test this: at each loop, pick a different sound to play.
-Works great.  Going this route, we need to go back to the idea of "one
+I woke up this AM and realized there's a simple heuristic for making
+changes to a stream at the start of each note: if the tick counter
+decreases, assume that you are starting a "new" note.  I wrote mune14
+to test this: at each loop, pick a different sound to play.  Works
+great.  Going this route, we need to go back to the idea of "one
 source per input", that is, can't share streams across multiple sinks.
 
-mune15 is the same thing, but uses a library class, RandomSelectPlayer
-to accomplish the same thing.
+mune15 does the same thing as mune14 using the new RandomSelectPlayer.
 
-### Maybe the right way to do a sequencer
 
-std::map is a C++ class that associates keys with values.  Keys are
-kept sorted in a b-tree, so key access is relatively fast.  
-
-So we could create a Stream object whose keys are starting times (in
-ticks) and whose values are stream objects.  We might optionally crop
-each stream to stop when the next stream starts, or otherwise let each
-stream play out to its natural end.
-
-Correspondingly, when does a stream really start?  We've agreed that a
-stream can have a negative start time, meaning it "starts before the
-downbeat".  In fact, it could start arbitrarily early.
-
-Extending this idea all the way, a SequenceStream becomes an AddStream
-where each input has its own offset; there's no real switching from
-one stream to the next.
-
-At at that point, there's no need to keep a std::map, since the delay
-offsets are embodied in DelayStream objects.
-
-Suggestion: retrofit mune13 to use a SequenceStream class built using
-this.

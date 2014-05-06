@@ -15,6 +15,8 @@ SOURCES := \
 	mune14.cpp \
 	mune15.cpp \
 	mune16.cpp \
+	mune17.cpp \
+	mune18.cpp \
 	test_clamp.cpp \
 	test_double_accuracy.cpp \
 	test_map.cpp \
@@ -37,6 +39,7 @@ STKLIB  := ../tarballs/stk-4.4.4/src/Release/*.o
 CC       = g++
 DEFS     = -DHAVE_GETTIMEOFDAY -D__MACOSX_CORE__ -D__LITTLE_ENDIAN__
 CFLAGS   = -O3 -Wall 
+# CFLAGS   = -O0 -g -Wall 
 INCLUDES = -I../include -I../tarballs/stk-4.4.4/include
 LIBRARY  = -lpthread -framework CoreAudio -framework CoreFoundation -framework CoreMidi
 
@@ -106,6 +109,12 @@ mune15 : mune15.cpp # | $(MULIB) $(STKLIB)
 	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $(@) $(<) $(MULIB) $(STKLIB) $(LIBRARY)
 
 mune16 : mune16.cpp # | $(MULIB) $(STKLIB)
+	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $(@) $(<) $(MULIB) $(STKLIB) $(LIBRARY)
+
+mune17 : mune17.cpp # | $(MULIB) $(STKLIB)
+	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $(@) $(<) $(MULIB) $(STKLIB) $(LIBRARY)
+
+mune18 : mune18.cpp # | $(MULIB) $(STKLIB)
 	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $(@) $(<) $(MULIB) $(STKLIB) $(LIBRARY)
 
 test_double_accuracy: test_double_accuracy.cpp
