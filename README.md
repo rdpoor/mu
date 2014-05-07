@@ -4,6 +4,10 @@ An experiment in blurring the lines between music composition and sound synthesi
 
 ## todo 
 
+* Give SequenceStream a "monophonic" switch so only one stream plays at a 
+time, or at least allows a cross-fade from one to the next.
+* Write a Filter that changes pitch by resampling.  Needs to maintain state
+over consecutive buffers.
 * Create a set of arithmetic operations on Tick times that honor kIndefinite:
   x + kIndefinite = kIndefinite, x * kIndefinite = kIndefinite, etc.
 * FileReadStream should allow negative Tick times
@@ -21,14 +25,12 @@ An experiment in blurring the lines between music composition and sound synthesi
 * When do we release resources?  Do we need a Transport.pause() method
   distinct from Transport.stop()?
 * Add command line parsing such as argp.h
-* Investigate ways to do automated unit testing.  Create a make target.
-* Create mu/Makefile to make all sub-projects
-* Clean up test/Makefile to avoid repetition, 
-* Fix test/Makefile to assure that mu library is up to date.
-* Extend src/Makefile to assure that stk library is up to date.
+* Create mu/Makefile to make all sub-projects: mu, test, stk
 
 ## changelog 
 
+* 2014-05-06: Clean up test/Makefile: any muneXX.cpp is an integration
+  test, ut_xxx.cpp is a unit test.
 * 2014-05-06: Created mune19 to test fade in/out using LinsegStream
 and MultiplyStream.
 * 2014-05-05: Created mune18 which connects to stk::PitShift (or

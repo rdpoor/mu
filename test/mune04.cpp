@@ -10,7 +10,7 @@
 #include "Mutex.h"
 #include <signal.h>
 
-namespace mu {
+namespace mu_test {
 
   using namespace stk;
 
@@ -333,11 +333,11 @@ namespace mu {
   }
   
 
-} // namespace mu
+} // namespace mu_test
 
 int main() {
-  mu::Transport t1;
-  mu::IdentityStream tn1;
+  mu_test::Transport t1;
+  mu_test::IdentityStream tn1;
   t1.source(&tn1);
   t1.start();
   sleep(5);
