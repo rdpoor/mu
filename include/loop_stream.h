@@ -18,6 +18,9 @@ namespace mu {
 
     LoopStream& step(stk::StkFrames& buffer, Tick tick, Player &player);
 
+    Tick getStart( void ) { return kIndefinite; }
+    Tick getEnd( void ) { return kIndefinite; }
+
     // needed(??) so setSource() returns a LoopStream and not a SingleSourceStream
     // TODO: figure out the right way to do this
     LoopStream& setSource(Stream *source) { source_ = source; return *this; }

@@ -3,6 +3,10 @@
  * One stream is selected as the "current" stream.  In each call to
  * step(), if the tick time goes backwards, another stream is randomly
  * selected as the current stream.
+ *
+ * Note that each input stream could have a different delay stream
+ * (to randomize start times) or different sound files (to randomize
+ * the sound played), etc.
  */
 #ifndef MU_RANDOM_SELECT_STREAM_H
 #define MU_RANDOM_SELECT_STREAM_H

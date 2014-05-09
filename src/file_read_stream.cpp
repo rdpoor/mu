@@ -9,6 +9,7 @@ namespace mu {
   FileReadStream& FileReadStream::step(stk::StkFrames& buffer, 
                                Tick tick,
                                Player& player) {
+    // fprintf(stderr,"FileReadStream::%p.step(%p, %ld, %p)\n", this, &buffer, tick, &player);
     if (!file_read_.isOpen()) {
       file_read_.open(file_name_);
       // TODO: check format, rate, etc against buffer & player

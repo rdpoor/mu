@@ -23,6 +23,14 @@ namespace mu {
       return ((getStart()==kIndefinite) || (getEnd()==kIndefinite)) ? kIndefinite : (getEnd() - getStart());
     }
 
+    // Return true if tick falls within start (inclusive) and end
+    // (exclusive) of this stream.
+    bool doesContain( Tick tick ) {
+      bool after_start = (getStart() == kIndefinite) || (tick >= getStart());
+      bool before_end = (getEnd() == kIndefinite) || (tick < getEnd());
+      return after_start && before_end;
+    }
+
     // utilities
     
     // zero out a buffer

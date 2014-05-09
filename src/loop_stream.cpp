@@ -7,8 +7,13 @@ namespace mu {
   }
   
   LoopStream& LoopStream::step(stk::StkFrames& buffer, Tick tick, Player& player) {
+    // fprintf(stderr,"LoopStream::%p.step(%p, %ld, %p)\n", this, &buffer, tick, &player);
+    if (source_ == NULL) { return *this; }
+
     long int frames_copied = 0;
+
     while (frames_copied < buffer.frames()) {
+      // fprintf(stderr,"b");
       Tick current_tick = frames_copied + tick;
       // TODO: This truncates towards zero.  We really want floor()
       // instead to allow for negative tick times.  Make it a separate
@@ -23,17 +28,23 @@ namespace mu {
       // (current_tick % loop_duration_) is the time associated with buffer_[0]
       if (frames_to_copy == buffer.frames()) {
         // optimize the a common case: no copy needed
+        // fprintf(stderr,"c");
         source_->step(buffer, (current_tick % loop_duration_), player);
+        // fprintf(stderr,"c1");
 
       } else {
         // resize buffer_ to receive frames_to_copy frames from source
+        // fprintf(stderr,"d");
         buffer_.resize(frames_to_copy, buffer.channels());
         // fill with source data
+        // fprintf(stderr,"e");
         source_->step(buffer_, (current_tick % loop_duration_), player);
         // copy from buffer_[0] into buffer[frames_copied] for frames_to_copy frames
+        // fprintf(stderr,"f");
         copy_buffer(buffer_, 0, buffer, frames_copied, frames_to_copy);
 
       }
+      // fprintf(stderr,"g");
       frames_copied += frames_to_copy;
     }
 
