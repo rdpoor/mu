@@ -4,6 +4,7 @@ An experiment in blurring the lines between music composition and sound synthesi
 
 ## todo 
 
+* Test RtPlayer for memory leaks.  (I suspect about 20k / 10 minutes).
 * Beef up assert.c=>assert.cpp Create a tester object that can print
 out context, print on error only, print always, etc.
 * Give SequenceStream a "monophonic" switch so only one stream plays at a 
@@ -31,14 +32,18 @@ over consecutive buffers.
 
 ## changelog 
 
+* 2014-05-09: test/test_rt_player runs a bare-bones RtPlayer in order
+to look for memory leaks.  Ran it for 6 hours.  None detected.
+* 2014-05-08: modified mune20 run run in non-real-time (i.e. as fast
+as possible) to look for memory leaks.  Ran for 30 minutes of CPU time,
+no leaks detected.
+* 2014-05-08: mune21 generatess output identical to mune20, but using
+library defined mu::ProbabilityStream
 * 2014-05-08: mune20 assigns random probability of playing a source
 stream at each b/n beats, where b is beats per measure and n is the
 number of elements in the probability vector.  Starting to sound fun.
 Found and stomped two bugs in LoopStream, not shadowing getStart() and
-getEnd() and not honoring null source stream.  Currently checking for
-memory leaks.  mune20 started at: real: 1.6m, virt: 2.36g, shared:
-360k, private: 676k.
-
+getEnd() and not honoring null source stream.  
 * 2014-05-06: Clean up test/Makefile: any muneXX.cpp is an integration
   test, ut_xxx.cpp is a unit test.
 * 2014-05-06: Created mune19 to test fade in/out using LinsegStream

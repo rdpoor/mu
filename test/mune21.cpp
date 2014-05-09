@@ -1,5 +1,5 @@
 /*
- * Make some fun and varying drum pattern
+ * Make some fun and varying drum pattern using mu::ProbabilityStream
  */
 #include "add_stream.h"
 #include "crop_stream.h"
@@ -8,68 +8,13 @@
 #include "loop_stream.h"
 #include "mu.h"
 #include "rt_player.h"
+#include "probability_stream.h"
 #include <unistd.h>
 
 #define SOUND_DIR "/Users/r/Projects/Musics/TNVM/sources/ThumpsAndScratches/"
 
 #define TEMPO_BPM 150
 #define BEAT_DURATION_TICS ((44100 * 60) / (TEMPO_BPM))
-
-/*
- * Play the input stream with a given probability and delay.
- */
-class ProbabilityStream : public mu::SingleSourceStream {
-public:
-  ProbabilityStream( void ) : 
-    prev_tick_  (mu::kIndefinite),
-    current_stream_ ( NULL ),
-    probability_ (1.0) {
-  }
-  ~ProbabilityStream( void ) { }
-  
-  ProbabilityStream& step(stk::StkFrames& buffer, mu::Tick tick, mu::Player &player) {
-    // fprintf(stderr,"%p.step(): tick=%ld, prev_tick_=%ld\n", this, tick, prev_tick_);
-    if ((prev_tick_ == mu::kIndefinite) || (tick <= prev_tick_)) { reset(); }
-    prev_tick_ = tick;
-
-    if (current_stream_ == NULL ) {
-      zero_buffer(buffer);
-    } else {
-      current_stream_->step(buffer, tick, player);
-    }
-    return *this;
-  }
-
-  ProbabilityStream& setSource(Stream *source) { source_ = source; return *this; }
-
-  double getProbability( void ) { return probability_; }
-  ProbabilityStream& setProbability(double probability) { probability_ = probability; return *this; }
-
-protected:
-  ProbabilityStream& reset() {
-    double p = ((double) rand() / (RAND_MAX));
-    bool play_it = p < probability_;
-    current_stream_ = play_it ? getSource() : NULL;
-    return *this;
-  }
-
-  mu::Tick prev_tick_;
-  Stream * current_stream_;
-  double probability_;
-  
-};                              // class ProbabilityStream
-
-mu::Stream *make_beat_stream(std::string file_name) {
-  mu::FileReadStream *frs = &(new mu::FileReadStream())->fileName(file_name).doNormalize(true);
-  mu::LoopStream *ls = &(new mu::LoopStream())->setLoopDuration(BEAT_DURATION_TICS).setSource(frs);
-  return ls;
-}
-
-int sum(std::vector<int> v) {
-  int s = 0;
-  for (size_t i=0; i<v.size(); i++) { s += v.at(i); }
-  return s;
-}
 
 int max(std::vector<int> v) {
   int s = 1;
@@ -95,7 +40,7 @@ mu::Stream *make_probabilty_stream(std::string file_name,
     mu::Tick delay = BEAT_DURATION_TICS * duration_in_beats * i / probabilities.size();
     double probability = (double)probabilities.at(i) / (double)p_max;
     mu::DelayStream *ds = &(new mu::DelayStream())->setDelay(delay).setSource(cs);
-    ProbabilityStream *ps = &(new ProbabilityStream())->setSource(ds).setProbability(probability);
+    mu::ProbabilityStream *ps = &(new mu::ProbabilityStream())->setSource(ds).setProbability(probability);
     as->addSource(ps);
   }
   mu::LoopStream *ls = &(new mu::LoopStream())->

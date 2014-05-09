@@ -41,3 +41,6 @@ sketches :	$(SKETCH_TARGETS)
 
 $(SKETCH_TARGETS) : %:%.cpp
 	$(CC) $(CFLAGS) -o $(@) $(<)
+
+test_rt_player: test_rt_player.cpp
+	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $(@) $(<) assert.o $(MULIB) $(STKLIB) $(LIBRARY)
