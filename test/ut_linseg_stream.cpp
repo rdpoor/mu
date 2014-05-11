@@ -22,6 +22,9 @@ int main() {
   fprintf(stderr, "=== no breakpoints\n");
   ASSERT(linseg_stream.getBreakpointCount() == 0);
 
+  ASSERT(linseg_stream.getStart() == mu::kIndefinite);
+  ASSERT(linseg_stream.getEnd() == mu::kIndefinite);
+
   linseg_stream.step(buffer, 0, player);
   ASSERT(buffer(0,0) == 0);
 
@@ -29,6 +32,9 @@ int main() {
   linseg_stream.setHoldValue(false);
   linseg_stream.addBreakpoint(10, 10);
   ASSERT(linseg_stream.getBreakpointCount() == 1);
+
+  ASSERT(linseg_stream.getStart() == 10);
+  ASSERT(linseg_stream.getEnd() == 10);
 
   linseg_stream.step(buffer, 0, player);
   ASSERT(buffer(9,0) == 0);
@@ -40,6 +46,9 @@ int main() {
   
   ASSERT(linseg_stream.getBreakpointCount() == 1);
 
+  ASSERT(linseg_stream.getStart() == mu::kIndefinite);
+  ASSERT(linseg_stream.getEnd() == mu::kIndefinite);
+
   linseg_stream.step(buffer, 0, player);
   ASSERT(buffer(9,0) == 10);
   ASSERT(buffer(10,0) == 10);
@@ -49,6 +58,9 @@ int main() {
   linseg_stream.setHoldValue(false);
   linseg_stream.addBreakpoint(20, 11);
   ASSERT(linseg_stream.getBreakpointCount() == 2);
+
+  ASSERT(linseg_stream.getStart() == 10);
+  ASSERT(linseg_stream.getEnd() == 20);
 
   linseg_stream.step(buffer, 0, player);
   ASSERT(buffer(9,0) == 0.0);
@@ -68,6 +80,9 @@ int main() {
   fprintf(stderr, "=== two breakpoints, hold value\n");
   linseg_stream.setHoldValue(true);
   ASSERT(linseg_stream.getBreakpointCount() == 2);
+
+  ASSERT(linseg_stream.getStart() == mu::kIndefinite);
+  ASSERT(linseg_stream.getEnd() == mu::kIndefinite);
 
   linseg_stream.step(buffer, 0, player);
   ASSERT(buffer(9,0) == 10.0);
@@ -89,6 +104,9 @@ int main() {
   linseg_stream.addBreakpoint(-10, 8.0);
   ASSERT(linseg_stream.getBreakpointCount() == 3);
 
+  ASSERT(linseg_stream.getStart() == -10);
+  ASSERT(linseg_stream.getEnd() == 20);
+
   linseg_stream.step(buffer, 0, player);
 
   ASSERT(buffer(0,0) == 9.0);
@@ -116,6 +134,9 @@ int main() {
 
   fprintf(stderr, "=== three breakpoints, spanning buffer, no hold\n");
   
+  ASSERT(linseg_stream.getStart() == -10);
+  ASSERT(linseg_stream.getEnd() == 20);
+
   linseg_stream.step(buffer, -FRAME_COUNT, player);
   ASSERT(buffer(FRAME_COUNT-1,0) == 8.9);
   ASSERT(buffer(FRAME_COUNT-2,0) == 8.8);
@@ -131,8 +152,10 @@ int main() {
 
   fprintf(stderr, "=== three breakpoints, hold value\n");
   linseg_stream.setHoldValue(true);
-  linseg_stream.addBreakpoint(-10, 8.0);
   ASSERT(linseg_stream.getBreakpointCount() == 3);
+
+  ASSERT(linseg_stream.getStart() == mu::kIndefinite);
+  ASSERT(linseg_stream.getEnd() == mu::kIndefinite);
 
   linseg_stream.step(buffer, 0, player);
 
@@ -159,8 +182,11 @@ int main() {
   ASSERT(buffer(20,0) == 11.0);
   ASSERT(buffer(21,0) == 11.0);
 
-  fprintf(stderr, "=== three breakpoints, spanning buffer, no hold\n");
+  fprintf(stderr, "=== three breakpoints, spanning buffer, hold value\n");
   
+  ASSERT(linseg_stream.getStart() == mu::kIndefinite);
+  ASSERT(linseg_stream.getEnd() == mu::kIndefinite);
+
   linseg_stream.step(buffer, -FRAME_COUNT, player);
   ASSERT(buffer(FRAME_COUNT-1,0) == 8.9);
   ASSERT(buffer(FRAME_COUNT-2,0) == 8.8);
@@ -177,6 +203,9 @@ int main() {
   fprintf(stderr, "=== remove all breakpoints\n");
   linseg_stream.removeAllBreakpoints();
   ASSERT(linseg_stream.getBreakpointCount() == 0);
+
+  ASSERT(linseg_stream.getStart() == mu::kIndefinite);
+  ASSERT(linseg_stream.getEnd() == mu::kIndefinite);
 
   // ================================================================
   fprintf(stderr,"=== done\n");

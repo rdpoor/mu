@@ -12,7 +12,7 @@ namespace mu {
   }
 
   SequenceStream& SequenceStream::addSource(Stream *source, Tick delay) {
-    if (delay > 0) {
+    if (delay != 0) {
       DelayStream *delay_stream = new DelayStream();
       delay_stream->setSource(source).setDelay(delay);
       AddStream::addSource(delay_stream);

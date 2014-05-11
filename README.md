@@ -4,11 +4,14 @@ An experiment in blurring the lines between music composition and sound synthesi
 
 ## todo 
 
-* Test RtPlayer for memory leaks.  (I suspect about 20k / 10 minutes).
+* Can we change Tick to Seconds?
+* step() should return Stream * (not more specialized subclass).
+* Write ut_sequence_stream.cpp
+* Write a sound example based on SpliceStream.
+* Figure out if/how to unify SequenceStream and SpliceStream (and perhaps
+throw in variable length cross fades for good measure).
 * Beef up assert.c=>assert.cpp Create a tester object that can print
 out context, print on error only, print always, etc.
-* Give SequenceStream a "monophonic" switch so only one stream plays at a 
-time, or at least allows a cross-fade from one to the next.
 * Write a Filter that changes pitch by resampling.  Needs to maintain state
 over consecutive buffers.
 * Create a set of arithmetic operations on Tick times that honor kIndefinite:
@@ -32,6 +35,8 @@ over consecutive buffers.
 
 ## changelog 
 
+* Wrote SpliceStreams that acts like SequenceStream, but stops output
+of the previous stream when the next stream starts.
 * 2014-05-09: test/test_rt_player runs a bare-bones RtPlayer in order
 to look for memory leaks.  Ran it for 6 hours.  None detected.
 * 2014-05-08: modified mune20 run run in non-real-time (i.e. as fast

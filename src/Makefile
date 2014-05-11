@@ -18,6 +18,7 @@ SOURCES := \
 	rt_player.cpp \
 	sequence_stream.cpp \
 	single_source_stream.cpp \
+	splice_stream.cpp \
 	stream.cpp \
 	tik.cpp
 

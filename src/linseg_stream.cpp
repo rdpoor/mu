@@ -50,7 +50,7 @@ namespace mu {
   }
 
   Tick LinsegStream::getStart() {
-    if (breakpoints_.size() == 0) {
+    if ((breakpoints_.size() == 0) || (hold_value_ == true)) {
       return mu::kIndefinite;
     } else {
       return breakpoints_.begin()->first;
@@ -58,7 +58,7 @@ namespace mu {
   }
 
   Tick LinsegStream::getEnd() {
-    if (breakpoints_.size() == 0) {
+    if ((breakpoints_.size() == 0) || (hold_value_ == true)) {
       return mu::kIndefinite;
     } else {
       return breakpoints_.rbegin()->first;

@@ -2,7 +2,7 @@ INTEGRATION_TEST_TARGETS := $(patsubst %.cpp,%,$(wildcard mune*.cpp))
 
 UNIT_TEST_TARGETS := $(patsubst %.cpp,%,$(wildcard ut_*.cpp))
 
-SKETCH_TARGETS := $(patsubst %.cpp,%,$(wildcard test_*.cpp))
+SKETCH_TARGETS := $(patsubst %.cpp,%,$(wildcard sketch_*.cpp))
 
 ALL_TARGETS := $(INTEGRATION_TEST_TARGETS) $(UNIT_TEST_TARGETS) $(SKETCH_TARGETS)
 
@@ -40,7 +40,4 @@ $(UNIT_TEST_TARGETS) : %:%.cpp assert.o
 sketches :	$(SKETCH_TARGETS)
 
 $(SKETCH_TARGETS) : %:%.cpp
-	$(CC) $(CFLAGS) -o $(@) $(<)
-
-test_rt_player: test_rt_player.cpp
-	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $(@) $(<) assert.o $(MULIB) $(STKLIB) $(LIBRARY)
+	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $(@) $(<) $(MULIB) $(STKLIB) $(LIBRARY)
