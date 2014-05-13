@@ -12,6 +12,7 @@ SOURCES := \
 	multi_source_stream.cpp \
 	multiply_stream.cpp \
 	nrt_player.cpp \
+	null_stream.cpp \
 	player.cpp \
 	probability_stream.cpp \
 	random_select_stream.cpp \

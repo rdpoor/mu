@@ -214,3 +214,37 @@ As a discipline, there should be a directory of raw source sounds.
 (pitch shifting, resampling, trimming, etc) to create processed sound
 files needed by the composition.  After that, the composition proper
 can start.
+
+### introspection
+
+I want to debug streams.  I should be able to do:
+
+     s.inspect() =>
+
+     LoopStream#3000439ac0
+       getLoopDelay(): 434
+       getStart(): 0
+       getEnd(): kIndefinite
+       getSource():
+         AddStream#3000439c00
+           getSources():
+             CropStream#3000439f0c0
+               getStart(): 
+               getEnd():
+               getSources():
+                 FileReadStream#3000439f000
+                   getFileName(): /Users/r/Projects/Musics/TNVM/Sources/PluckedFinger/A4.wav
+             FileReadStream#3000439f000
+               getFileName(): /Users/r/Projects/Musics/TNVM/Sources/PluckedFinger/A#4.wav
+
+Each Stream subclass implements:
+
+    void inspect(level=0)
+
+See http://www.cplusplus.com/reference/string/string/string/, in particular the
+
+    std::string s6 (10, 'x');
+
+constructor that creates "xxxxxxxxxx" -- useful for indentation.
+
+

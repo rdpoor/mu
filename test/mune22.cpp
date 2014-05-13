@@ -1,48 +1,48 @@
 /*
- * More strumming.  Work out compact syntax.
- * See also mune12.cpp and mune17.cpp
+ * Test out SpliceStream to make an arpeggio, on the way to
+ * a strummed instrument.
+ *
+ * See also mune12.cpp and mune17.cpp.
+ *
+ * For a strummed instrument, use one SpliceStream per string,
+ * which guarantees that one string can only play one note at
+ * a time.  Add all the strings together with an addStream
+ * at the end.
  */
-#include "add_stream.h"
-#include "crop_stream.h"
-#include "delay_stream.h"
 #include "file_read_stream.h"
 #include "loop_stream.h"
 #include "mu.h"
 #include "rt_player.h"
-#include "sequence_stream.h"
+#include "splice_stream.h"
 #include <unistd.h>
 
 #define SOUND_DIR "/Users/r/Projects/Musics/TNVM/sources/PluckFinger/"
 
-#define CREATE_VECTOR(_TYPE_, _ARRAY_) std::vector<_TYPE_>(_ARRAY_, (_ARRAY_ + sizeof(_ARRAY_) / SIZEOF(_TYPE_)))
+#define Q (3306)
 
-/* 
- * I like the idea of defining a fretted instrument that, given fret
- * positions, creates a stream object to strum that chord.
- */
+mu::Stream *getSoundFile(std::string file_name) {
+  mu::FileReadStream *frs = &((new mu::FileReadStream())->fileName(file_name).doNormalize(true));
+  return frs;
+  // mu::CropStream *cs = &(new mu::CropStream())->setSource(frs).setStart(0);
+  // return cs;
+}
 
-class FrettedInstrument {
-public:
-  // set the number and tuning of strings for this instrument
-  FrettedInstrument& defineStrings(std::vector<int>pitches);
+int main() {
+  mu::SpliceStream splice_stream;
+  mu::LoopStream loop_stream;
+  mu::RtPlayer player;
 
-  /*
-   * Generate a stream object that produces a single strum at time 0
-   * with fingers on the given frets.  A fret value of 0 means open
-   * string, a negative fret value means the string is damped.
-   * Direction (kUp or kDown) specifies the order of strum.  If given,
-   * dynamics_lo specifies the loudness of the strum on the
-   * bottom-most string in relative dB, dynamics_hi specifies the
-   * loudness of the strum on the topmost string.  The loudness for
-   * the intermediate strings are interpolated.
-   *
-   * TODO: can we define a pluckable string that rings until it is
-   * plucked again at some (indeterminate) later time?  (Answer:
-   * yes, see SpliceStream below...)
-   */
-  mu::Stream *strum(std::vector<int>frets, bool direction, double dynamics_lo = 0.0, double dynamics_hi = 0.0);
+  splice_stream.addSource(getSoundFile(SOUND_DIR "A4" ".wav"), 0.0*Q);
+  splice_stream.addSource(getSoundFile(SOUND_DIR "C5" ".wav"), 1.0*Q);
+  splice_stream.addSource(getSoundFile(SOUND_DIR "E5" ".wav"), 2.0*Q);
+  splice_stream.addSource(getSoundFile(SOUND_DIR "F#5" ".wav"), 3.0*Q);
 
-protected:
-  
-}; 
+  loop_stream.setSource(&splice_stream).setLoopDuration(splice_stream.getEnd());
+  player.setSource(&loop_stream);
+  player.start();
+  fprintf(stderr, "Type [return] to quit:");
+  getchar();
+  player.stop();
 
+  return 0;
+}
