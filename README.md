@@ -5,8 +5,8 @@ An experiment in blurring the lines between music composition and sound synthesi
 ## todo 
 
 * Can we change Tick to Seconds?
-* step() should return Stream * (not more specialized subclass).
-* Write ut_sequence_stream.cpp
+* step() should return Stream * (not more specialized subclass).  Or void?
+* Assure that there's a ut_xxx_stream unit test for each XxxStream class.
 * Write a sound example based on SpliceStream.
 * Figure out if/how to unify SequenceStream and SpliceStream (and perhaps
 throw in variable length cross fades for good measure).
@@ -14,11 +14,10 @@ throw in variable length cross fades for good measure).
 out context, print on error only, print always, etc.
 * Write a Filter that changes pitch by resampling.  Needs to maintain state
 over consecutive buffers.
-* Create a set of arithmetic operations on Tick times that honor kIndefinite:
-  x + kIndefinite = kIndefinite, x * kIndefinite = kIndefinite, etc.
 * FileReadStream should allow negative Tick times
 * Create a stream that fiddles with time: t' = t0 + k*t.  (Oog -- am I
   going to regret using an integer frame counter?)
+* What's a clean way to separate frame time (pitch) from gesture time (tempo)?
 * Create F(t)Stream and test file.
 * setSource() and related should check for compatible frameRate(), channelCount()
 * setSource() and related should check for circular loops.
@@ -35,6 +34,9 @@ over consecutive buffers.
 
 ## changelog 
 
+* 2014-05-14: Wrote inspect() method for streams.  mune23 uses
+SpliceStream, to emulate strumming, but there's still a problem with
+damping a string.  Use inspect() to debug.
 * Wrote SpliceStreams that acts like SequenceStream, but stops output
 of the previous stream when the next stream starts.
 * 2014-05-09: test/test_rt_player runs a bare-bones RtPlayer in order
