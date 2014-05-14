@@ -4,6 +4,7 @@ An experiment in blurring the lines between music composition and sound synthesi
 
 ## todo 
 
+* Debug SpliceStream (and don't use AddStream)
 * Can we change Tick to Seconds?
 * step() should return Stream * (not more specialized subclass).  Or void?
 * Assure that there's a ut_xxx_stream unit test for each XxxStream class.
