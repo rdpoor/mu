@@ -3,6 +3,7 @@
 
 #include "mu.h"
 #include "player.h"
+#include <iostream>
 
 namespace mu {
 
@@ -22,6 +23,13 @@ namespace mu {
     Tick getDuration( void ) {     
       return ((getStart()==kIndefinite) || (getEnd()==kIndefinite)) ? kIndefinite : (getEnd() - getStart());
     }
+
+    virtual std::string getClassName() { return "Stream"; }
+    std::string inspect(int level = 0);
+    void inspectIndent(std::stringstream& ss, int level);
+    // each stream subclass should define an inspect_aux method
+    // that prints this node and all sub-nodes
+    virtual void inspectAux(std::stringstream& ss, int level);
 
     // Return true if tick falls within start (inclusive) and end
     // (exclusive) of this stream.

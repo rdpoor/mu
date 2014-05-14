@@ -7,6 +7,12 @@ namespace mu {
     TRACE("CropStream::~CropStream()\n");
   }
 
+  // TODO: put this in SingleSourceStream
+  void CropStream::inspectAux(std::stringstream& ss, int level) {
+    inspectIndent(ss, level); ss << "Input" << std::endl;
+    ss << source_->inspect(level+1);
+  }
+
   CropStream& CropStream::step(stk::StkFrames& buffer,
                              Tick tick,
                              Player& player) {

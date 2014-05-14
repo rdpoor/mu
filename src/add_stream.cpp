@@ -10,6 +10,14 @@ namespace mu {
     TRACE("AddStream::~AddStream()\n");
   }
 
+  void AddStream::inspectAux(std::stringstream& ss, int level) {
+    inspectIndent(ss, level); ss << "Inputs:" << std::endl;
+    for (int i=0; i<sources_.size(); i++) {
+      ss << sources_.at(i)->inspect(level+1);
+    }
+  }
+    
+  
   AddStream& AddStream::step(stk::StkFrames& buffer, Tick tick, Player& player) {
     // fprintf(stderr,"AddStream::%p.step(%p, %ld, %p)\n", this, &buffer, tick, &player);
     if (sources_.size() == 0) {

@@ -18,6 +18,7 @@ namespace mu {
       probability_ (1.0) {
     }
     ~ProbabilityStream( void ) { }
+    std::string getClassName() { return "ProbabilityStream"; }
   
     ProbabilityStream& step(stk::StkFrames& buffer, Tick tick, Player &player) {
       if ((prev_tick_ == kIndefinite) || (tick <= prev_tick_)) { reset(); }

@@ -14,6 +14,8 @@ namespace mu {
 
     DelayStream();
     ~DelayStream( void );
+    std::string getClassName() { return "DelayStream"; }
+    virtual void inspectAux(std::stringstream& ss, int level);
 
     DelayStream& step(stk::StkFrames& buffer, Tick tick, Player &player);
     // needed(??) so setSource() returns a DelayStream and not a SingleSourceStream

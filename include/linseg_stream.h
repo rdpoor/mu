@@ -15,6 +15,7 @@ namespace mu {
 
   class LinsegStream : public Stream {
   public:
+    std::string getClassName() { return "LinsegStream"; }
     LinsegStream& step(stk::StkFrames& buffer, Tick tick, Player &player);
     
     Tick getStart( void );

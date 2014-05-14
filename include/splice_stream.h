@@ -20,7 +20,11 @@ namespace mu {
     SpliceStream( void ) :
       prev_tick_ (kIndefinite) {
     }
+
     ~SpliceStream( void ) { }
+
+    std::string getClassName() { return "SpliceStream"; }
+
     SpliceStream& step(stk::StkFrames& buffer, Tick tick, Player &player) {
       if ((prev_tick_ == kIndefinite) || (tick <= prev_tick_)) { reset(); }
       prev_tick_ = tick;

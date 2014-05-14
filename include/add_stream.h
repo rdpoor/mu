@@ -15,6 +15,9 @@ namespace mu {
     AddStream();
     ~AddStream( void );
 
+    std::string getClassName() { return "AddStream"; }
+    virtual void inspectAux(std::stringstream& ss, int level);
+
     AddStream& step(stk::StkFrames& buffer, 
                           Tick tick,
                           Player &player);

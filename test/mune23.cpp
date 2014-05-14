@@ -149,14 +149,21 @@ int main() {
 
   // upstroke / downstroke works.  Playing two strums in a row does not.
   // fretted_instrument.strum(0, (int []){0, 0, 0, 0}, 2000);
-  fretted_instrument.strum(0, (int []){0, 0, 5, 7}, 8000);
-  // fretted_instrument.strum(44100, (int []){0, 0, 0, 0}, -2000);
+  fretted_instrument.strum(0, (int []){0, 0, 0, 0}, 2000);
+  fretted_instrument.strum(11024, (int []){-1, -1, -1, -1}, 2000);
+  fretted_instrument.strum(11025, (int []){1, 1, 1, 1}, -2000);
 
   loop_stream.setSource(fretted_instrument.getStream());
+  loop_stream.setLoopDuration(loop_stream.getSource()->getEnd());
+
+  std::cout << loop_stream.inspect();
+
   player.setSource(&loop_stream);
   player.start();
   fprintf(stderr, "Type [return] to quit:"); getchar();
   player.stop();
+
+  std::cout << loop_stream.inspect();
 
   return 0;
 }

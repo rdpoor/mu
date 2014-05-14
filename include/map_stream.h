@@ -27,6 +27,7 @@ namespace mu {
 
     MapStream();
     ~MapStream( void );
+    std::string getClassName() { return "MapStream"; }
 
     MapStream& step(stk::StkFrames& buffer, Tick tick, Player &player);
 

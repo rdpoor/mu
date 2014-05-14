@@ -40,6 +40,9 @@ int main() {
   S2 s2;
   S3 s3;
 
+  std::cout << s1.inspect();
+  ASSERT(s1.inspect() == "No inspector");
+
   ASSERT(s1.getStart() == mu::kIndefinite);
   ASSERT(s1.getEnd() == mu::kIndefinite);
   ASSERT(s1.getDuration() == mu::kIndefinite);

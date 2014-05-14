@@ -17,9 +17,10 @@ namespace mu {
 
     CropStream() 
       : start_ (kIndefinite), end_ (kIndefinite) {
-      TRACE("CropStream::CropStream()\n");
     }
     ~CropStream( void );
+    std::string getClassName() { return "CropStream"; }
+    virtual void inspectAux(std::stringstream& ss, int level);
 
     CropStream& step(stk::StkFrames& buffer, Tick tick, Player &player);
 

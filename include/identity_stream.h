@@ -15,6 +15,7 @@ namespace mu {
 
     IdentityStream();
     ~IdentityStream( void );
+    std::string getClassName() { return "IdentityStream"; }
     IdentityStream& step(stk::StkFrames& buffer, 
                      Tick tick,
                      Player& player);

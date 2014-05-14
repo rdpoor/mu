@@ -12,6 +12,8 @@ namespace mu {
 
     FileReadStream();
     ~FileReadStream( void );
+    std::string getClassName() { return "FileReadStream"; }
+    void inspectAux(std::stringstream& ss, int level);
     FileReadStream& fileName(std::string file_name);
     FileReadStream& doNormalize(bool do_normalize);
 

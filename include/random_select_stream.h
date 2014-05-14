@@ -21,6 +21,7 @@ namespace mu {
     
     RandomSelectStream( void );
     ~RandomSelectStream( void );
+    std::string getClassName() { return "RandomSelectStream"; }
     RandomSelectStream& step(stk::StkFrames& buffer, Tick tick, Player &player) {
       if (sources_.size() == 0) {
         zero_buffer(buffer);

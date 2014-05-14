@@ -5,7 +5,13 @@ namespace mu {
   LoopStream::~LoopStream() {
     TRACE("LoopStream::~LoopStream()\n");
   }
-  
+
+  void LoopStream::inspectAux(std::stringstream& ss, int level) {
+    inspectIndent(ss, level); ss << "getLoopDuration() = " << getLoopDuration() << std::endl;
+    inspectIndent(ss, level); ss << "Input" << std::endl;
+    ss << source_->inspect(level+1);
+  }
+
   LoopStream& LoopStream::step(stk::StkFrames& buffer, Tick tick, Player& player) {
     // fprintf(stderr,"LoopStream::%p.step(%p, %ld, %p)\n", this, &buffer, tick, &player);
     if (source_ == NULL) { return *this; }

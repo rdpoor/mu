@@ -17,6 +17,7 @@ namespace mu {
 
     SequenceStream();
     ~SequenceStream( void );
+    std::string getClassName() { return "SequenceStream"; }
     // SequenceStream& step(stk::StkFrames& buffer, Tick tick, Player &player);
     SequenceStream& addSource(Stream *source, Tick delay);
 

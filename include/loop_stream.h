@@ -15,6 +15,8 @@ namespace mu {
 
     LoopStream();
     ~LoopStream( void );
+    std::string getClassName() { return "LoopStream"; }
+    virtual void inspectAux(std::stringstream& ss, int level);
 
     LoopStream& step(stk::StkFrames& buffer, Tick tick, Player &player);
 

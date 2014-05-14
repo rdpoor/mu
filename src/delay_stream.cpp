@@ -6,6 +6,12 @@ namespace mu {
     TRACE("DelayStream::~DelayStream()\n");
   }
 
+  void DelayStream::inspectAux(std::stringstream& ss, int level) {
+    inspectIndent(ss, level); ss << "getDelay() = " << getDelay() << std::endl;
+    inspectIndent(ss, level); ss << "Input" << std::endl;
+    ss << source_->inspect(level+1);
+  }
+
   DelayStream& DelayStream::step(stk::StkFrames& buffer, Tick tick, Player& player) {
     if (source_ == NULL) {
       zero_buffer(buffer);

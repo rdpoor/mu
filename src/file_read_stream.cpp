@@ -6,6 +6,10 @@ namespace mu {
     TRACE("FileReadStream::~FileReadStream()\n");
   }
   
+  void FileReadStream::inspectAux(std::stringstream& ss, int level) {
+    inspectIndent(ss, level); ss << "getFileName() = " << getFileName() << std::endl;
+  }
+
   FileReadStream& FileReadStream::step(stk::StkFrames& buffer, 
                                Tick tick,
                                Player& player) {

@@ -14,6 +14,7 @@ namespace mu {
 
     MultiplyStream( void );
     ~MultiplyStream( void );
+    std::string getClassName() { return "MultiplyStream"; }
     MultiplyStream& step(stk::StkFrames& buffer, Tick tick, Player &player);
 
   };                            // class MultiplyStream
