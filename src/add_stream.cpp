@@ -17,7 +17,6 @@ namespace mu {
     }
   }
     
-  
   AddStream& AddStream::step(stk::StkFrames& buffer, Tick tick, Player& player) {
     // fprintf(stderr,"AddStream::%p.step(%p, %ld, %p)\n", this, &buffer, tick, &player);
     if (sources_.size() == 0) {

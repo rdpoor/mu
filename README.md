@@ -35,6 +35,10 @@ over consecutive buffers.
 
 ## changelog 
 
+* 2014-05-15: cleaned up SpliceStream (i.e. fixed it).  mune23 is a
+sketch for "strumming" using SpliceStream.  It works, but there's a
+lot of crackling due to non-zero splice points.  Need to work on a
+cross-fade version.
 * 2014-05-14: Wrote inspect() method for streams.  mune23 uses
 SpliceStream, to emulate strumming, but there's still a problem with
 damping a string.  Use inspect() to debug.

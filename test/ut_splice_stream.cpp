@@ -3,6 +3,7 @@
  */
 #include "assert.h"
 #include "crop_stream.h"
+#include "delay_stream.h"
 #include "identity_stream.h"
 #include "mu.h"
 #include "nrt_player.h"
@@ -13,9 +14,17 @@
 #define FRAME_COUNT 512
 #define CHANNEL_COUNT 2
 
+#define S2S 2
+#define S2E 10
+#define S3S 8
+#define S3E 16
+#define S4S 14
+#define S4E 22
+
 int main() {
   mu::IdentityStream identity_stream;
   mu::SpliceStream splice_stream;
+  mu::CropStream crop_stream;
   mu::NrtPlayer player;
   stk::StkFrames buffer;
 
@@ -24,7 +33,7 @@ int main() {
 
   /*
    * configuration:  Each stream starts at value = 0 and ramps linearly:
-   * stream 1: start indefinite, end indefinite
+   * stream 1: start indefinite, end indefinite (value = 0 at tick = 0)
    * stream 2: start frame 2, end frame 10
    * stream 3: start frame 8, end frame 16
    * stream 4: start frame 14, end frame 22
@@ -32,10 +41,13 @@ int main() {
    * nb: stream3 overlaps stream2 and stream4.  
    *     stream2 and stream4 are disjoint.
    */
-  mu::Stream *stream1 = new mu::IdentityStream();
-  mu::Stream *stream2 = &(new mu::CropStream())->setSource(new mu::IdentityStream()).setStart(0).setEnd(8);
-  mu::Stream *stream3 = &(new mu::CropStream())->setSource(new mu::IdentityStream()).setStart(0).setEnd(8);
-  mu::Stream *stream4 = &(new mu::CropStream())->setSource(new mu::IdentityStream()).setStart(0).setEnd(8);
+  
+  crop_stream.setSource(&identity_stream).setStart(0).setEnd(8);
+
+  mu::Stream *stream1 = &identity_stream;
+  mu::Stream *stream2 = &(new mu::DelayStream())->setDelay(S2S).setSource(&crop_stream);
+  mu::Stream *stream3 = &(new mu::DelayStream())->setDelay(S3S).setSource(&crop_stream);
+  mu::Stream *stream4 = &(new mu::DelayStream())->setDelay(S4S).setSource(&crop_stream);
 
   fprintf(stderr, "=== assay...\n");
   fprintf(stderr, "stream1->getStart()=%ld, getEnd()=%ld\n", stream1->getStart(), stream1->getEnd());
@@ -45,19 +57,22 @@ int main() {
 
   // ================================================================
   fprintf(stderr, "=== verify stream2\n");
-  ASSERT(stream2->getStart() == 0);
-  ASSERT(stream2->getEnd() == 8);
+  ASSERT(stream2->getStart() == S2S);
+  ASSERT(stream2->getEnd() == S2E);
 
   stream2->step(buffer, 0, player);
 
-  ASSERT(buffer(0,0) == 0);     // stream 2 starts
-  ASSERT(buffer(0,1) == 0);
-  ASSERT(buffer(1,0) == 1);
-  ASSERT(buffer(1,1) == 1);
-  ASSERT(buffer(7,0) == 7);
-  ASSERT(buffer(7,1) == 7);
-  ASSERT(buffer(8,0) == 0);    // stream 2 ends
-  ASSERT(buffer(8,1) == 0);
+  ASSERT(buffer(S2S-1,0) == 0);
+  ASSERT(buffer(S2S-1,1) == 0);
+  ASSERT(buffer(S2S+0,0) == 0); // stream 2 starts
+  ASSERT(buffer(S2S+0,1) == 0);
+  ASSERT(buffer(S2S+1,0) == 1); // stream 2 starts
+  ASSERT(buffer(S2S+1,1) == 1);
+  ASSERT(buffer(S2E-1,0) == (S2E-S2S-1));
+  ASSERT(buffer(S2E-1,1) == (S2E-S2S-1));
+  ASSERT(buffer(S2E+0,0) == 0); // stream 2 ends
+  ASSERT(buffer(S2E+0,1) == 0);
+
   ASSERT(buffer((FRAME_COUNT-1),0) == 0);
   ASSERT(buffer((FRAME_COUNT-1),1) == 0);
 
@@ -78,7 +93,7 @@ int main() {
   // ================================================================
   fprintf(stderr, "=== stream1 only\n");
   splice_stream.removeAllSources();
-  splice_stream.addSource(stream1, 0);
+  splice_stream.addSource(stream1);
 
   ASSERT(splice_stream.getStart()==mu::kIndefinite);
   ASSERT(splice_stream.getEnd()==mu::kIndefinite);
@@ -93,266 +108,253 @@ int main() {
   // ================================================================
   fprintf(stderr, "=== stream2 only\n");
   splice_stream.removeAllSources();
-  splice_stream.addSource(stream2, 2);
+  splice_stream.addSource(stream2);
 
-  ASSERT(splice_stream.getStart() == 2);
-  ASSERT(splice_stream.getEnd() == 10);
+  ASSERT(splice_stream.getStart() == S2S);
+  ASSERT(splice_stream.getEnd() == S2E);
 
   splice_stream.step(buffer, 0, player);
 
-  ASSERT(buffer(0,0) == 0);
-  ASSERT(buffer(0,1) == 0);
-  ASSERT(buffer(1,0) == 0);
-  ASSERT(buffer(1,1) == 0);
-  ASSERT(buffer(2,0) == 0);     // stream 2 starts
-  ASSERT(buffer(2,1) == 0);
-  ASSERT(buffer(3,0) == 1);
-  ASSERT(buffer(3,1) == 1);
-  ASSERT(buffer(9,0) == 7);
-  ASSERT(buffer(9,1) == 7);
-  ASSERT(buffer(10,0) == 0);    // stream 2 ends
-  ASSERT(buffer(10,1) == 0);
-  ASSERT(buffer(11,0) == 0);
-  ASSERT(buffer(11,1) == 0);
+  ASSERT(buffer(S2S-1,0) == 0);
+  ASSERT(buffer(S2S-1,1) == 0);
+  ASSERT(buffer(S2S+0,0) == 0); // stream 2 starts
+  ASSERT(buffer(S2S+0,1) == 0);
+  ASSERT(buffer(S2S+1,0) == 1); // stream 2 starts
+  ASSERT(buffer(S2S+1,1) == 1);
+  ASSERT(buffer(S2E-1,0) == (S2E-S2S-1));
+  ASSERT(buffer(S2E-1,1) == (S2E-S2S-1));
+  ASSERT(buffer(S2E+0,0) == 0); // stream 2 ends
+  ASSERT(buffer(S2E+0,1) == 0);
+
   ASSERT(buffer((FRAME_COUNT-1),0) == 0);
   ASSERT(buffer((FRAME_COUNT-1),1) == 0);
 
   // ================================================================
   fprintf(stderr, "=== stream3 only\n");
   splice_stream.removeAllSources();
-  splice_stream.addSource(stream3, 8);
+  splice_stream.addSource(stream3);
 
-  ASSERT(splice_stream.getStart() == 8);
-  ASSERT(splice_stream.getEnd() == 16);
+  ASSERT(splice_stream.getStart() == S3S);
+  ASSERT(splice_stream.getEnd() == S3E);
 
   splice_stream.step(buffer, 0, player);
 
-  ASSERT(buffer(0,0) == 0);
-  ASSERT(buffer(0,1) == 0);
-  ASSERT(buffer(7,0) == 0);
-  ASSERT(buffer(7,1) == 0);
-  ASSERT(buffer(8,0) == 0);     // start of stream 3
-  ASSERT(buffer(8,1) == 0);
-  ASSERT(buffer(9,0) == 1);
-  ASSERT(buffer(9,1) == 1);
-  ASSERT(buffer(15,0) == 7);
-  ASSERT(buffer(15,1) == 7);
-  ASSERT(buffer(16,0) == 0);    // end of stream 3
-  ASSERT(buffer(16,1) == 0);
+  ASSERT(buffer(S3S-1,0) == 0);
+  ASSERT(buffer(S3S-1,1) == 0);
+  ASSERT(buffer(S3S+0,0) == 0); // stream 3 starts
+  ASSERT(buffer(S3S+0,1) == 0);
+  ASSERT(buffer(S3S+1,0) == 1); // stream 3 starts
+  ASSERT(buffer(S3S+1,1) == 1);
+  ASSERT(buffer(S3E-1,0) == (S3E-S3S-1));
+  ASSERT(buffer(S3E-1,1) == (S3E-S3S-1));
+  ASSERT(buffer(S3E+0,0) == 0); // stream 3 ends
+  ASSERT(buffer(S3E+0,1) == 0);
+
   ASSERT(buffer((FRAME_COUNT-1),0) == 0);
   ASSERT(buffer((FRAME_COUNT-1),1) == 0);
 
   // ================================================================
   fprintf(stderr, "=== stream4 only\n");
   splice_stream.removeAllSources();
-  splice_stream.addSource(stream4, 14);
+  splice_stream.addSource(stream4);
 
-  ASSERT(splice_stream.getStart() == 14);
-  ASSERT(splice_stream.getEnd() == 22);
+  ASSERT(splice_stream.getStart() == S4S);
+  ASSERT(splice_stream.getEnd() == S4E);
 
   splice_stream.step(buffer, 0, player);
 
-  ASSERT(buffer(0,0) == 0);
-  ASSERT(buffer(0,1) == 0);
-  ASSERT(buffer(13,0) == 0);
-  ASSERT(buffer(13,1) == 0);
-  ASSERT(buffer(14,0) == 0);    // stream 4 starts
-  ASSERT(buffer(14,1) == 0);
-  ASSERT(buffer(15,0) == 1);
-  ASSERT(buffer(15,1) == 1);
-  ASSERT(buffer(21,0) == 7);
-  ASSERT(buffer(21,1) == 7);
-  ASSERT(buffer(22,0) == 0);    // stream 4 ends
-  ASSERT(buffer(22,1) == 0);
+  ASSERT(buffer(S4S-1,0) == 0);
+  ASSERT(buffer(S4S-1,1) == 0);
+  ASSERT(buffer(S4S+0,0) == 0); // stream 4 starts
+  ASSERT(buffer(S4S+0,1) == 0);
+  ASSERT(buffer(S4S+1,0) == 1); // stream 4 starts
+  ASSERT(buffer(S4S+1,1) == 1);
+  ASSERT(buffer(S4E-1,0) == (S4E-S4S-1));
+  ASSERT(buffer(S4E-1,1) == (S4E-S4S-1));
+  ASSERT(buffer(S4E+0,0) == 0); // stream 4 ends
+  ASSERT(buffer(S4E+0,1) == 0);
+
   ASSERT(buffer((FRAME_COUNT-1),0) == 0);
   ASSERT(buffer((FRAME_COUNT-1),1) == 0);
 
   // ================================================================
   fprintf(stderr, "=== stream1 + stream2\n");
   splice_stream.removeAllSources();
-  splice_stream.addSource(stream1, 0);
-  splice_stream.addSource(stream2, 2);
+  splice_stream.addSource(stream1);
+  splice_stream.addSource(stream2);
 
   ASSERT(splice_stream.getStart() == mu::kIndefinite);
-  ASSERT(splice_stream.getEnd() == mu::kIndefinite);
+  ASSERT(splice_stream.getEnd() == S2E);
 
   splice_stream.step(buffer, 0, player);
-
+  
   ASSERT(buffer(0,0) == 0);     // stream 1 in progress...
   ASSERT(buffer(0,1) == 0);
   ASSERT(buffer(1,0) == 1);
   ASSERT(buffer(1,1) == 1);
-  ASSERT(buffer(2,0) == 0);     // stream 2 starts
-  ASSERT(buffer(2,1) == 0);
-  ASSERT(buffer(3,0) == 1);
-  ASSERT(buffer(3,1) == 1);
-  ASSERT(buffer(9,0) == 7);
-  ASSERT(buffer(9,1) == 7);
-  ASSERT(buffer(10,0) == 0);    // stream 2 ends
-  ASSERT(buffer(10,1) == 0);
-  ASSERT(buffer(11,0) == 0);
-  ASSERT(buffer(11,1) == 0);
+  
+  ASSERT(buffer(S2S+0,0) == 0); // stream 2 starts
+  ASSERT(buffer(S2S+0,1) == 0);
+  ASSERT(buffer(S2S+1,0) == 1); // stream 2 starts
+  ASSERT(buffer(S2S+1,1) == 1);
+  ASSERT(buffer(S2E-1,0) == (S2E-S2S-1));
+  ASSERT(buffer(S2E-1,1) == (S2E-S2S-1));
+  ASSERT(buffer(S2E+0,0) == 0); // stream 2 ends
+  ASSERT(buffer(S2E+0,1) == 0);
+  
   ASSERT(buffer((FRAME_COUNT-1),0) == 0);
   ASSERT(buffer((FRAME_COUNT-1),1) == 0);
-
+  
   // ================================================================
   fprintf(stderr, "=== stream1 + stream3\n");
   splice_stream.removeAllSources();
-  splice_stream.addSource(stream1, 0);
-  splice_stream.addSource(stream3, 8);
-
+  splice_stream.addSource(stream1);
+  splice_stream.addSource(stream3);
+  
   ASSERT(splice_stream.getStart() == mu::kIndefinite);
-  ASSERT(splice_stream.getEnd() == mu::kIndefinite);
-
+  ASSERT(splice_stream.getEnd() == S3E);
+  
   splice_stream.step(buffer, 0, player);
-
+  
   ASSERT(buffer(0,0) == 0);     // stream 1 in progress
   ASSERT(buffer(0,1) == 0);
   ASSERT(buffer(1,0) == 1);
   ASSERT(buffer(1,1) == 1);
-  ASSERT(buffer(5,0) == 5);
-  ASSERT(buffer(5,1) == 5);
-  ASSERT(buffer(7,0) == 7);
-  ASSERT(buffer(7,1) == 7);
-  ASSERT(buffer(8,0) == 0);     // stream 3 starts
-  ASSERT(buffer(8,1) == 0);
-  ASSERT(buffer(9,0) == 1);
-  ASSERT(buffer(9,1) == 1);
-  ASSERT(buffer(15,0) == 7);
-  ASSERT(buffer(15,1) == 7);
-  ASSERT(buffer(16,0) == 0);   // stream 3 ends
-  ASSERT(buffer(16,1) == 0);
+  
+  ASSERT(buffer(S3S+0,0) == 0); // stream 3 starts
+  ASSERT(buffer(S3S+0,1) == 0);
+  ASSERT(buffer(S3S+1,0) == 1); // stream 3 starts
+  ASSERT(buffer(S3S+1,1) == 1);
+  ASSERT(buffer(S3E-1,0) == (S3E-S3S-1));
+  ASSERT(buffer(S3E-1,1) == (S3E-S3S-1));
+  ASSERT(buffer(S3E+0,0) == 0); // stream 3 ends
+  ASSERT(buffer(S3E+0,1) == 0);
+  
   ASSERT(buffer((FRAME_COUNT-1),0) == 0);
   ASSERT(buffer((FRAME_COUNT-1),1) == 0);
-
+  
   // ================================================================
   fprintf(stderr, "=== stream1 + stream4\n");
   splice_stream.removeAllSources();
-  splice_stream.addSource(stream1, 0);
-  splice_stream.addSource(stream4, 14);
+  splice_stream.addSource(stream1);
+  splice_stream.addSource(stream4);
 
   ASSERT(splice_stream.getStart() == mu::kIndefinite);
-  ASSERT(splice_stream.getEnd() == mu::kIndefinite);
+  ASSERT(splice_stream.getEnd() == S4E);
 
   splice_stream.step(buffer, 0, player);
-
+  
   ASSERT(buffer(0,0) == 0);     // stream 1 in progress
   ASSERT(buffer(0,1) == 0);
   ASSERT(buffer(1,0) == 1);
   ASSERT(buffer(1,1) == 1);
-  ASSERT(buffer(13,0) == 13);
-  ASSERT(buffer(13,1) == 13);
-  ASSERT(buffer(14,0) == 0);   // stream 4 starts
-  ASSERT(buffer(14,1) == 0);
-  ASSERT(buffer(15,0) == 1);
-  ASSERT(buffer(15,1) == 1);
-  ASSERT(buffer(21,0) == 7);
-  ASSERT(buffer(21,1) == 7);
-  ASSERT(buffer(22,0) == 0);   // stream 4 ends
-  ASSERT(buffer(22,1) == 0);
+  
+  ASSERT(buffer(S4S+0,0) == 0); // stream 4 starts
+  ASSERT(buffer(S4S+0,1) == 0);
+  ASSERT(buffer(S4S+1,0) == 1); // stream 4 starts
+  ASSERT(buffer(S4S+1,1) == 1);
+  ASSERT(buffer(S4E-1,0) == (S4E-S4S-1));
+  ASSERT(buffer(S4E-1,1) == (S4E-S4S-1));
+  ASSERT(buffer(S4E+0,0) == 0); // stream 4 ends
+  ASSERT(buffer(S4E+0,1) == 0);
+  
   ASSERT(buffer((FRAME_COUNT-1),0) == 0);
   ASSERT(buffer((FRAME_COUNT-1),1) == 0);
-
+  
   // ================================================================
   fprintf(stderr, "=== stream2 + stream3\n");
   splice_stream.removeAllSources();
-  splice_stream.addSource(stream2, 2);
-  splice_stream.addSource(stream3, 8);
-
-  ASSERT(splice_stream.getStart() == 2);
-  ASSERT(splice_stream.getEnd() == 16);
+  splice_stream.addSource(stream2);
+  splice_stream.addSource(stream3);
+  
+  ASSERT(splice_stream.getStart() == S2S);
+  ASSERT(splice_stream.getEnd() == S3E);
 
   splice_stream.step(buffer, 0, player);
 
-  ASSERT(buffer(0,0) == 0);
-  ASSERT(buffer(0,1) == 0);
-  ASSERT(buffer(1,0) == 0);
-  ASSERT(buffer(1,1) == 0);
-  ASSERT(buffer(2,0) == 0);     // stream 2 starts
-  ASSERT(buffer(2,1) == 0);
-  ASSERT(buffer(3,0) == 1);
-  ASSERT(buffer(3,1) == 1);
-  ASSERT(buffer(7,0) == 5);
-  ASSERT(buffer(7,1) == 5);
-  ASSERT(buffer(8,0) == 0);   // stream 3 starts
-  ASSERT(buffer(8,1) == 0);
-  ASSERT(buffer(9,0) == 1);
-  ASSERT(buffer(9,1) == 1);
-  ASSERT(buffer(15,0) == 7);
-  ASSERT(buffer(15,1) == 7);
-  ASSERT(buffer(16,0) == 0);    // stream 3 ends
-  ASSERT(buffer(16,1) == 0);
+  ASSERT(buffer(S2S-1,0) == 0);
+  ASSERT(buffer(S2S-1,1) == 0);
+  ASSERT(buffer(S2S+0,0) == 0); // stream 2 starts
+  ASSERT(buffer(S2S+0,1) == 0);
+  ASSERT(buffer(S2S+1,0) == 1); // stream 2 starts
+  ASSERT(buffer(S2S+1,1) == 1);
+
+  // assumes knowledge of overlap
+  ASSERT(buffer(S3S-1,0) == S3S-S2S-1);
+  ASSERT(buffer(S3S-1,1) == S3S-S2S-1);
+
+  ASSERT(buffer(S3S+0,0) == 0); // stream 3 starts
+  ASSERT(buffer(S3S+0,1) == 0);
+  ASSERT(buffer(S3S+1,0) == 1); // stream 3 starts
+  ASSERT(buffer(S3S+1,1) == 1);
+  ASSERT(buffer(S3E-1,0) == (S3E-S3S-1));
+  ASSERT(buffer(S3E-1,1) == (S3E-S3S-1));
+  ASSERT(buffer(S3E+0,0) == 0); // stream 3 ends
+  ASSERT(buffer(S3E+0,1) == 0);
+
   ASSERT(buffer((FRAME_COUNT-1),0) == 0);
   ASSERT(buffer((FRAME_COUNT-1),1) == 0);
 
   // ================================================================
   fprintf(stderr, "=== stream2 + stream4\n");
   splice_stream.removeAllSources();
-  splice_stream.addSource(stream2, 2);
-  splice_stream.addSource(stream4, 14);
+  splice_stream.addSource(stream2);
+  splice_stream.addSource(stream4);
 
-  ASSERT(splice_stream.getStart() == 2);
-  ASSERT(splice_stream.getEnd() == 22);
+  ASSERT(splice_stream.getStart() == S2S);
+  ASSERT(splice_stream.getEnd() == S4E);
 
   splice_stream.step(buffer, 0, player);
 
-  ASSERT(buffer(0,0) == 0);
-  ASSERT(buffer(0,1) == 0);
-  ASSERT(buffer(1,0) == 0);
-  ASSERT(buffer(1,1) == 0);
-
-  ASSERT(buffer(2,0) == 0);     // stream 2 starts
-  ASSERT(buffer(2,1) == 0);
-  ASSERT(buffer(3,0) == 1);
-  ASSERT(buffer(3,1) == 1);
-  ASSERT(buffer(9,0) == 7);
-  ASSERT(buffer(9,1) == 7);
-  ASSERT(buffer(10,0) == 0);    // stream 2 ends
-  ASSERT(buffer(10,1) == 0);
-
-  ASSERT(buffer(13,0) == 0);
-  ASSERT(buffer(13,1) == 0);
-  ASSERT(buffer(14,0) == 0);    // stream 4 starts
-  ASSERT(buffer(14,1) == 0);
-  ASSERT(buffer(15,0) == 1);
-  ASSERT(buffer(15,1) == 1);
-  ASSERT(buffer(21,0) == 7);
-  ASSERT(buffer(21,1) == 7);
-  ASSERT(buffer(22,0) == 0);    // stream 4 ends
-  ASSERT(buffer(22,1) == 0);
+  ASSERT(buffer(S2S+0,0) == 0); // stream 2 starts
+  ASSERT(buffer(S2S+0,1) == 0);
+  ASSERT(buffer(S2S+1,0) == 1); // stream 2 starts
+  ASSERT(buffer(S2S+1,1) == 1);
+  ASSERT(buffer(S2E-1,0) == (S2E-S2S-1));
+  ASSERT(buffer(S2E-1,1) == (S2E-S2S-1));
+  ASSERT(buffer(S2E+0,0) == 0); // stream 2 ends
+  ASSERT(buffer(S2E+0,1) == 0);
+  
+  ASSERT(buffer(S4S+0,0) == 0); // stream 4 starts
+  ASSERT(buffer(S4S+0,1) == 0);
+  ASSERT(buffer(S4S+1,0) == 1); // stream 4 starts
+  ASSERT(buffer(S4S+1,1) == 1);
+  ASSERT(buffer(S4E-1,0) == (S4E-S4S-1));
+  ASSERT(buffer(S4E-1,1) == (S4E-S4S-1));
+  ASSERT(buffer(S4E+0,0) == 0); // stream 4 ends
+  ASSERT(buffer(S4E+0,1) == 0);
+  
   ASSERT(buffer((FRAME_COUNT-1),0) == 0);
   ASSERT(buffer((FRAME_COUNT-1),1) == 0);
 
   // ================================================================
   fprintf(stderr, "=== stream3 + stream4\n");
   splice_stream.removeAllSources();
-  splice_stream.addSource(stream3, 8);
-  splice_stream.addSource(stream4, 14);
+  splice_stream.addSource(stream3);
+  splice_stream.addSource(stream4);
 
-  ASSERT(splice_stream.getStart() == 8);
-  ASSERT(splice_stream.getEnd() == 22);
+  ASSERT(splice_stream.getStart() ==S3S);
+  ASSERT(splice_stream.getEnd() == S4E);
 
   splice_stream.step(buffer, 0, player);
 
-  ASSERT(buffer(0,0) == 0);
-  ASSERT(buffer(0,1) == 0);
-  ASSERT(buffer(1,0) == 0);
-  ASSERT(buffer(1,1) == 0);
+  ASSERT(buffer(S3S+0,0) == 0); // stream 3 starts
+  ASSERT(buffer(S3S+0,1) == 0);
+  ASSERT(buffer(S3S+1,0) == 1); // stream 3 starts
+  ASSERT(buffer(S3S+1,1) == 1);
+  
+  ASSERT(buffer(S4S-1,0) == S4S-S3S-1);
+  ASSERT(buffer(S4S-1,1) == S4S-S3S-1);
 
-  ASSERT(buffer(8,0) == 0);     // stream 3 starts
-  ASSERT(buffer(8,1) == 0);
-  ASSERT(buffer(9,0) == 1);
-  ASSERT(buffer(9,1) == 1);
-  ASSERT(buffer(13,0) == 5);
-  ASSERT(buffer(13,1) == 5);
-  ASSERT(buffer(14,0) == 0);    // stream 4 starts
-  ASSERT(buffer(14,1) == 0);
-  ASSERT(buffer(15,0) == 1);
-  ASSERT(buffer(15,1) == 1);
-  ASSERT(buffer(21,0) == 7);
-  ASSERT(buffer(21,1) == 7);
-  ASSERT(buffer(22,0) == 0);    // stream 4 ends
-  ASSERT(buffer(22,1) == 0);
+  ASSERT(buffer(S4S+0,0) == 0); // stream 4 starts
+  ASSERT(buffer(S4S+0,1) == 0);
+  ASSERT(buffer(S4S+1,0) == 1); // stream 4 starts
+  ASSERT(buffer(S4S+1,1) == 1);
+  ASSERT(buffer(S4E-1,0) == (S4E-S4S-1));
+  ASSERT(buffer(S4E-1,1) == (S4E-S4S-1));
+  ASSERT(buffer(S4E+0,0) == 0); // stream 4 ends
+  ASSERT(buffer(S4E+0,1) == 0);
+  
   ASSERT(buffer((FRAME_COUNT-1),0) == 0);
   ASSERT(buffer((FRAME_COUNT-1),1) == 0);
 
