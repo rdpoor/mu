@@ -10,9 +10,13 @@
  */
 #include "mu.h"
 
+#include "add_stream.h"
+#include "constant_stream.h"
+#include "crop_stream.h"
+#include "delay_stream.h"
 #include "file_read_stream.h"
-#include "loop_stream.h"
 #include "null_stream.h"
+#include "multiply_stream.h"
 #include "rt_player.h"
 #include "splice_stream.h"
 #include <map>
@@ -117,10 +121,15 @@ protected:
     mu::SpliceStream *splice_stream = (mu::SpliceStream *)stream;
     if (fret == kSustain) {
     } else if (fret == kDamped) {
-      splice_stream->addSource(&null_stream_, start);
+      // null_stream has indefinite extent.  CropStream forces it to start at the desired time.
+      mu::CropStream *cs = &(new mu::CropStream())->setStart(start).setSource(&null_stream_);
+      splice_stream->addSource(cs);
     } else {
       mu::Stream *s = stream_set_->findStream(open_pitch + fret);
-      if (s != NULL) splice_stream->addSource(s, start);
+      if (s != NULL) {
+        mu::DelayStream *ds = &(new mu::DelayStream())->setDelay(start).setSource(s);
+        splice_stream->addSource(ds);
+      }
     }
   }
 
@@ -134,7 +143,6 @@ protected:
 
 
 int main() {
-  mu::LoopStream loop_stream;
   mu::RtPlayer player;
   FileReadStreamSet file_read_stream_set;
   FrettedInstrument fretted_instrument;
@@ -147,23 +155,47 @@ int main() {
   fretted_instrument.addString(64); // 329.6 Hz, E4
   fretted_instrument.addString(69); // 440.0 Hz, A4
 
-  // upstroke / downstroke works.  Playing two strums in a row does not.
   // fretted_instrument.strum(0, (int []){0, 0, 0, 0}, 2000);
-  fretted_instrument.strum(0, (int []){0, 0, 0, 0}, 2000);
-  fretted_instrument.strum(11024, (int []){-1, -1, -1, -1}, 2000);
-  fretted_instrument.strum(11025, (int []){1, 1, 1, 1}, -2000);
+  // fretted_instrument.strum(11025, (int []){1, 1, 1, 1}, -2000);
 
-  loop_stream.setSource(fretted_instrument.getStream());
-  loop_stream.setLoopDuration(loop_stream.getSource()->getEnd());
+#define TQ (44100 * 0.4)
+#define TE (TQ/2)
+#define TS (TQ/4)
+#define TDE (TE*1.6)
 
-  std::cout << loop_stream.inspect();
+  mu::Tick t;
+  t = 0;
+  fretted_instrument.strum(t, (int []){3, 2, 1, 1}, 800); t += TDE;
+  fretted_instrument.strum(t, (int []){3, 2, 1, 1}, -800); t += (TQ - TDE);
+  fretted_instrument.strum(t, (int []){3, 2, 1, 1}, 800); t += TE;
+  fretted_instrument.strum(t, (int []){-1, -1, -1, -1}, -800); t += (TQ - TE);
 
-  player.setSource(&loop_stream);
+  fretted_instrument.strum(t, (int []){1, 2, 1, 2}, 800); t += TDE;
+  fretted_instrument.strum(t, (int []){1, 2, 1, 2}, -800); t += (TQ - TDE);
+  fretted_instrument.strum(t, (int []){1, 2, 1, 2}, 800); t += TE;
+  fretted_instrument.strum(t, (int []){-1, -1, -1, -1}, -800); t += (TQ - TE);
+
+  fretted_instrument.strum(t, (int []){3, 3, 3, 3}, 800); t += TDE;
+  fretted_instrument.strum(t, (int []){3, 3, 3, 3}, -800); t += (TQ - TDE);
+  fretted_instrument.strum(t, (int []){3, 3, 3, 3}, 800); t += TE;
+  fretted_instrument.strum(t, (int []){-1, -1, -1, -1}, -800); t += (TQ - TE);
+
+  fretted_instrument.strum(t, (int []){2, 3, 1, 0}, 4000); t += TDE;
+
+  mu::MultiplyStream multiply_stream;
+  mu::ConstantStream constant_stream;
+
+  // gain control?
+  constant_stream.setValue(0.25);
+  multiply_stream.addSource(fretted_instrument.getStream());
+  multiply_stream.addSource(&constant_stream);
+
+  player.setSource(&multiply_stream);
   player.start();
   fprintf(stderr, "Type [return] to quit:"); getchar();
   player.stop();
 
-  std::cout << loop_stream.inspect();
+  std::cout << multiply_stream.inspect();
 
   return 0;
 }

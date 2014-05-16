@@ -10,6 +10,13 @@ namespace mu {
     TRACE("MultiplyStream::~MultiplyStream()\n");
   }
 
+  void MultiplyStream::inspectAux(std::stringstream& ss, int level) {
+    inspectIndent(ss, level); ss << "Inputs:" << std::endl;
+    for (int i=0; i<sources_.size(); i++) {
+      ss << sources_.at(i)->inspect(level+1);
+    }
+  }
+    
   // TODO: should we write ones rather than zeros?
   MultiplyStream& MultiplyStream::step(stk::StkFrames& buffer, Tick tick, Player& player) {
     if (sources_.size() == 0) {

@@ -35,6 +35,10 @@ over consecutive buffers.
 
 ## changelog 
 
+* 2014-05-15: cleaned up SpliceStream (i.e. fixed it).  mune23 is a
+sketch for "strumming" using SpliceStream.  It works, but there's a
+lot of crackling due to non-zero splice points.  Need to work on a
+cross-fade version.
 * Wrote SpliceStreams that acts like SequenceStream, but stops output
 of the previous stream when the next stream starts.
 * 2014-05-09: test/test_rt_player runs a bare-bones RtPlayer in order

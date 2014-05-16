@@ -22,6 +22,10 @@ namespace mu {
     MultiSourceStream& removeAllSources();
     size_t getSourceCount() { return sources_.size(); }
 
+    // Allow readonly access to the underlying sources.  This is
+    // primarily intended for unit testing.
+    const StreamVector& getSources() const { return sources_; }
+
   protected:
     StreamVector sources_;
     stk::StkFrames buffer_;
