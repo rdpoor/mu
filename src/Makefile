@@ -21,7 +21,8 @@ SOURCES := \
 	single_source_stream.cpp \
 	splice_stream.cpp \
 	stream.cpp \
-	tik.cpp
+	tik.cpp \
+	x_fade_stream.cpp
 
 OBJECT_DIR := ../obj
 INCLUDE_DIR := ../include

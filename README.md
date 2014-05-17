@@ -4,6 +4,7 @@ An experiment in blurring the lines between music composition and sound synthesi
 
 ## todo 
 
+* Optimize a few inner loops (copy buffer, zero part of buffer...)
 * Can we change Tick to Seconds?
 * step() should return Stream * (not more specialized subclass).
 * Write ut_sequence_stream.cpp
@@ -35,6 +36,8 @@ over consecutive buffers.
 
 ## changelog 
 
+* 2014-05-17: wrote and tested XFadeStream.  Need a sound example
+that uses it.
 * 2014-05-15: cleaned up SpliceStream (i.e. fixed it).  mune23 is a
 sketch for "strumming" using SpliceStream.  It works, but there's a
 lot of crackling due to non-zero splice points.  Need to work on a
@@ -219,36 +222,19 @@ As a discipline, there should be a directory of raw source sounds.
 files needed by the composition.  After that, the composition proper
 can start.
 
-### introspection
+### cross-fading
 
-I want to debug streams.  I should be able to do:
+How about a CropStream that fades in and out at each end?  i.e.:
 
-     s.inspect() =>
+  XFadeStream& setStart(Tick start);
+  XFadeStream& setEnd(Tick end);
+  XFadeStream& setXFadeTime(Tick x_fade_time);
 
-     LoopStream#3000439ac0
-       getLoopDelay(): 434
-       getStart(): 0
-       getEnd(): kIndefinite
-       getSource():
-         AddStream#3000439c00
-           getSources():
-             CropStream#3000439f0c0
-               getStart(): 
-               getEnd():
-               getSources():
-                 FileReadStream#3000439f000
-                   getFileName(): /Users/r/Projects/Musics/TNVM/Sources/PluckedFinger/A4.wav
-             FileReadStream#3000439f000
-               getFileName(): /Users/r/Projects/Musics/TNVM/Sources/PluckedFinger/A#4.wav
+The fade in starts at \c start - x_fade_time / 2 or at the starting
+time of the source signal, whichever comes later.  Similarly, the fade
+out starts at end - x_fade_time / 2 or at the ending time of the
+source signal, whichever comes earlier.
 
-Each Stream subclass implements:
-
-    void inspect(level=0)
-
-See http://www.cplusplus.com/reference/string/string/string/, in particular the
-
-    std::string s6 (10, 'x');
-
-constructor that creates "xxxxxxxxxx" -- useful for indentation.
-
-
+If the x_fade does not have time to fade all the way in before
+starting to fade out, then there will be a smooth transition, even
+though the gain never reaches unity.

@@ -1,5 +1,5 @@
 /*
- * Unit Test MixStream
+ * Unit Test AddStream
  */
 #include "assert.h"
 #include "crop_stream.h"
