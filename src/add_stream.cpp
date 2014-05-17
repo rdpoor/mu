@@ -18,32 +18,35 @@ namespace mu {
   }
     
   AddStream& AddStream::step(stk::StkFrames& buffer, Tick tick, Player& player) {
-    // fprintf(stderr,"AddStream::%p.step(%p, %ld, %p)\n", this, &buffer, tick, &player);
-    if (sources_.size() == 0) {
-      zero_buffer(buffer);
-    } else {
-      // first source is written directly.
-      Stream* source = sources_.at(0);
-      // fprintf(stderr,"[%ld]=>Source::%p.step(%p, %ld, %p)\n", 0l, source, &buffer, tick, &player);
-      source->step(buffer, tick, player);
-      for (long int i=1; i<sources_.size(); i++) {
-        source = sources_.at(i);
-        Tick buffer_start = tick;
-        Tick buffer_end = tick + buffer.frames();
-        Tick source_start = source->getStart();
-        Tick source_end = source->getEnd();
-        // TODO: write general Stream::has_overlap() method
-        if (((source_start == kIndefinite) || (source_start < buffer_end)) &&
-            ((source_end == kIndefinite) || (source_end > buffer_start))) {
+    int active_streams = 0;
+    Tick buffer_start = tick;
+    Tick buffer_end = tick + buffer.frames();
+
+    for (int i=sources_.size()-1; i>=0; i--) {
+      Stream *source = sources_.at(i);
+      Tick source_start = source->getStart();
+      Tick source_end = source->getEnd();
+      if (((source_start == kIndefinite) || (source_start < buffer_end)) &&
+          ((source_end == kIndefinite) || (source_end > buffer_start))) {
+        // source has one or more frames to contribute to output.
+        if (active_streams == 0) {
+          // the first source can be copied directly to output.
+          source->step(buffer, tick, player);
+        } else {
+          // subsequent sources must be fetched into a holding buffer
+          // and summed into the output.
           buffer_.resize(buffer.frames(), buffer.channels());
-          // fprintf(stderr,"[%ld]=>Source::%p.step(%p, %ld, %p)\n", i, source, &buffer, tick, &player);
           source->step(buffer_, tick, player);
           stk::StkFloat *dst = &(buffer[0]);
           stk::StkFloat *src = &(buffer_[0]);
-          for (int i=buffer.size()-1; i>=0; i--) { *dst++ += *src++; }
+          for (int j=buffer.size()-1; j>=0; j--) { *dst++ += *src++; }
         }
+        active_streams += 1;
       }
     }
+
+    // if no stream has contributed to output, explicitly zero it
+    if (active_streams == 0) { zero_buffer(buffer); }
     return *this;
   }
 
