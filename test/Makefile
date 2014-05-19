@@ -11,7 +11,8 @@ CFLAGS   = -O3 -Wall # or perhaps -O0 -g -Wall
 DEFS     = -DHAVE_GETTIMEOFDAY -D__MACOSX_CORE__ -D__LITTLE_ENDIAN__
 INCLUDES = -I../include -I../tarballs/stk-4.4.4/include
 MULIB   := ../obj/*.o
-STKLIB  := ../tarballs/stk-4.4.4/src/Release/*.o
+// STKLIB  := ../tarballs/stk-4.4.4/src/Release/*.o
+STKLIB  := ../tarballs/stk-4.4.4/src/Debug/*.o
 LIBRARY  = -lpthread -framework CoreAudio -framework CoreFoundation -framework CoreMidi
 
 .PHONY:	clean
