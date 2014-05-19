@@ -1,24 +1,32 @@
-#include "x_fade_stream.h"
+#include "fade_stream.h"
 
 namespace mu {
 
-  XFadeStream::~XFadeStream() {
-    TRACE("XFadeStream::~XFadeStream()\n");
+  FadeStream::FadeStream() : 
+    start_ (kIndefinite), 
+    end_ (kIndefinite),
+    fade_time_ ( 0 ) {
+    // pre-allocate transfer buffer
+    buffer_.resize(stk::RT_BUFFER_SIZE, 2);
   }
 
-  void XFadeStream::inspectAux(std::stringstream& ss, int level) {
+  FadeStream::~FadeStream() {
+    TRACE("FadeStream::~FadeStream()\n");
+  }
+
+  void FadeStream::inspectAux(std::stringstream& ss, int level) {
     inspectIndent(ss, level); 
-    ss << "getXFadeTIme() = " << getXFadeTime() << std::endl;
+    ss << "getFadeTIme() = " << getFadeTime() << std::endl;
     inspectIndent(ss, level); 
     ss << "Input" << std::endl;
     ss << source_->inspect(level+1);
   }
 
-  XFadeStream& XFadeStream::step(stk::StkFrames& buffer, 
+  FadeStream& FadeStream::step(stk::StkFrames& buffer, 
                                  Tick tick, 
                                  Player& player) {
     if (source_ == NULL) {
-      zero_buffer(buffer);
+      zeroBuffer(buffer);
       return *this;
     }
 
@@ -42,13 +50,13 @@ namespace mu {
       t2 = LONG_MIN;
     } else if (start_ == kIndefinite) {
       t1 = ss;
-      t2 = ss + x_fade_time_;
+      t2 = ss + fade_time_;
     } else if (ss == kIndefinite) {
-      t1 = start_ - (x_fade_time_ / 2);
-      t2 = t1 + x_fade_time_;
+      t1 = start_ - (fade_time_ / 2);
+      t2 = t1 + fade_time_;
     } else {
-      t1 = std::max(ss, start_ - (x_fade_time_ / 2));
-      t2 = t1 + x_fade_time_;
+      t1 = std::max(ss, start_ - (fade_time_ / 2));
+      t2 = t1 + fade_time_;
     }
 
     if ((end_ == kIndefinite) && (se == kIndefinite)) {
@@ -56,17 +64,17 @@ namespace mu {
       t3 = LONG_MAX;
     } else if (end_ == kIndefinite) {
       t4 = se;
-      t3 = se - x_fade_time_;
+      t3 = se - fade_time_;
     } else if (se == kIndefinite) {
-      t4 = end_ + (x_fade_time_ / 2);
-      t3 = t4 - x_fade_time_;
+      t4 = end_ + (fade_time_ / 2);
+      t3 = t4 - fade_time_;
     } else {
-      t4 = std::min(se, end_ + (x_fade_time_ / 2));
-      t3 = t4 - x_fade_time_;
+      t4 = std::min(se, end_ + (fade_time_ / 2));
+      t3 = t4 - fade_time_;
     }
 
     // change in gain per sample
-    double dGdT = (x_fade_time_ == 0) ? 0.0 : 1.0 / x_fade_time_;
+    double dGdT = (fade_time_ == 0) ? 0.0 : 1.0 / fade_time_;
 
     // We need to handle the case where the fade out starts before
     // the fade in completes.
@@ -134,7 +142,7 @@ namespace mu {
       // copy some frames verbatim
       buffer_.resize(dx, buffer.channels());
       source_->step(buffer_, x0, player);
-      copy_buffer(buffer_, 0, buffer, x0, dx);
+      copyBuffer(buffer_, 0, buffer, x0-buf_s, dx);
       if (x1 == buf_e) return *this;
     }
 
@@ -181,7 +189,7 @@ namespace mu {
     return *this;
   }
   
-  Tick XFadeStream::getStart() {
+  Tick FadeStream::getStart() {
     Tick ss = (source_ == NULL) ? kIndefinite : source_->getStart();
     
     if ((start_ == kIndefinite) && (ss == kIndefinite)) {
@@ -189,13 +197,13 @@ namespace mu {
     } else if (start_ == kIndefinite) {
       return ss;
     } else if (ss == kIndefinite) {
-      return start_ - (x_fade_time_ / 2);
+      return start_ - (fade_time_ / 2);
     } else {
-      return std::max(ss, start_ - (x_fade_time_ / 2));
+      return std::max(ss, start_ - (fade_time_ / 2));
     }
   }
 
-  Tick XFadeStream::getEnd() {
+  Tick FadeStream::getEnd() {
     Tick se = (source_ == NULL) ? kIndefinite : source_->getEnd();
 
     if ((end_ == kIndefinite) && (se == kIndefinite)) {
@@ -203,9 +211,9 @@ namespace mu {
     } else if (end_ == kIndefinite) {
       return se;
     } else if (se == kIndefinite) {
-      return end_ + (x_fade_time_ / 2);
+      return end_ + (fade_time_ / 2);
     } else {
-      return std::min(se, end_ + (x_fade_time_ / 2));
+      return std::min(se, end_ + (fade_time_ / 2));
     }
   }
 

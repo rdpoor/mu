@@ -2,6 +2,12 @@
 
 namespace mu {
 
+  LoopStream::LoopStream()
+    : loop_duration_ (44100) {
+    TRACE("LoopStream::LoopStream()\n");
+    buffer_.resize(stk::RT_BUFFER_SIZE, 2);
+  }
+
   LoopStream::~LoopStream() {
     TRACE("LoopStream::~LoopStream()\n");
   }
@@ -47,7 +53,7 @@ namespace mu {
         source_->step(buffer_, (current_tick % loop_duration_), player);
         // copy from buffer_[0] into buffer[frames_copied] for frames_to_copy frames
         // fprintf(stderr,"f");
-        copy_buffer(buffer_, 0, buffer, frames_copied, frames_to_copy);
+        copyBuffer(buffer_, 0, buffer, frames_copied, frames_to_copy);
 
       }
       // fprintf(stderr,"g");

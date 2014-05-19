@@ -15,10 +15,11 @@ namespace mu {
   class SequenceStream : public AddStream {
   public:
 
-    SequenceStream();
+    SequenceStream( void );
     ~SequenceStream( void );
+
     std::string getClassName() { return "SequenceStream"; }
-    // SequenceStream& step(stk::StkFrames& buffer, Tick tick, Player &player);
+
     SequenceStream& addSource(Stream *source, Tick delay);
 
   };                            // class SequenceStream

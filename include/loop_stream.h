@@ -13,8 +13,9 @@ namespace mu {
   class LoopStream : public SingleSourceStream {
   public:
 
-    LoopStream();
+    LoopStream( void );
     ~LoopStream( void );
+
     std::string getClassName() { return "LoopStream"; }
     virtual void inspectAux(std::stringstream& ss, int level);
 
@@ -27,24 +28,13 @@ namespace mu {
     // TODO: figure out the right way to do this
     LoopStream& setSource(Stream *source) { source_ = source; return *this; }
 
-    Tick getLoopDuration() const;
-    LoopStream& setLoopDuration(Tick loop_duration);
+    Tick getLoopDuration() const { return loop_duration_; }
+    LoopStream& setLoopDuration(Tick loop_duration) { loop_duration_ = loop_duration; return *this; }
 
   protected:
     Tick loop_duration_;
 
   };                            // class LoopStream
-
-  inline LoopStream::LoopStream()
-    : loop_duration_ (44100) {
-    TRACE("LoopStream::LoopStream()\n");
-  }
-
-  inline Tick LoopStream::getLoopDuration() const { return loop_duration_; }
-  inline LoopStream& LoopStream::setLoopDuration(Tick loop_duration) {
-    TRACE("LoopStream::loopDuration()\n");
-    loop_duration_ = loop_duration; return *this;
-  }
 
 }                               // namespace mu
 

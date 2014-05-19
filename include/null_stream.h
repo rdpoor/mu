@@ -12,15 +12,15 @@ namespace mu {
   class NullStream : public Stream {
   public:
 
-    NullStream( void ) { }
-    ~NullStream( void ) { }
+    NullStream( void );
+    ~NullStream( void );
+
     std::string getClassName() { return "NullStream"; }
-    NullStream& step(stk::StkFrames& buffer, Tick tick, Player& player) {
-      zero_buffer(buffer);
-      return *this;
-    }
+
+    NullStream& step(stk::StkFrames& buffer, Tick tick, Player& player);
     
   protected:
   };                            // class NullStream
+
 }                               // namespace mu
 #endif

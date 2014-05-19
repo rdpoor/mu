@@ -49,6 +49,14 @@ namespace mu {
     return 0;
   }
   
+  RtPlayer::RtPlayer() 
+  : device_number_ (kDefaultDeviceNumber),
+    is_running_ (false) {
+    TRACE("RtPlayer::RtPlayer()\n");
+    stk_frames_.resize(stk::RT_BUFFER_SIZE, 2);
+    init();
+  }
+
   RtPlayer::~RtPlayer() {
     TRACE("RtPlayer::~RtPlayer()\n");
   }

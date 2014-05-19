@@ -3,6 +3,7 @@ SOURCES := \
 	constant_stream.cpp \
 	crop_stream.cpp \
 	delay_stream.cpp \
+	fade_stream.cpp \
 	file_read_stream.cpp \
 	identity_stream.cpp \
 	linseg_stream.cpp \
@@ -18,11 +19,11 @@ SOURCES := \
 	random_select_stream.cpp \
 	rt_player.cpp \
 	sequence_stream.cpp \
+	sine_stream.cpp \
 	single_source_stream.cpp \
 	splice_stream.cpp \
 	stream.cpp \
-	tik.cpp \
-	x_fade_stream.cpp
+	tik.cpp
 
 OBJECT_DIR := ../obj
 INCLUDE_DIR := ../include
@@ -31,7 +32,8 @@ OBJECTS := $(patsubst %.cpp,$(OBJECT_DIR)/%.o,$(SOURCES))
 
 CC      = g++
 DEFS    = 
-CFLAGS  = -O3 -Wall
+# CFLAGS  = -O3 -Wall
+CFLAGS = -O0 -Wall
 IFLAGS  = -I$(INCLUDE_DIR) -I../tarballs/stk-4.4.4/include
 
 $(OBJECT_DIR)/%.o : %.cpp $(INCLUDE_DIR)/%.h $(INCLUDE_DIR)/mu.h

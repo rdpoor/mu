@@ -26,7 +26,7 @@ namespace mu {
     // Method called from processing thread
     void *processingLoop();
 
-    bool isRunning() const;
+    bool isRunning() const { return is_running_; }
 
   protected:
     bool is_running_enabled_;
@@ -37,15 +37,6 @@ namespace mu {
     stk::StkFrames stk_frames_;
 
   };                            // class NrtPlayer
-
-  inline NrtPlayer::NrtPlayer()
-    : is_running_enabled_ (false),
-    is_running_ (false) {
-    TRACE("NrtPlayer::NrtPlayer()\n");
-    init();
-  }
-  
-  inline bool NrtPlayer::isRunning() const { return is_running_; }
 
 } // namespace mu
 #endif

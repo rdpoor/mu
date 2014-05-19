@@ -16,13 +16,22 @@ namespace mu {
       if (source_ == NULL) break;
       stk_frames_.resize(frame_size_, channel_count_);
       source_->step(stk_frames_, tick_, *this);
-      // TODO: protect updating of time_ within a mutex
+      // TODO: protect updating of tick_ within a mutex (but right
+      // now, nobody in the fg thread looks at tick_).
       tick_ += frame_size_;
     }
     is_running_ = false;
     return NULL;
   }
   
+  NrtPlayer::NrtPlayer()
+    : is_running_enabled_ (false),
+      is_running_ (false) {
+    TRACE("NrtPlayer::NrtPlayer()\n");
+    stk_frames_.resize(stk::RT_BUFFER_SIZE, 2); // pre-allocate stk_frames_ 
+    init();
+  }
+
   NrtPlayer::~NrtPlayer() {
     TRACE("NrtPlayer::~NrtPlayer()\n");
   }

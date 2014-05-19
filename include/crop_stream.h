@@ -15,10 +15,9 @@ namespace mu {
   class CropStream : public SingleSourceStream {
   public:
 
-    CropStream() 
-      : start_ (kIndefinite), end_ (kIndefinite) {
-    }
+    CropStream( void );
     ~CropStream( void );
+
     std::string getClassName() { return "CropStream"; }
     virtual void inspectAux(std::stringstream& ss, int level);
 
@@ -30,6 +29,7 @@ namespace mu {
 
     Tick getStart( void );
     CropStream& setStart(Tick start) {  start_ = start; return *this; }
+
     Tick getEnd( void );
     CropStream& setEnd(Tick end) { end_ = end; return *this; }
 
@@ -38,7 +38,6 @@ namespace mu {
     Tick start_;
     Tick end_;
   };                            // class CropStream
-
   
 }                               // namespace mu
 

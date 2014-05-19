@@ -12,45 +12,28 @@ namespace mu {
 
     FileReadStream();
     ~FileReadStream( void );
+
     std::string getClassName() { return "FileReadStream"; }
     void inspectAux(std::stringstream& ss, int level);
-    FileReadStream& fileName(std::string file_name);
-    FileReadStream& doNormalize(bool do_normalize);
 
     FileReadStream& step(stk::StkFrames& buffer, 
                      Tick tick,
                      Player &player);
     Tick getStart( void );
     Tick getEnd( void );
+
+    FileReadStream& fileName(std::string file_name);
+    FileReadStream& doNormalize(bool do_normalize);
+
     std::string getFileName() const;
-    long int frameIndex();
 
   protected:
     std::string file_name_;
     bool do_normalize_;
+
     stk::FileRead file_read_;
-    long int frame_index_;
 
   };                            // class FileReadStream
-
-  inline FileReadStream::FileReadStream()
-    : frame_index_ (0) {
-    TRACE("FileReadStream::FileReadStream()\n");
-  }
-
-  inline FileReadStream& FileReadStream::fileName(std::string file_name) {
-    TRACE("FileReadStream::fileName()\n");
-    file_name_ = file_name; return *this;
-  }
-
-  inline FileReadStream& FileReadStream::doNormalize(bool do_normalize) {
-    TRACE("FileReadStream::doNormalize()\n");
-    do_normalize_ = do_normalize; return *this;
-  }
-
-  inline std::string FileReadStream::getFileName() const { 
-    return file_name_; 
-  }
 
 }                               // namespace mu
 

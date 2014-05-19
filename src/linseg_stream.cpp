@@ -32,9 +32,16 @@ namespace mu {
 
   }
 
+  LinsegStream::LinsegStream( void ) 
+    : hold_value_ ( true ) {
+  }
+
+  LinsegStream::~LinsegStream( void ) {
+  }
+
   LinsegStream& LinsegStream::step(stk::StkFrames& buffer, Tick tick, Player &player) {
     if (breakpoints_.size() == 0) {
-      zero_buffer(buffer);
+      zeroBuffer(buffer);
 
     } else {
       int frame_count = buffer.frames();
@@ -51,7 +58,7 @@ namespace mu {
 
   Tick LinsegStream::getStart() {
     if ((breakpoints_.size() == 0) || (hold_value_ == true)) {
-      return mu::kIndefinite;
+      return kIndefinite;
     } else {
       return breakpoints_.begin()->first;
     }

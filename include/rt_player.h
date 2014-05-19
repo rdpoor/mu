@@ -13,8 +13,8 @@ namespace mu {
   public:
     static const int kDefaultDeviceNumber = 0;
 
-    RtPlayer();
-    ~RtPlayer(void);
+    RtPlayer( void );
+    ~RtPlayer( void );
 
     // Start the player if not already running.  Does not rewind
     // before starting.
@@ -25,12 +25,15 @@ namespace mu {
     // already queued samples to finish.
     RtPlayer& stop(bool immediately = false);
 
-    int getDeviceNumber() const;
-    RtPlayer& setDeviceNumber(int device_number);
-
     // callback method for RtAudio
     int readBuffer( void *buffer, unsigned int frame_count, double stream_time );
 
+    int getDeviceNumber() const { return device_number_; }
+    RtPlayer& setDeviceNumber(int device_number) {
+      TRACE("RtPlayer::deviceNumber()\n");
+      device_number_ = device_number; return *this;
+    }
+    
   protected:
     int device_number_;
     RtAudio dac_;
@@ -40,18 +43,5 @@ namespace mu {
 
   };                            // class RtPlayer
 
-  inline RtPlayer::RtPlayer()
-    : device_number_ (kDefaultDeviceNumber),
-    is_running_ (false) {
-    TRACE("RtPlayer::RtPlayer()\n");
-    init();
-  }
-  
-  inline int RtPlayer::getDeviceNumber() const { return device_number_; }
-  inline RtPlayer& RtPlayer::setDeviceNumber(int device_number) {
-    TRACE("RtPlayer::deviceNumber()\n");
-    device_number_ = device_number; return *this;
-  }
-  
 } // namespace mu
 #endif

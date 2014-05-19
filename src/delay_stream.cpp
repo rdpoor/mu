@@ -2,6 +2,11 @@
 
 namespace mu {
 
+  DelayStream::DelayStream() 
+    : delay_ ( 0 ) {
+    TRACE("DelayStream::DelayStream()\n");
+  }
+
   DelayStream::~DelayStream() {
     TRACE("DelayStream::~DelayStream()\n");
   }
@@ -14,7 +19,7 @@ namespace mu {
 
   DelayStream& DelayStream::step(stk::StkFrames& buffer, Tick tick, Player& player) {
     if (source_ == NULL) {
-      zero_buffer(buffer);
+      zeroBuffer(buffer);
     } else {
       source_->step(buffer, tick - delay_, player);
     }
@@ -22,16 +27,19 @@ namespace mu {
   }
 
   Tick DelayStream::getStart() {
-    return (source_ == NULL) ? 
-      kIndefinite : 
-      ((source_->getStart() == kIndefinite) ? kIndefinite : (source_->getStart() + delay_));
+    if ((source_ == NULL) || (source_->getStart() == kIndefinite)) {
+      return kIndefinite;
+    } else {
+      return (source_->getStart() + delay_);
+    }
   }
 
   Tick DelayStream::getEnd() {
-    return (source_ == NULL) ? 
-      kIndefinite : 
-      ((source_->getEnd() == kIndefinite) ? kIndefinite : (source_->getEnd() + delay_));
+    if ((source_ == NULL) || (source_->getEnd() == kIndefinite)) {
+      return kIndefinite;
+    } else {
+      return (source_->getEnd() + delay_);
+    }
   }
-
 
 }
