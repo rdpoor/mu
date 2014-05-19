@@ -4,6 +4,7 @@ namespace mu {
 
   AddStream::AddStream() {
     TRACE("AddStream::AddStream()\n");
+    buffer_.resize(stk::RT_BUFFER_SIZE, 2);
   }
 
   AddStream::~AddStream() {
@@ -22,6 +23,8 @@ namespace mu {
     Tick buffer_start = tick;
     Tick buffer_end = tick + buffer.frames();
 
+    // fprintf(stderr,"AddStream::step(tick=%ld)\n",tick);
+
     for (int i=sources_.size()-1; i>=0; i--) {
       Stream *source = sources_.at(i);
       Tick source_start = source->getStart();
@@ -37,16 +40,24 @@ namespace mu {
           // and summed into the output.
           buffer_.resize(buffer.frames(), buffer.channels());
           source->step(buffer_, tick, player);
+#if 0
           stk::StkFloat *dst = &(buffer[0]);
           stk::StkFloat *src = &(buffer_[0]);
           for (int j=buffer.size()-1; j>=0; j--) { *dst++ += *src++; }
+#else
+          for (int i=0; i<buffer.frames(); i++) {
+            for (int j=0; j<buffer.channels(); j++) {
+              buffer(i,j) += buffer_(i,j);
+            }
+          }
+#endif
         }
         active_streams += 1;
       }
     }
 
     // if no stream has contributed to output, explicitly zero it
-    if (active_streams == 0) { zero_buffer(buffer); }
+    if (active_streams == 0) { zeroBuffer(buffer); }
     return *this;
   }
 

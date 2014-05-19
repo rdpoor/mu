@@ -2,6 +2,11 @@
 
 namespace mu {
 
+  MapStream::MapStream() 
+    : callback_ ( NULL ) {
+    TRACE("MapStream::MapStream()\n");
+  }
+
   MapStream::~MapStream() {
     TRACE("MapStream::~MapStream()\n");
   }

@@ -11,11 +11,11 @@ namespace mu {
   }
   
   IdentityStream& IdentityStream::step(stk::StkFrames& buffer, 
-                               Tick tick,
-                               Player &player) {
+                                       Tick tick,
+                                       Player &player) {
     Tick frame_count = buffer.frames();
     Tick channel_count = buffer.channels();
-
+    
     Tick f = tick;
     switch (channel_count) {
     case 1:

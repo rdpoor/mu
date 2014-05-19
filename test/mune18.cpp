@@ -39,7 +39,7 @@ public:
 
   PitchShiftStream& step(stk::StkFrames& buffer, mu::Tick tick, mu::Player &player) {
     if (source_ == NULL) {
-      zero_buffer (buffer);
+      zeroBuffer (buffer);
     } else {
       setup();
       int frame_count = buffer.frames();

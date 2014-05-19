@@ -20,9 +20,11 @@ namespace mu {
   SpliceStream::SpliceStream( void ) :
       prev_tick_ (kIndefinite),
       cursor_ (-1) {
+    buffer_.resize(stk::RT_BUFFER_SIZE, 2);
     }
 
-  SpliceStream::~SpliceStream( void ) { }
+  SpliceStream::~SpliceStream( void ) { 
+  }
 
   // ================================================================
   // public instance methods
@@ -38,15 +40,15 @@ namespace mu {
   // infinite stream superceded by a short stream > 512 frames later
   // short stream, blank space > 512 frames, another short stream
   //
-  SpliceStream& SpliceStream::step(stk::StkFrames& buffer, 
-                                   Tick tick, 
-                                   Player &player) {
+  SpliceStream& SpliceStream::step(stk::StkFrames& buffer, Tick tick, Player &player) {
     // reset if needed
-    if ((prev_tick_ == kIndefinite) || (tick <= prev_tick_)) { setupCursor(tick, tick + buffer.frames()); }
+    if ((prev_tick_ == kIndefinite) || (tick <= prev_tick_)) { 
+      setupCursor(tick, tick + buffer.frames()); 
+    }
     prev_tick_ = tick;
 
     // simplify logic...
-    zero_buffer(buffer);
+    zeroBuffer(buffer);
 
     // cursor_ is the lowest index into sources_ that sounds during
     // this buffer.  It will be advanced as each sources is consumed.
@@ -59,7 +61,8 @@ namespace mu {
       Stream* s = sources_.at(cursor_);
       bool is_last_source = (cursor_ == sources_.size() - 1);
       Tick src_start = s->getStart() == kIndefinite ? dst_start : s->getStart();
-      Tick src_end = is_last_source ? s->getEnd() : sources_.at(cursor_+1)->getStart();
+      Tick src_end = is_last_source ? 
+        s->getEnd() : sources_.at(cursor_+1)->getStart();
 
       Tick tmp_start = std::max(src_start, dst_start);
       Tick tmp_end = std::min(src_end, dst_end);
@@ -67,7 +70,8 @@ namespace mu {
       long int frames_to_write = tmp_end - tmp_start;
 
 //       fprintf(stderr,"ds=%ld,de=%ld,ss=%ld,se=%ld,ts=%ld,te=%ld,ftw=%ld\n",
-//               dst_start, dst_end, src_start, src_end, tmp_start, tmp_end, frames_to_write);
+//               dst_start, dst_end, src_start, src_end, tmp_start, tmp_end, 
+//               frames_to_write);
 
       if (frames_to_write == buffer.frames()) {
         // current stream spans entire buffer -- copy directly
@@ -76,7 +80,7 @@ namespace mu {
         // fill a transfer buffer and copy sub-segment
         buffer_.resize(frames_to_write, buffer.channels());
         s->step(buffer_, tmp_start, player);
-        copy_buffer(buffer_, 0, buffer, tmp_start-tick, frames_to_write);
+        copyBuffer(buffer_, 0, buffer, tmp_start-tick, frames_to_write);
       }
       dst_start += frames_to_write;
       // if we have consumed all frames of current stream, advance to the next
@@ -141,7 +145,9 @@ namespace mu {
       Stream *s = sources_.at(cursor_);
       bool is_last_source = (cursor_ == sources_.size() - 1);
       Tick src_start = s->getStart() == kIndefinite ? start : s->getStart();
-      Tick src_end = is_last_source ? s->getEnd() : sources_.at(cursor_+1)->getStart();
+      Tick src_end = is_last_source ? 
+        s->getEnd() : 
+        sources_.at(cursor_+1)->getStart();
       if ((src_end >= start) && (src_start < end)) { return; }
     }
     cursor_ = -1;

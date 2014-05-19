@@ -16,23 +16,18 @@ namespace mu {
   public:
     
     SpliceStream( void );
-
     ~SpliceStream( void );
 
     std::string getClassName() { return "SpliceStream"; }
-
     virtual void inspectAux(std::stringstream& ss, int level);
 
     SpliceStream& step(stk::StkFrames& buffer, Tick tick, Player &player);
 
     Tick getStart();
-
     Tick getEnd();
     
     SpliceStream& addSource(Stream *source);
-
     SpliceStream& removesSource(Stream *source);
-
     SpliceStream& removeAllSources();
 
   protected:

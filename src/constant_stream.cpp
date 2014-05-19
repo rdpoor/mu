@@ -2,7 +2,8 @@
 
 namespace mu {
 
-  ConstantStream::ConstantStream() {
+  ConstantStream::ConstantStream() 
+    : value_ ( 0.0 ) {
     TRACE("ConstantStream::ConstantStream()\n");
   }
   

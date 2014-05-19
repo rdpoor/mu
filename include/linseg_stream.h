@@ -15,7 +15,12 @@ namespace mu {
 
   class LinsegStream : public Stream {
   public:
+
+    LinsegStream( void );
+    ~LinsegStream( void );
+
     std::string getClassName() { return "LinsegStream"; }
+
     LinsegStream& step(stk::StkFrames& buffer, Tick tick, Player &player);
     
     Tick getStart( void );
@@ -32,8 +37,8 @@ namespace mu {
     stk::StkFloat lerp(Tick tick);
 
   protected:
-    std::map<Tick, stk::StkFloat> breakpoints_;
     bool hold_value_;
+    std::map<Tick, stk::StkFloat> breakpoints_;
   };
 
 }

@@ -4,6 +4,7 @@ namespace mu {
 
   MultiplyStream::MultiplyStream() {
     TRACE("MultiplyStream::MultiplyStream()\n");
+    buffer_.resize(stk::RT_BUFFER_SIZE, 2);
   }
 
   MultiplyStream::~MultiplyStream() {
@@ -20,7 +21,7 @@ namespace mu {
   // TODO: should we write ones rather than zeros?
   MultiplyStream& MultiplyStream::step(stk::StkFrames& buffer, Tick tick, Player& player) {
     if (sources_.size() == 0) {
-      zero_buffer(buffer);
+      zeroBuffer(buffer);
     } else {
       // first source is written directly.
       Stream* source = sources_.at(0);

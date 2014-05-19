@@ -33,7 +33,7 @@ public:
     prev_tick_ = tick;
 
     if (current_stream_ == NULL ) {
-      zero_buffer(buffer);
+      zeroBuffer(buffer);
     } else {
       current_stream_->step(buffer, tick, player);
     }

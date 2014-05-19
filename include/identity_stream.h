@@ -13,12 +13,12 @@ namespace mu {
   class IdentityStream : public Stream {
   public:
 
-    IdentityStream();
+    IdentityStream( void );
     ~IdentityStream( void );
+
     std::string getClassName() { return "IdentityStream"; }
-    IdentityStream& step(stk::StkFrames& buffer, 
-                     Tick tick,
-                     Player& player);
+    IdentityStream& step(stk::StkFrames& buffer, Tick tick, Player& player);
+
   };                            // class IdentityStream
 
 }                               // namespace mu

@@ -12,28 +12,16 @@ namespace mu {
 
   class ProbabilityStream : public SingleSourceStream {
   public:
-    ProbabilityStream( void ) : 
-      prev_tick_  (kIndefinite),
-      current_stream_ ( NULL ),
-      probability_ (1.0) {
-    }
-    ~ProbabilityStream( void ) { }
+
+    ProbabilityStream( void );
+    ~ProbabilityStream( void );
+
     std::string getClassName() { return "ProbabilityStream"; }
   
-    ProbabilityStream& step(stk::StkFrames& buffer, Tick tick, Player &player) {
-      if ((prev_tick_ == kIndefinite) || (tick <= prev_tick_)) { reset(); }
-      prev_tick_ = tick;
+    ProbabilityStream& step(stk::StkFrames& buffer, Tick tick, Player &player);
 
-      if (current_stream_ == NULL ) {
-        zero_buffer(buffer);
-      } else {
-        current_stream_->step(buffer, tick, player);
-      }
-      return *this;
-    }
-
-    Tick getStart( void ) { return kIndefinite; }
-    Tick getEnd( void ) { return kIndefinite; }
+    Tick getStart();
+    Tick getEnd();
 
     ProbabilityStream& setSource(Stream *source) { source_ = source; return *this; }
 
@@ -42,13 +30,7 @@ namespace mu {
 
   protected:
 
-    // Arrive here when the stream starts or backs up: flip a weighted
-    // coin to choose whether or not to play the source stream.
-    ProbabilityStream& reset() {
-      double p = ((double) rand() / (RAND_MAX));
-      current_stream_ = (p < probability_) ? getSource() : NULL;
-      return *this;
-    }
+    ProbabilityStream& reset();
 
     Tick prev_tick_;
     Stream * current_stream_;

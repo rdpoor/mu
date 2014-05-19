@@ -24,7 +24,7 @@ public:
   ResetStream& step(stk::StkFrames& buffer, mu::Tick tick, mu::Player &player) {
     if (sources_.size() == 0) {
       fprintf(stderr,"A");
-      zero_buffer(buffer);
+      zeroBuffer(buffer);
     } else {
       fprintf(stderr,"B");
       if (tick < prev_tick_) { reset(); }

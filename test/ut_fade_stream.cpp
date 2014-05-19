@@ -1,33 +1,22 @@
 /*
- * Unit Test XFadeStream
+ * Unit Test FadeStream
  */
 #include "assert.h"
 #include "constant_stream.h"
 #include "crop_stream.h"
 #include "mu.h"
 #include "nrt_player.h"
-#include "x_fade_stream.h"
+#include "fade_stream.h"
 #include <unistd.h>
 
 #define FRAME_RATE 44100
 #define FRAME_COUNT 512
 #define CHANNEL_COUNT 2
 
-#define EPSILON 0.0001
-
-bool near(double f1, double f2) {
-  double d = EPSILON;
-  bool pass = ((f1 - d) < f2) & ((f1 + d) > f2);
-  if (pass == false) {
-    fprintf(stderr,"near: %f should be near %f\n", f1, f2);
-  }
-  return pass;
-}
-
 int main() {
   mu::ConstantStream constant_stream;
   mu::CropStream crop_stream;
-  mu::XFadeStream x_fade_stream;
+  mu::FadeStream fade_stream;
   mu::NrtPlayer player;
   stk::StkFrames buffer;
 
@@ -39,42 +28,42 @@ int main() {
 
   // ================================================================
   fprintf(stderr, "=== null source\n");
-  x_fade_stream.setSource(NULL);
-  x_fade_stream.setStart(mu::kIndefinite).setEnd(mu::kIndefinite);
+  fade_stream.setSource(NULL);
+  fade_stream.setStart(mu::kIndefinite).setEnd(mu::kIndefinite);
 
-  x_fade_stream.step(buffer, 0, player);
+  fade_stream.step(buffer, 0, player);
 
   ASSERT(buffer(0,0) == 0);
   ASSERT(buffer(0,1) == 0);
   ASSERT(buffer((FRAME_COUNT-1),0) == 0);
   ASSERT(buffer((FRAME_COUNT-1),1) == 0);
 
-  ASSERT(x_fade_stream.getStart()==mu::kIndefinite);
-  ASSERT(x_fade_stream.getEnd()==mu::kIndefinite);
+  ASSERT(fade_stream.getStart()==mu::kIndefinite);
+  ASSERT(fade_stream.getEnd()==mu::kIndefinite);
 
   // ================================================================
   // When source has indefinite extent, fade in and fade out times are
   // determinined by fade_stream->setStart() and setEnd().
   fprintf(stderr, "=== constant source, start=kIndefinite, end=kIndefinite\n");
-  x_fade_stream.setSource(&constant_stream);
-  x_fade_stream.setStart(mu::kIndefinite).setEnd(mu::kIndefinite);
+  fade_stream.setSource(&constant_stream);
+  fade_stream.setStart(mu::kIndefinite).setEnd(mu::kIndefinite);
 
-  x_fade_stream.step(buffer, 0, player);
+  fade_stream.step(buffer, 0, player);
 
   ASSERT(buffer(0,0) == 1.0);
   ASSERT(buffer(0,1) == 1.0);
   ASSERT(buffer((FRAME_COUNT-1),0) == 1.0);
   ASSERT(buffer((FRAME_COUNT-1),1) == 1.0);
 
-  ASSERT(x_fade_stream.getStart()==mu::kIndefinite);
-  ASSERT(x_fade_stream.getEnd()==mu::kIndefinite);
+  ASSERT(fade_stream.getStart()==mu::kIndefinite);
+  ASSERT(fade_stream.getEnd()==mu::kIndefinite);
 
   // ================================================================
   fprintf(stderr, "=== constant source, start=100, end=200\n");
-  x_fade_stream.setSource(&constant_stream);
-  x_fade_stream.setStart(100).setEnd(200).setXFadeTime(10);
+  fade_stream.setSource(&constant_stream);
+  fade_stream.setStart(100).setEnd(200).setFadeTime(10);
 
-  x_fade_stream.step(buffer, 0, player);
+  fade_stream.step(buffer, 0, player);
 
   ASSERT(near(buffer(95,0), 0.0));
   ASSERT(near(buffer(95,1), 0.0));
@@ -125,15 +114,15 @@ int main() {
   ASSERT(near(buffer((FRAME_COUNT-1),0), 0.0));
   ASSERT(near(buffer((FRAME_COUNT-1),1), 0.0));
 
-  ASSERT(x_fade_stream.getStart()==95);
-  ASSERT(x_fade_stream.getEnd()==205);
+  ASSERT(fade_stream.getStart()==95);
+  ASSERT(fade_stream.getEnd()==205);
 
   // ================================================================
   fprintf(stderr, "=== constant source, start=100, end=kIndefinite\n");
-  x_fade_stream.setSource(&constant_stream);
-  x_fade_stream.setStart(100).setEnd(mu::kIndefinite).setXFadeTime(10);
+  fade_stream.setSource(&constant_stream);
+  fade_stream.setStart(100).setEnd(mu::kIndefinite).setFadeTime(10);
 
-  x_fade_stream.step(buffer, 0, player);
+  fade_stream.step(buffer, 0, player);
 
   ASSERT(near(buffer(95,0), 0.0));
   ASSERT(near(buffer(95,1), 0.0));
@@ -184,15 +173,15 @@ int main() {
   ASSERT(buffer((FRAME_COUNT-1),0) == 1.0);
   ASSERT(buffer((FRAME_COUNT-1),1) == 1.0);
 
-  ASSERT(x_fade_stream.getStart()==95);
-  ASSERT(x_fade_stream.getEnd()==mu::kIndefinite);
+  ASSERT(fade_stream.getStart()==95);
+  ASSERT(fade_stream.getEnd()==mu::kIndefinite);
 
   // ================================================================
   fprintf(stderr, "=== constant source, start=kIndefinite, end=200\n");
-  x_fade_stream.setSource(&constant_stream);
-  x_fade_stream.setStart(mu::kIndefinite).setEnd(200).setXFadeTime(10);
+  fade_stream.setSource(&constant_stream);
+  fade_stream.setStart(mu::kIndefinite).setEnd(200).setFadeTime(10);
 
-  x_fade_stream.step(buffer, 0, player);
+  fade_stream.step(buffer, 0, player);
 
   ASSERT(near(buffer(95,0), 1.0));
   ASSERT(near(buffer(95,1), 1.0));
@@ -243,17 +232,17 @@ int main() {
   ASSERT(near(buffer((FRAME_COUNT-1),0), 0.0));
   ASSERT(near(buffer((FRAME_COUNT-1),1), 0.0));
 
-  ASSERT(x_fade_stream.getStart()==mu::kIndefinite);
-  ASSERT(x_fade_stream.getEnd()==205);
+  ASSERT(fade_stream.getStart()==mu::kIndefinite);
+  ASSERT(fade_stream.getEnd()==205);
 
   // ================================================================
   // NB: when source has definite extent, fade in starts at
   // source->getStart() and ends at source->getEnd().
   fprintf(stderr, "=== cropped source, start=kIndefinite, end=kIndefinite\n");
-  x_fade_stream.setSource(&crop_stream);
-  x_fade_stream.setStart(mu::kIndefinite).setEnd(mu::kIndefinite).setXFadeTime(10);
+  fade_stream.setSource(&crop_stream);
+  fade_stream.setStart(mu::kIndefinite).setEnd(mu::kIndefinite).setFadeTime(10);
 
-  x_fade_stream.step(buffer, 0, player);
+  fade_stream.step(buffer, 0, player);
 
   ASSERT(near(buffer(95,0), 0.0));
   ASSERT(near(buffer(95,1), 0.0));
@@ -314,15 +303,15 @@ int main() {
   ASSERT(near(buffer((FRAME_COUNT-1),0), 0.0));
   ASSERT(near(buffer((FRAME_COUNT-1),1), 0.0));
 
-  ASSERT(x_fade_stream.getStart()==100);
-  ASSERT(x_fade_stream.getEnd()==200);
+  ASSERT(fade_stream.getStart()==100);
+  ASSERT(fade_stream.getEnd()==200);
 
   // ================================================================
   fprintf(stderr, "=== cropped source, start=100, end=200\n");
-  x_fade_stream.setSource(&crop_stream);
-  x_fade_stream.setStart(100).setEnd(200).setXFadeTime(10);
+  fade_stream.setSource(&crop_stream);
+  fade_stream.setStart(100).setEnd(200).setFadeTime(10);
 
-  x_fade_stream.step(buffer, 0, player);
+  fade_stream.step(buffer, 0, player);
 
   ASSERT(near(buffer(95,0), 0.0));
   ASSERT(near(buffer(95,1), 0.0));
@@ -383,21 +372,21 @@ int main() {
   ASSERT(near(buffer((FRAME_COUNT-1),0), 0.0));
   ASSERT(near(buffer((FRAME_COUNT-1),1), 0.0));
 
-  ASSERT(x_fade_stream.getStart()==100);
-  ASSERT(x_fade_stream.getEnd()==200);
+  ASSERT(fade_stream.getStart()==100);
+  ASSERT(fade_stream.getEnd()==200);
 
   // ================================================================
   // When both source stream and fade stream have definite extent, the
   // start time is 
-  // max(source->getStart(),fader->getStart()+(fader->getXFadeTime()/2))
+  // max(source->getStart(),fader->getStart()+(fader->getFadeTime()/2))
   // and end time is
-  // min(source->getEnd(),fader->getEnd()-(fader->getXFadeTime()/2))
+  // min(source->getEnd(),fader->getEnd()-(fader->getFadeTime()/2))
   //
   fprintf(stderr, "=== cropped source, start=105, end=195\n");
-  x_fade_stream.setSource(&crop_stream);
-  x_fade_stream.setStart(105).setEnd(195).setXFadeTime(10);
+  fade_stream.setSource(&crop_stream);
+  fade_stream.setStart(105).setEnd(195).setFadeTime(10);
 
-  x_fade_stream.step(buffer, 0, player);
+  fade_stream.step(buffer, 0, player);
 
   ASSERT(near(buffer(95,0), 0.0));
   ASSERT(near(buffer(95,1), 0.0));
@@ -458,21 +447,21 @@ int main() {
   ASSERT(near(buffer((FRAME_COUNT-1),0), 0.0));
   ASSERT(near(buffer((FRAME_COUNT-1),1), 0.0));
 
-  ASSERT(x_fade_stream.getStart()==100);
-  ASSERT(x_fade_stream.getEnd()==200);
+  ASSERT(fade_stream.getStart()==100);
+  ASSERT(fade_stream.getEnd()==200);
 
   // ================================================================
   // When both source stream and fade stream have definite extent, the
   // start time is 
-  // max(source->getStart(),fader->getStart()+(fader->getXFadeTime()/2))
+  // max(source->getStart(),fader->getStart()+(fader->getFadeTime()/2))
   // and end time is
-  // min(source->getEnd(),fader->getEnd()-(fader->getXFadeTime()/2))
+  // min(source->getEnd(),fader->getEnd()-(fader->getFadeTime()/2))
   //
   fprintf(stderr, "=== cropped source, start=110, end=190\n");
-  x_fade_stream.setSource(&crop_stream);
-  x_fade_stream.setStart(110).setEnd(190).setXFadeTime(10);
+  fade_stream.setSource(&crop_stream);
+  fade_stream.setStart(110).setEnd(190).setFadeTime(10);
 
-  x_fade_stream.step(buffer, 0, player);
+  fade_stream.step(buffer, 0, player);
 
   ASSERT(near(buffer(95,0), 0.0));
   ASSERT(near(buffer(95,1), 0.0));
@@ -553,17 +542,17 @@ int main() {
   ASSERT(near(buffer((FRAME_COUNT-1),0), 0.0));
   ASSERT(near(buffer((FRAME_COUNT-1),1), 0.0));
 
-  ASSERT(x_fade_stream.getStart()==105);
-  ASSERT(x_fade_stream.getEnd()==195);
+  ASSERT(fade_stream.getStart()==105);
+  ASSERT(fade_stream.getEnd()==195);
 
   // ================================================================
   // When start and end times are close together, it fades in and fades
   // out without reaching unity.
   fprintf(stderr, "=== cropped source, start=150, end=150\n");
-  x_fade_stream.setSource(&crop_stream);
-  x_fade_stream.setStart(150).setEnd(150).setXFadeTime(10);
+  fade_stream.setSource(&crop_stream);
+  fade_stream.setStart(150).setEnd(150).setFadeTime(10);
 
-  x_fade_stream.step(buffer, 0, player);
+  fade_stream.step(buffer, 0, player);
 
   ASSERT(near(buffer(140,0), 0.0));
   ASSERT(near(buffer(140,1), 0.0));
@@ -603,8 +592,8 @@ int main() {
   ASSERT(near(buffer((FRAME_COUNT-1),0), 0.0));
   ASSERT(near(buffer((FRAME_COUNT-1),1), 0.0));
 
-  ASSERT(x_fade_stream.getStart()==145);
-  ASSERT(x_fade_stream.getEnd()==155);
+  ASSERT(fade_stream.getStart()==145);
+  ASSERT(fade_stream.getEnd()==155);
 
   // ================================================================
   fprintf(stderr,"=== done\n");

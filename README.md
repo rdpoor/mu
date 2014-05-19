@@ -4,13 +4,10 @@ An experiment in blurring the lines between music composition and sound synthesi
 
 ## todo 
 
+* Debug FadeStream (better unit tests?)
 * Optimize a few inner loops (copy buffer, zero part of buffer...)
 * Can we change Tick to Seconds?
 * step() should return Stream * (not more specialized subclass).
-* Write ut_sequence_stream.cpp
-* Write a sound example based on SpliceStream.
-* Figure out if/how to unify SequenceStream and SpliceStream (and perhaps
-throw in variable length cross fades for good measure).
 * Beef up assert.c=>assert.cpp Create a tester object that can print
 out context, print on error only, print always, etc.
 * Write a Filter that changes pitch by resampling.  Needs to maintain state
@@ -36,6 +33,8 @@ over consecutive buffers.
 
 ## changelog 
 
+* 2014-05-17: Rename: XFadeStream => FadeStream. Stream::copy_buffer =>
+Stream::copyBuffer.  Stream::zero_buffer => Stream::ZeroBuffer.
 * 2014-05-17: wrote and tested XFadeStream.  Need a sound example
 that uses it.
 * 2014-05-15: cleaned up SpliceStream (i.e. fixed it).  mune23 is a
@@ -238,3 +237,21 @@ source signal, whichever comes earlier.
 If the x_fade does not have time to fade all the way in before
 starting to fade out, then there will be a smooth transition, even
 though the gain never reaches unity.
+
+### finding memory smashers
+
+My test examples have started to exibit non-repeatable crashes and
+malloc errors.  I suspect that I've written a memory smasher (or 
+two); the following may help find them:
+
+https://developer.apple.com/library/mac/documentation/performance/conceptual/managingmemory/Articles/MallocDebug.html
+
+"Run your program against libgmalloc.dylib in gdb. This library is an
+aggressive debugging malloc library that can help track down insidious
+bugs in your code. For more information, see the libgmalloc man page."
+
+https://developer.apple.com/library/mac/documentation/Darwin/Reference/ManPages/man3/libgmalloc.3.html
+https://developer.apple.com/library/mac/documentation/Darwin/Reference/ManPages/man3/malloc.3.html
+
+
+DYLD_INSERT_LIBRARIES=/usr/lib/libgmalloc.dylib
