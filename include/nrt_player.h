@@ -34,6 +34,7 @@ namespace mu {
 
     pthread_t processing_thread_;
     pthread_t current_processing_thread_;
+    pthread_t main_processing_thread_;
     stk::StkFrames stk_frames_;
 
   };                            // class NrtPlayer

@@ -24,7 +24,7 @@ namespace mu {
 
     // fprintf(stderr,"SineStream::step(tick=%ld)\n",tick);
 
-    for (Tick i=buffer.size()-1; i>=0; i--) { 
+    for (Tick i=0; i<buffer.frames(); i++) { 
       double t = (double)(tick + i)/buffer.dataRate();
       double value = amplitude_ * sin(t * 2.0 * M_PI * frequency_ + phase_);
       for (int j = 0; j < buffer.channels(); j++) {

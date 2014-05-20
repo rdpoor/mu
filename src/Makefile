@@ -5,6 +5,7 @@ SOURCES := \
 	delay_stream.cpp \
 	fade_stream.cpp \
 	file_read_stream.cpp \
+	file_write_stream.cpp \
 	identity_stream.cpp \
 	linseg_stream.cpp \
 	loop_stream.cpp \
@@ -32,8 +33,9 @@ OBJECTS := $(patsubst %.cpp,$(OBJECT_DIR)/%.o,$(SOURCES))
 
 CC      = g++
 DEFS    = 
-# CFLAGS  = -O3 -Wall
-CFLAGS = -O0 -Wall
+# TODO: Switch flags via command line args
+CFLAGS  = -O3 -Wall
+# CFLAGS = -g -O0 -Wall
 IFLAGS  = -I$(INCLUDE_DIR) -I../tarballs/stk-4.4.4/include
 
 $(OBJECT_DIR)/%.o : %.cpp $(INCLUDE_DIR)/%.h $(INCLUDE_DIR)/mu.h

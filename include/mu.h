@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include "Stk.h"
 #include "tick_indefinite.h"
+#include <math.h>
 
 namespace mu {
 
@@ -29,6 +30,8 @@ namespace mu {
   template <class T> const T& clamp(const T& min, const T& val, const T& max) {
     return (val < min) ? min : ((val > max) ? max : val);
   }
+
+  double dbToValue(double db);
 
 };
 

@@ -596,6 +596,82 @@ int main() {
   ASSERT(fade_stream.getEnd()==155);
 
   // ================================================================
+  // coverage tests
+
+  fprintf(stderr, "=== Coverage A\n");
+  fade_stream.setSource(NULL).setStart(mu::kIndefinite).setEnd(mu::kIndefinite).setFadeTime(100);
+  fade_stream.step(buffer, 0, player);
+
+  ASSERT(near(buffer(0,0), 0.0));
+  ASSERT(near(buffer(0,1), 0.0));
+  ASSERT(near(buffer(buffer.frames()-1, 0), 0.0));
+  ASSERT(near(buffer(buffer.frames()-1, 1), 0.0));
+
+  fprintf(stderr, "=== Coverage B\n");
+  // intentionally set end before start
+  fade_stream.setSource(&constant_stream).setStart(200).setEnd(100).setFadeTime(100);
+  fade_stream.step(buffer, 0, player);
+
+  ASSERT(near(buffer(0,0), 0.0));
+  ASSERT(near(buffer(0,1), 0.0));
+  ASSERT(near(buffer(100,0), 0.0));
+  ASSERT(near(buffer(100,1), 0.0));
+  ASSERT(near(buffer(150,0), 0.0));
+  ASSERT(near(buffer(150,1), 0.0));
+  ASSERT(near(buffer(200,0), 0.0));
+  ASSERT(near(buffer(200,1), 0.0));
+  ASSERT(near(buffer(buffer.frames()-1, 0), 0.0));
+  ASSERT(near(buffer(buffer.frames()-1, 1), 0.0));
+
+  fprintf(stderr, "=== Coverage C\n");
+  fade_stream.setSource(&constant_stream).setStart(150).setEnd(150).setFadeTime(10);
+  fade_stream.step(buffer, 0, player);
+
+  ASSERT(near(buffer(0,0), 0.0));
+  ASSERT(near(buffer(0,1), 0.0));
+  ASSERT(near(buffer(145,0), 0.0));
+  ASSERT(near(buffer(145,1), 0.0));
+  ASSERT(near(buffer(150,0), 0.5));
+  ASSERT(near(buffer(150,1), 0.5));
+  ASSERT(near(buffer(155,0), 0.0));
+  ASSERT(near(buffer(155,1), 0.0));
+  ASSERT(near(buffer(buffer.frames()-1, 0), 0.0));
+  ASSERT(near(buffer(buffer.frames()-1, 1), 0.0));
+
+  fprintf(stderr, "=== Coverage D, E, G, H\n");
+  fade_stream.setSource(&constant_stream).setStart(120).setEnd(180).setFadeTime(10);
+  fade_stream.step(buffer, 0, player);
+
+  ASSERT(near(buffer(0,0), 0.0));
+  ASSERT(near(buffer(0,1), 0.0));
+  ASSERT(near(buffer(115,0), 0.0));
+  ASSERT(near(buffer(115,1), 0.0));
+  ASSERT(near(buffer(125,0), 1.0));
+  ASSERT(near(buffer(125,1), 1.0));
+  ASSERT(near(buffer(175,0), 1.0));
+  ASSERT(near(buffer(175,1), 1.0));
+  ASSERT(near(buffer(buffer.frames()-1, 0), 0.0));
+  ASSERT(near(buffer(buffer.frames()-1, 1), 0.0));
+
+  fprintf(stderr, "=== Coverage F\n");
+  fade_stream.setSource(&constant_stream).setStart(0).setEnd(2000).setFadeTime(10);
+  fade_stream.step(buffer, 512, player);
+
+  ASSERT(near(buffer(0,0), 1.0));
+  ASSERT(near(buffer(0,1), 1.0));
+  ASSERT(near(buffer(buffer.frames()-1, 0), 1.0));
+  ASSERT(near(buffer(buffer.frames()-1, 1), 1.0));
+
+  fprintf(stderr, "=== Coverage I\n");
+  fade_stream.setSource(&constant_stream).setStart(0).setEnd(512).setFadeTime(10);
+  fade_stream.step(buffer, 517, player);
+
+  ASSERT(near(buffer(0,0), 0.0));
+  ASSERT(near(buffer(0,1), 0.0));
+  ASSERT(near(buffer(buffer.frames()-1, 0), 0.0));
+  ASSERT(near(buffer(buffer.frames()-1, 1), 0.0));
+
+  // ================================================================
   fprintf(stderr,"=== done\n");
   return 0;
 

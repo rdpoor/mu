@@ -9,6 +9,7 @@
  * a time.  Add all the strings together with an addStream
  * at the end.
  */
+#include "delay_stream.h"
 #include "file_read_stream.h"
 #include "loop_stream.h"
 #include "mu.h"
@@ -20,9 +21,10 @@
 
 #define Q (3306)
 
-mu::Stream *getSoundFile(std::string file_name) {
+mu::Stream *getSoundFile(std::string file_name, mu::Tick delay) {
   mu::FileReadStream *frs = &((new mu::FileReadStream())->fileName(file_name).doNormalize(true));
-  return frs;
+  mu::DelayStream *ds = &((new mu::DelayStream())->setDelay(delay).setSource(frs));
+  return ds;
   // mu::CropStream *cs = &(new mu::CropStream())->setSource(frs).setStart(0);
   // return cs;
 }
@@ -32,10 +34,10 @@ int main() {
   mu::LoopStream loop_stream;
   mu::RtPlayer player;
 
-  splice_stream.addSource(getSoundFile(SOUND_DIR "A4" ".wav"), 0.0*Q);
-  splice_stream.addSource(getSoundFile(SOUND_DIR "C5" ".wav"), 1.0*Q);
-  splice_stream.addSource(getSoundFile(SOUND_DIR "E5" ".wav"), 2.0*Q);
-  splice_stream.addSource(getSoundFile(SOUND_DIR "F#5" ".wav"), 3.0*Q);
+  splice_stream.addSource(getSoundFile(SOUND_DIR "A4" ".wav", 0.0*Q));
+  splice_stream.addSource(getSoundFile(SOUND_DIR "C5" ".wav", 1.0*Q));
+  splice_stream.addSource(getSoundFile(SOUND_DIR "E5" ".wav", 2.0*Q));
+  splice_stream.addSource(getSoundFile(SOUND_DIR "F#5" ".wav", 3.0*Q));
 
   loop_stream.setSource(&splice_stream).setLoopDuration(splice_stream.getEnd());
   player.setSource(&loop_stream);
