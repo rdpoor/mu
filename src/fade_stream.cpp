@@ -1,5 +1,10 @@
 #include "fade_stream.h"
 
+// #define COVERAGE_CHECK(x) fprintf(stderr,x)
+#define COVERAGE_CHECK(x)
+// #define SEQUENCE_CHECK(x) fprintf(stderr,x)
+#define SEQUENCE_CHECK(x)
+
 namespace mu {
 
   FadeStream::FadeStream() : 
@@ -25,7 +30,19 @@ namespace mu {
   FadeStream& FadeStream::step(stk::StkFrames& buffer, 
                                  Tick tick, 
                                  Player& player) {
+
+    // 11264 - 11418
+    // ###
+    // bug hunting. I suspect the buffer is not always
+    // getting written.
+    for (long int i=0; i<buffer.frames(); i++) {
+      for (int j=0; j<buffer.channels(); j++) {
+        buffer(i,j) = 0.5;
+      }
+    }
+
     if (source_ == NULL) {
+      COVERAGE_CHECK("FadeSteam::step() A\n");
       zeroBuffer(buffer);
       return *this;
     }
@@ -81,18 +98,28 @@ namespace mu {
     if ((t1 != kIndefinite) && (t4 != kIndefinite)) {
       if (t1 >= t4) {
         // can this happen?  Never fade in...
-        t1 = LONG_MIN;
-        t2 = LONG_MIN;
-        t3 = LONG_MAX;
-        t4 = LONG_MAX;
+        COVERAGE_CHECK("FadeSteam::step() B\n");
+        t1 = LONG_MAX;
+        t2 = LONG_MAX;
+        t3 = LONG_MIN;
+        t4 = LONG_MIN;
       } else if (t2 >= t3) {
         // fade out starts before fade in completes
+        COVERAGE_CHECK("FadeSteam::step() C\n");
         t2 = t3 = (t2 + t3) / 2;
       }
     }
 
-    // At this point, t0..t5 descibe all the breakpoints.
+    // At this point, t0..t5 descibe all the breakpoints:
+    // t0 <= t < t1: result is zero (not yet faded in)
+    // t1 <= t < t2: fade in linearly over fade_time_ samples
+    // t2 <= t < t3: fully faded in
+    // t3 <= t < t4: fade out linearly over fade_time_ samples
+    // t4 <= t < t5: result is zero (fully faded out)
+
     Tick x0, x1, dx;
+
+    // fprintf(stderr, "%ld, %ld: %ld, %ld, %ld, %ld\n", buf_s, buf_e, t1, t2, t3, t4);
 
     // Write zeros between t0 and t1
     x0 = buf_s;                 // std::max(t0, buf_s);
@@ -101,10 +128,13 @@ namespace mu {
     if (dx > 0) {
       // some zeros get written in this buffer.
       // TODO: abstract out and optimize this loop
+      // TODO: optimize for dx == buffer.frames()
+      SEQUENCE_CHECK("A");
+      COVERAGE_CHECK("FadeSteam::step() D\n");
       long int i, x;
       for (i=0, x=x0; i<dx; i++, x++) {
         for (long int j=0; j<buffer.channels(); j++) {
-          buffer(x, j) = 0.0;
+          buffer(x-buf_s, j) = 0.0;
         }
       }
       if (x1 == buf_e) return *this;
@@ -116,15 +146,19 @@ namespace mu {
     dx = x1 - x0;
     if (dx > 0) {
       // some ramp up happens in this buffer.
+      SEQUENCE_CHECK("B");
+      COVERAGE_CHECK("FadeSteam::step() E\n");
       buffer_.resize(dx, buffer.channels());
       source_->step(buffer_, x0, player);
+
+      // fprintf(stderr,"x0=%ld, x1=%ld, dx=%ld\n", x0, x1, dx);
 
       long int x, i;
       for (i=0, x=x0; i<dx; i++, x++) {
         // gain is 0 when x=t1, ramps up as x increases
         double gain = dGdT * (x - t1);
         for (int j=0; j<buffer.channels(); j++) {
-          buffer(x, j) = buffer_(i, j) * gain;
+          buffer(x-buf_s, j) = buffer_(i, j) * gain;
         }
       }
       if (x1 == buf_e) return *this;
@@ -136,10 +170,14 @@ namespace mu {
     dx = x1 - x0;
     if (dx == buffer.frames()) {
       // copy buffer verbatim
+      SEQUENCE_CHECK("C");
+      COVERAGE_CHECK("FadeSteam::step() F\n");
       source_->step(buffer, tick, player);
       return *this;
     } else if (dx > 0) {
       // copy some frames verbatim
+      SEQUENCE_CHECK("D");
+      COVERAGE_CHECK("FadeSteam::step() G\n");
       buffer_.resize(dx, buffer.channels());
       source_->step(buffer_, x0, player);
       copyBuffer(buffer_, 0, buffer, x0-buf_s, dx);
@@ -151,16 +189,18 @@ namespace mu {
     x1 = std::min(t4, buf_e);
     dx = x1 - x0;
     if (dx > 0) {
-      // some ramp up happens in this buffer.
+      // some ramp down happens in this buffer.
+      SEQUENCE_CHECK("E");
+      COVERAGE_CHECK("FadeSteam::step() H\n");
       buffer_.resize(dx, buffer.channels());
       source_->step(buffer_, x0, player);
 
       long int x, i;
       for (i=0, x=x0; i<dx; i++, x++) {
         // gain is zero when x = t4, ramps down towards there
-        double g = dGdT * (t4 - x);
+        double gain = dGdT * (t4 - x);
         for (int j=0; j<buffer.channels(); j++) {
-          buffer(x, j) = buffer_(i, j) * g;
+          buffer(x-buf_s, j) = buffer_(i, j) * gain;
         }
       }
       if (x1 == buf_e) return *this;
@@ -172,10 +212,13 @@ namespace mu {
     dx = x1 - x0;
     if (dx > 0) {
       // some zeros get written in this buffer.
+      // TODO: optimize for dx == buffer.frames()
       long int i, x;
+      SEQUENCE_CHECK("F");
+      COVERAGE_CHECK("FadeSteam::step() I\n");
       for (i=0, x=x0; i<dx; i++, x++) {
         for (long int j=0; j<buffer.channels(); j++) {
-          buffer(x, j) = 0.0;
+          buffer(x-buf_s, j) = 0.0;
         }
       }
       if (x1 == buf_e) return *this;

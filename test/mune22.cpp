@@ -21,12 +21,10 @@
 
 #define Q (3306)
 
-mu::Stream *getSoundFile(std::string file_name, mu::Tick t) {
+mu::Stream *getSoundFile(std::string file_name, mu::Tick delay) {
   mu::FileReadStream *frs = &((new mu::FileReadStream())->fileName(file_name).doNormalize(true));
-  mu::DelayStream *ds = &(new mu::DelayStream())->setSource(frs).setDelay(t);
+  mu::DelayStream *ds = &((new mu::DelayStream())->setDelay(delay).setSource(frs));
   return ds;
-  // mu::CropStream *cs = &(new mu::CropStream())->setSource(frs).setStart(0);
-  // return cs;
 }
 
 int main() {

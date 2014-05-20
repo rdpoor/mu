@@ -19,6 +19,9 @@ namespace mu {
       // TODO: protect updating of tick_ within a mutex (but right
       // now, nobody in the fg thread looks at tick_).
       tick_ += frame_size_;
+      if ((source_->getEnd() != kIndefinite) && (tick_ >= source_->getEnd())) {
+        stop();
+      }
     }
     is_running_ = false;
     return NULL;
@@ -41,6 +44,7 @@ namespace mu {
   NrtPlayer& NrtPlayer::start() {
     TRACE("NrtPlayer::start()\n");
     if (!is_running_enabled_) {
+      main_processing_thread_ = pthread_self();      
       int rc = pthread_create(&processing_thread_, NULL, process, (void *)this);
       if (rc) {
          printf("ERROR; return code from pthread_create() is %d\n", rc);
@@ -65,7 +69,7 @@ namespace mu {
       } else {
         // modify current_processing_thread_, which processingLoop()
         // will notice on next buffer and gracefully stop.
-        current_processing_thread_ = pthread_self();
+        current_processing_thread_ = main_processing_thread_;
       }
     }
     return *this;

@@ -64,7 +64,7 @@ protected:
 
 mu::Stream *makeNote(StreamSet *ss, mu::Tick start, mu::Tick duration, int pitch) {
   mu::Stream *s = ss->findStream(pitch);
-#if 0
+#if 1
   mu::CropStream *cs = &(new mu::CropStream())->
     setStart(0).
     setEnd(duration * 1.5).

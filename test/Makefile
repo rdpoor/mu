@@ -7,12 +7,15 @@ SKETCH_TARGETS := $(patsubst %.cpp,%,$(wildcard sketch_*.cpp))
 ALL_TARGETS := $(INTEGRATION_TEST_TARGETS) $(UNIT_TEST_TARGETS) $(SKETCH_TARGETS)
 
 CC       = g++
-CFLAGS   = -O3 -Wall # or perhaps -O0 -g -Wall
+# TODO: switch flags via command line arg
+CFLAGS   = -O3 -Wall
+# CFLAGS   = -O0 -g -Wall
 DEFS     = -DHAVE_GETTIMEOFDAY -D__MACOSX_CORE__ -D__LITTLE_ENDIAN__
 INCLUDES = -I../include -I../tarballs/stk-4.4.4/include
 MULIB   := ../obj/*.o
-// STKLIB  := ../tarballs/stk-4.4.4/src/Release/*.o
-STKLIB  := ../tarballs/stk-4.4.4/src/Debug/*.o
+# TODO: switch libraries via command line arg
+STKLIB  := ../tarballs/stk-4.4.4/src/Release/*.o
+# STKLIB  := ../tarballs/stk-4.4.4/src/Debug/*.o
 LIBRARY  = -lpthread -framework CoreAudio -framework CoreFoundation -framework CoreMidi
 
 .PHONY:	clean

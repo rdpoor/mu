@@ -46,6 +46,10 @@ namespace mu {
     unsigned int sample_count = frame_count * channel_count_;
     for (int i=sample_count-1; i>=0; i--) { *dst++ = *src++; }
 
+    if ((source_->getEnd() != kIndefinite) && (tick_ >= source_->getEnd())) {
+      stop();
+    }
+
     return 0;
   }
   

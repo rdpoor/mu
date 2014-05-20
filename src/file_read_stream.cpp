@@ -8,7 +8,7 @@ namespace mu {
     TRACE("FileReadStream::FileReadStream()\n");
   }
 
-  FileReadStream::~FileReadStream() {
+ FileReadStream::~FileReadStream() {
     TRACE("FileReadStream::~FileReadStream()\n");
   }
   
@@ -17,8 +17,8 @@ namespace mu {
   }
 
   FileReadStream& FileReadStream::step(stk::StkFrames& buffer, 
-                               Tick tick,
-                               Player& player) {
+                                       Tick tick,
+                                       Player& player) {
     // fprintf(stderr,"FileReadStream::%p.step(%p, %ld, %p)\n", this, &buffer, tick, &player);
     // fprintf(stderr,"FRS: A %s ", file_name_.c_str());
     if (!file_read_.isOpen()) {
