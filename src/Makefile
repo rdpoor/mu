@@ -18,6 +18,7 @@ SOURCES := \
 	player.cpp \
 	probability_stream.cpp \
 	random_select_stream.cpp \
+	resample_stream.cpp \
 	rt_player.cpp \
 	sequence_stream.cpp \
 	sine_stream.cpp \
