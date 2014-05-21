@@ -276,3 +276,14 @@ Anyway, a lot of problems were solved when I changed:
     for (Tick i=0; i<buffer.size(); i++) { 
 to
     for (Tick i=0; i<buffer.frames(); i++) { 
+
+### PolarPlayStream
+
+I might call this PolarPlayStream instead, since the math works out
+nicely if you give it two inputs: theta and z.  Theta controls the
+instantaneous phase of the playback (cycling through the original
+waveform) and z controls (effectively) what part of the waveform is
+being played.  
+
+Anyway, look up bilinear interpolation when the time comes to write
+the beast.
