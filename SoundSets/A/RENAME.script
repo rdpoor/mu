@@ -1,0 +1,105 @@
+# Finger plucked ukulele sound set for "The Flight of Bumble Bee"
+# 
+# A single sound file may have three names:
+# 
+# 70.wav   (midi name)
+# as4.wav  (scientific name)
+# bf4.wav  (scientific name)
+# 
+# This script takes the midi named files and creates links
+# for the "scientific" names
+
+ln 33.wav a1.wav
+ln 34.wav as1.wav
+ln 34.wav bf1.wav
+ln 35.wav b1.wav
+ln 36.wav c2.wav
+ln 37.wav cs2.wav
+ln 37.wav df2.wav
+ln 38.wav d2.wav
+ln 39.wav ds2.wav
+ln 39.wav ef2.wav
+ln 40.wav e2.wav
+ln 41.wav f2.wav
+ln 42.wav fs2.wav
+ln 42.wav gf2.wav
+ln 43.wav g2.wav
+ln 44.wav gs2.wav
+ln 44.wav af2.wav
+
+ln 45.wav a2.wav
+ln 46.wav as2.wav
+ln 46.wav bf2.wav
+ln 47.wav b2.wav
+ln 48.wav c3.wav
+ln 49.wav cs3.wav
+ln 49.wav df3.wav
+ln 50.wav d3.wav
+ln 51.wav ds3.wav
+ln 51.wav ef3.wav
+ln 52.wav e3.wav
+ln 53.wav f3.wav
+ln 54.wav fs3.wav
+ln 54.wav gf3.wav
+ln 55.wav g3.wav
+ln 56.wav gs3.wav
+ln 56.wav af3.wav
+
+ln 57.wav a3.wav
+ln 58.wav as3.wav
+ln 58.wav bf3.wav
+ln 59.wav b3.wav
+ln 60.wav c4.wav
+ln 61.wav cs4.wav
+ln 61.wav df4.wav
+ln 62.wav d4.wav
+ln 63.wav ds4.wav
+ln 63.wav ef4.wav
+ln 64.wav e4.wav
+ln 65.wav f4.wav
+ln 66.wav fs4.wav
+ln 66.wav gf4.wav
+ln 67.wav g4.wav
+ln 68.wav gs4.wav
+ln 68.wav af4.wav
+
+ln 69.wav a4.wav
+ln 70.wav as4.wav
+ln 70.wav bf4.wav
+ln 71.wav b4.wav
+ln 72.wav c5.wav
+ln 73.wav cs5.wav
+ln 73.wav df5.wav
+ln 74.wav d5.wav
+ln 75.wav ds5.wav
+ln 75.wav ef5.wav
+ln 76.wav e5.wav
+ln 77.wav f5.wav
+ln 78.wav fs5.wav
+ln 78.wav gf5.wav
+ln 79.wav g5.wav
+ln 80.wav gs5.wav
+ln 80.wav af5.wav
+
+ln 81.wav a5.wav
+ln 82.wav as5.wav
+ln 82.wav bf5.wav
+ln 83.wav b5.wav
+ln 84.wav c6.wav
+ln 85.wav cs6.wav
+ln 85.wav df6.wav
+ln 86.wav d6.wav
+ln 87.wav ds6.wav
+ln 87.wav ef6.wav
+ln 88.wav e6.wav
+ln 89.wav f6.wav
+ln 90.wav fs6.wav
+ln 90.wav gf6.wav
+ln 91.wav g6.wav
+ln 92.wav gs6.wav
+ln 92.wav af6.wav
+
+ln 93.wav a6.wav
+ln 94.wav as6.wav
+ln 94.wav bf6.wav
+ln 95.wav b6.wav

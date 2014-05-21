@@ -1,0 +1,66 @@
+# Finger plucked ukulele sound set for "The Flight of Bumble Bee"
+# 
+# A single sound file may have three names:
+# 
+# 70.wav
+# as4.wav
+# bf4.wav
+# 
+# Notes from 60.wav (C4) to 83.wav (B5) are original ukulele notes.
+# Since FOBB needs notes from 33.wav (A1) to 93.wav (A6), we have
+# resampled existing notes to make up the rest.  A sox command for
+# shifting pitch down one octave (straight speed change):
+# 
+#   sox -S 60.wav 48.wav speed -1200c
+# 
+# To shift up using pitch shifting algorithm, 
+#
+#   sox -S 72.wav 84.wav pitch 1200
+
+# script:
+
+sox -S 69.wav 33.wav speed -3600c
+sox -S 70.wav 34.wav speed -3600c
+sox -S 71.wav 35.wav speed -3600c
+
+sox -S 60.wav 36.wav speed -2400c
+sox -S 61.wav 37.wav speed -2400c
+sox -S 62.wav 38.wav speed -2400c
+sox -S 63.wav 39.wav speed -2400c
+sox -S 64.wav 40.wav speed -2400c
+sox -S 65.wav 41.wav speed -2400c
+sox -S 66.wav 42.wav speed -2400c
+sox -S 67.wav 43.wav speed -2400c
+sox -S 68.wav 44.wav speed -2400c
+sox -S 69.wav 45.wav speed -2400c
+sox -S 70.wav 46.wav speed -2400c
+sox -S 71.wav 47.wav speed -2400c
+
+sox -S 60.wav 48.wav speed -1200c
+sox -S 61.wav 49.wav speed -1200c
+sox -S 62.wav 50.wav speed -1200c
+sox -S 63.wav 51.wav speed -1200c
+sox -S 64.wav 52.wav speed -1200c
+sox -S 65.wav 53.wav speed -1200c
+sox -S 66.wav 54.wav speed -1200c
+sox -S 67.wav 55.wav speed -1200c
+sox -S 68.wav 56.wav speed -1200c
+sox -S 69.wav 57.wav speed -1200c
+sox -S 70.wav 58.wav speed -1200c
+sox -S 71.wav 59.wav speed -1200c
+
+# to up-shift, we use the pitch algo rather than
+# the speed algo, otherwise durations are too short.
+
+sox -S 72.wav 84.wav pitch 1200
+sox -S 73.wav 85.wav pitch 1200
+sox -S 74.wav 86.wav pitch 1200
+sox -S 75.wav 87.wav pitch 1200
+sox -S 76.wav 88.wav pitch 1200
+sox -S 77.wav 89.wav pitch 1200
+sox -S 78.wav 90.wav pitch 1200
+sox -S 79.wav 91.wav pitch 1200
+sox -S 80.wav 92.wav pitch 1200
+sox -S 81.wav 93.wav pitch 1200
+sox -S 82.wav 94.wav pitch 1200
+sox -S 83.wav 95.wav pitch 1200
