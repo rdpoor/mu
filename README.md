@@ -4,24 +4,18 @@ An experiment in blurring the lines between music composition and sound synthesi
 
 ## todo 
 
+* Make it easy to run unit tests with libgmalloc turned on.
 * Write unit test for FileReadStream and FileWriteStream.
-* Create ResampleStream to mess with time.
 * Stop Player when tick >= source.getEnd().  Clean up implementations.
 * FOTB!  See http://www.classicalmidiconnection.com/romantic.html#R
-* Fix integration tests so all terminate without kill -9
 * Debug FadeStream (better unit tests?)  Fixed!
 * Create MU_DEBUG switch for makefile(s) to use debug libs, etc.
 * Optimize a few inner loops (copy buffer, zero part of buffer...)
-* Can we change Tick to Seconds?
+* Can we (should we?) change Tick to Seconds?
 * step() should return Stream * (not more specialized subclass).
 * Beef up assert.c=>assert.cpp Create a tester object that can print
 out context, print on error only, print always, etc.
-* Write a Filter that changes pitch by resampling.  Needs to maintain state
-over consecutive buffers.
-* FileReadStream should allow negative Tick times
-* Create a stream that fiddles with time: t' = t0 + k*t.  (Oog -- am I
-  going to regret using an integer frame counter?)
-* What's a clean way to separate frame time (pitch) from gesture time (tempo)?
+* FileReadStream should allow negative Tick times (implicit crop)
 * Create F(t)Stream and test file.
 * setSource() and related should check for compatible frameRate(), channelCount()
 * setSource() and related should check for circular loops.
@@ -263,44 +257,6 @@ https://developer.apple.com/library/mac/documentation/Darwin/Reference/ManPages/
 
 
 DYLD_INSERT_LIBRARIES=/usr/lib/libgmalloc.dylib
-
-### ResampleStream
-
-Suddenly, this seems easy.  A ResampleStream takes two inputs: a
-source Stream and a timing Stream.  The source Stream behaves like any
-ordinary stream.  The timing stream maps between real time and warped
-time: 
-
-    timing[T] = T'
-
-T' is the time of the original sample that gets played in real time at
-time T.  So if timing is a linear ramp with a slope of 1, the output
-equals the original signal.  If timing has a slope of 0.5, the
-original signal is played back at half speed.  And of course, timing
-can can ramp down, in which case the original signal is played
-backwards.
-
-Inside ResampleStream, step() calls timing_.step(buffer1_), which
-describes the temporal extent of the resulting sound.  t0 =
-floor(min(buffer_)) and t1 = ceiling(max(buffer_)), and then:
-
-    buffer2_.resize((t1 - t0), buffer.channels());
-    source_.step(buffer2_, t0, player)
-
-buffer2_ now contains all the samples we need to perform linear
-interpolation:
-
-    for (int i=0; i<buffer.frames(); i++) {
-      Time xp = tbuffer_[i];
-      Time x0 = floor(xp);
-      Time dx = xp - x0;
-      for (int j=0; j<buffer.channels(); j++) {
-        double y0, y1;
-        y0 = sbuffer_(x0, j);
-        y1 = sbuffer_(x0+1, j);
-        buffer(i, j) = y0 + (y1 - y0) * dx;
-      }
-    }
 
 ### Finding memory smashers
 
