@@ -73,18 +73,21 @@ mu::Stream *makeNote(StreamSet *ss, mu::Tick start, mu::Tick duration, int pitch
     setDelay(start).
     setSource(cs);
   mu::FadeStream *fs = &(new mu::FadeStream())->
-    setFadeTime(200).
+    setFadeTime(100).
     setSource(ds);
   return fs;
 #else
   mu::CropStream *cs = &(new mu::CropStream())->
     setStart(0).
-    setEnd(duration * 1.5).
+    setEnd(duration * 3.5).
     setSource(s);
   mu::DelayStream *ds = &(new mu::DelayStream())->
     setDelay(start).
     setSource(cs);
-  return ds;
+  mu::FadeStream *fs = &(new mu::FadeStream())->
+    setFadeTime(8000).
+    setSource(ds);
+  return fs;
 #endif
 }
 
