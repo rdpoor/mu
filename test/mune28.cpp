@@ -299,8 +299,8 @@ int main() {
   reverb_stream.setSource(dynamics.getStream());
   reverb_stream.setRatio(0.25);
 
-  // write and play the multiply_steam
-  file_write_stream.setSource(&reverb_stream).setFileName("/Users/r/Projects/Mu/Scores/fotb.wav");
+  // write and play the result
+  file_write_stream.setSource(&reverb_stream).setFileName("/Users/r/Projects/Mu/Scores/fotu.wav");
   player.setSource(&file_write_stream);
 
   // create some handy dynamics
@@ -335,7 +335,7 @@ int main() {
   dynamics.setTime(0);
 
   // a little intro...
-  dynamics.rest(dur_h*8);
+  dynamics.set(dur_h*8, dyn_p);
   right_hand.note(dur_h, "e5", 0.8);
   right_hand.note(dur_h, "c5", 0.8);
   right_hand.note(dur_h, "a4", 0.8);
@@ -348,7 +348,7 @@ int main() {
   right_hand.rest(dur_h);
   left_hand.rest(dur_h);
   dynamics.rest(dur_h);
-  
+
   // p1.1
   printf("page 1.1 lh time = %f\n", left_hand.getTime());
   printf("page 1.1 rh time = %f\n", right_hand.getTime());
@@ -1321,12 +1321,12 @@ int main() {
   right_hand.note(dur_s, "bf5", legato);
   right_hand.note(dur_s, "a5", legato);
   right_hand.note(dur_s, "gs5", legato);
-
   dynamics.rest(dur_h);
   left_hand.chord(dur_e, "f4", "a4", "d5", "", "", staccato, small_arpeggio);
   left_hand.rest(dur_e);
-  left_hand.chord(dur_e, "d4", "g4", "b5", "", "", staccato, small_arpeggio);
+  left_hand.chord(dur_e, "d4", "g4", "b4", "", "", staccato, small_arpeggio);
   left_hand.rest(dur_e);
+
   right_hand.note(dur_s, "a5", legato);
   right_hand.note(dur_s, "af5", legato);
   right_hand.note(dur_s, "g5", legato);
@@ -1757,7 +1757,6 @@ int main() {
   left_hand.rest(dur_e + dur_q);
   right_hand.note(dur_e, "a3", staccato);
   right_hand.rest(dur_e + dur_q);
-
 
   // fin
   printf("page 5.5 lh time = %f\n", left_hand.getTime());
