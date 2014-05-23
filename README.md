@@ -7,8 +7,6 @@ An experiment in blurring the lines between music composition and sound synthesi
 * Make it easy to run unit tests with libgmalloc turned on.
 * Write unit test for FileReadStream and FileWriteStream.
 * Stop Player when tick >= source.getEnd().  Clean up implementations.
-* FOTB!  See http://www.classicalmidiconnection.com/romantic.html#R
-* Debug FadeStream (better unit tests?)  Fixed!
 * Create MU_DEBUG switch for makefile(s) to use debug libs, etc.
 * Optimize a few inner loops (copy buffer, zero part of buffer...)
 * Can we (should we?) change Tick to Seconds?
@@ -267,8 +265,8 @@ See https://developer.apple.com/library/mac/documentation/Darwin/Reference/ManPa
 for a good treatment (including running lldb).
 
 It would be useful to run unit tests under libgmalloc.  It would also
-be useful to be able to use a command line definition to `make` to select
-debugging flags (-O0 -g -Wall) vs (-03 -Wall).
+be useful to be able to use a command line definition to `make` to
+select debugging flags (-O0 -g -Wall) vs (-03 -Wall).
 
 Anyway, a lot of problems were solved when I changed:
 
@@ -279,11 +277,11 @@ to
 
 ### PolarPlayStream
 
-I might call this PolarPlayStream instead, since the math works out
-nicely if you give it two inputs: theta and z.  Theta controls the
-instantaneous phase of the playback (cycling through the original
-waveform) and z controls (effectively) what part of the waveform is
-being played.  
+I might call RasterPlayStream "PolarPlayStream" instead, since the
+math works out nicely if you give it two inputs: theta (0..2PI) and z
+(0..1).  Theta controls the instantaneous phase of the playback
+(cycling through the original waveform) and z controls (effectively)
+what part of the waveform is being played.
 
 Anyway, look up bilinear interpolation when the time comes to write
 the beast.
