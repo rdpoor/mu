@@ -23,6 +23,7 @@ SOURCES := \
 	sequence_stream.cpp \
 	sine_stream.cpp \
 	single_source_stream.cpp \
+	splay_stream.cpp \
 	splice_stream.cpp \
 	stream.cpp \
 	tik.cpp
@@ -35,8 +36,8 @@ OBJECTS := $(patsubst %.cpp,$(OBJECT_DIR)/%.o,$(SOURCES))
 CC      = g++
 DEFS    = 
 # TODO: Switch flags via command line args
-CFLAGS  = -O3 -Wall
-# CFLAGS = -g -O0 -Wall
+# CFLAGS  = -O3 -Wall
+CFLAGS = -g -O0 -Wall
 IFLAGS  = -I$(INCLUDE_DIR) -I../tarballs/stk-4.4.4/include
 
 $(OBJECT_DIR)/%.o : %.cpp $(INCLUDE_DIR)/%.h $(INCLUDE_DIR)/mu.h

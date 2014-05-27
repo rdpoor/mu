@@ -8,8 +8,8 @@ ALL_TARGETS := $(INTEGRATION_TEST_TARGETS) $(UNIT_TEST_TARGETS) $(SKETCH_TARGETS
 
 CC       = g++
 # TODO: switch flags via command line arg
-CFLAGS   = -O3 -Wall
-# CFLAGS   = -O0 -g -Wall
+# CFLAGS   = -O3 -Wall
+CFLAGS   = -O0 -g -Wall
 DEFS     = -DHAVE_GETTIMEOFDAY -D__MACOSX_CORE__ -D__LITTLE_ENDIAN__
 INCLUDES = -I../include -I../tarballs/stk-4.4.4/include
 MULIB   := ../obj/*.o

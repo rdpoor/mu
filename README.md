@@ -4,6 +4,9 @@ An experiment in blurring the lines between music composition and sound synthesi
 
 ## todo 
 
+* Add MIT Licence headers
+* Add doxygen comments
+* Add 'make docs' to Makefile
 * Make it easy to run unit tests with libgmalloc turned on.
 * Write unit test for FileReadStream and FileWriteStream.
 * Stop Player when tick >= source.getEnd().  Clean up implementations.
@@ -17,6 +20,7 @@ out context, print on error only, print always, etc.
 * Create F(t)Stream and test file.
 * setSource() and related should check for compatible frameRate(), channelCount()
 * setSource() and related should check for circular loops.
+* Write a generalized graph traversal method for inspect and loop detection.
 * Think about mono to stereo (and stereo to mono) stream elements: pan.
 * Think about automatic conversion from mono to stereo -- what happens
   when you connect a mono source to a stereo stream object?  Should that
@@ -27,6 +31,7 @@ out context, print on error only, print always, etc.
   distinct from Transport.stop()?
 * Add command line parsing such as argp.h
 * Create mu/Makefile to make all sub-projects: mu, test, stk
+* Rename Stream => SP (StreamProcessor) for brevity and clarity.  Or not.
 
 ## changelog 
 
@@ -275,13 +280,24 @@ Anyway, a lot of problems were solved when I changed:
 to
     for (Tick i=0; i<buffer.frames(); i++) { 
 
-### PolarPlayStream
+### SplayStream
 
-I might call RasterPlayStream "PolarPlayStream" instead, since the
-math works out nicely if you give it two inputs: theta (0..2PI) and z
-(0..1).  Theta controls the instantaneous phase of the playback
-(cycling through the original waveform) and z controls (effectively)
-what part of the waveform is being played.
+SplayStream gives you independent control of pitch and "position"
+within a sampled sound.  Theta controls the instantaneous phase of the
+playback and phi controls the part of the waveform being played.
 
-Anyway, look up bilinear interpolation when the time comes to write
-the beast.
+In the current implementation, phi is in units of periods.  It might
+be easier in the long run if it was simply in units of (original)
+frames, or the original length of the sample.
+
+The current implementation works, but generates a lot of artifacts
+when time is moving slowly or pitch is shifted substantially.  One
+thought for another version:
+
+- oversample original sample by 10x
+- run autocorrelation period by period to find maximal overlap
+- record those as splice points.
+- when synthesizing, crossfade between splice points
+
+I think this would smooth out the crackles.
+
