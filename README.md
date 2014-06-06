@@ -4,7 +4,6 @@ An experiment in blurring the lines between music composition and sound synthesi
 
 ## todo 
 
-* Add MIT Licence headers
 * Add doxygen comments
 * Add 'make docs' to Makefile
 * Make it easy to run unit tests with libgmalloc turned on.
@@ -300,4 +299,41 @@ thought for another version:
 - when synthesizing, crossfade between splice points
 
 I think this would smooth out the crackles.
+
+### SplayStream redux
+
+The idea behind splay is "aggressive SOLA" where instead of finding
+a loop point after some number of samples, splay interpolates between
+the current and neighboring period on every sample.
+
+Tau represents the the instantaneous position within the waveform that
+being played, and phi represents the instantaneous phase. dtau/dt
+controls the rate of playback, dphi/dt independently controls the
+pitch.
+
+We want a function f(tau, phi) that gives us a rate-shifted sample.
+
+See research/t7.m for a working implementation.
+
+### More on SfxStream
+
+SFX = Synchronized Cross-Fade, which is my variant on SOLA.  It's like
+SOLA in that it's a time-domain time stretcher, but it does a
+crossfade on every sample..
+
+Some ideas:
+
+* For pitch detection, benchmark discrete cross-correlation algos vs
+FFT based algos.  Since we're looking only for a peak, we can use a 
+gradient descent method so we only call the core correlator a few
+times.  And our discrete cross-correlation doesn't need to normalize.
+
+To compute the period at time t, we can call 2 ffts and one ifft O(3 n
+log n) OR "a few" calls to the discrete cross-correlation algo (since
+we're looking to find a well-defined peak). Overall, the latter may be
+more efficient.
+
+* Take the derivative of the waveform (actually: finite difference) at
+initialization time to speed up interpolation.  We could even do
+something fancier with spline fits...
 

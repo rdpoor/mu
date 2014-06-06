@@ -6,6 +6,7 @@
 #include "nrt_player.h"
 #include "identity_stream.h"
 #include "linseg_stream.h"
+#include "resample_stream.h"
 #include "splay_stream.h"
 #include <unistd.h>
 

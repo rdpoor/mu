@@ -26,4 +26,5 @@
 # External sources
 /tarballs
 /bin
-/scores
+/binary
+/tmp

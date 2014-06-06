@@ -16,7 +16,7 @@ MULIB   := ../obj/*.o
 # TODO: switch libraries via command line arg
 STKLIB  := ../tarballs/stk-4.4.4/src/Release/*.o
 # STKLIB  := ../tarballs/stk-4.4.4/src/Debug/*.o
-LIBRARY  = -lpthread -framework CoreAudio -framework CoreFoundation -framework CoreMidi
+LIBRARY  = -lpthread -framework CoreAudio -framework CoreFoundation -framework CoreMidi -lfftw3 -lm
 
 .PHONY:	clean
 
@@ -24,6 +24,7 @@ all :	integration-tests unit-tests sketches
 
 clean :
 	rm -f $(ALL_TARGETS)
+	rm -rf *.dSYM
 
 integration-tests :	$(INTEGRATION_TEST_TARGETS)
 

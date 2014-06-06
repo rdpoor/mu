@@ -1,0 +1,85 @@
+On Sat, 10 Dec 2011 22:40:53 -0800
+Robert Poor <rdpoor@gmail.com> wrote:
+
+Yikes!  I had totally forgotten about your email on my to-reply queue,
+until I was suddenly reminded by seeing your post to the list.  Many apologies!
+
+> * Have you been able to track down the presentation you gave w.r.t. pitch
+> extraction and synthesis?  Your e-mail description was rather complete, but
+> I'd welcome any additional details.
+
+Yes, in fact, it was already online.  (And now I feel especially dumb for not replying earlier).
+http://www1.cs.columbia.edu/~alexia/physical-modeling-talk-20050909/slide-00.html
+
+There's also a (incomplete) web-paper I have never finished:
+http://www1.cs.columbia.edu/~alexia/PhysModeling/
+
+
+> * Choice of software tools?  I don't have Macsyma, I could use Matlab
+> (well, Octave actually), or I could roll my own using the Gnu Software
+> Library or other code.  What would you suggest?
+
+Once you've seen the above (especially the unfinished paper) it should
+be pretty clear what's involved.  You don't need a whole lot of symbolic
+crunch power.  It's perfectly reasonable to do it all numerically, even
+in straight C, using nothing more than FFT and, perhaps, a very good
+quality sample-rate doubling filter followed by cubic interpolation for
+the resample-to-fundamental step.
+
+
+> * As best I understand your approach, you're using the FFT to tease out the
+> purely periodic components of the note, and once you've done that, the
+> residual is the "attack".  With an exponentially decaying note (like a
+> plucked or struck string), the attack puts the initial energy into a set of
+> resonators, which then simply run their course.  Is that the right way to
+> think about it?
+
+That's about it.
+
+> (I imagine a woodwind or bowed instrument is a bit
+> different, since the wind or bow is providing a continuous driving function
+> for the resonators, but the resonators themselves feed back to the driving
+> function.)
+
+Woodwinds are significantly different.  You can find the pitches of the
+harmonics as above which gives you an idea of what sort of
+near-arithmetical progression the harmonics lie in, which lets you
+design the allpass phase-shift networks to approximate that.
+But it'll tell you nothing about the decay characteristics.  I imagine
+a carefully-controlled burst of air, which is stopped at a known time,
+can let you tease out the residual resonances, and from there working
+backwards to find the nonlinear driving-fource coupliing.  But I
+haven't gone that far.
+
+
+> The synthesis idea: (This is a rewording of a concept I played with at
+> CCRMA a lonnnggggg time ago...)  Imagine a periodic waveform, where you
+> chop the waveform into 1 lambda slices, then stack the slices up side by
+> side, so you have a 3 dimensional surface which is one period wide.  You
+> can see the attack at y = 0 and see the note evolve with increasing y.  You
+> can play back the original note by scanning the surface like a CRT beam on
+> a television: increase x by one sample at each tic and increase y by one
+> when you get to the end of the row.
+>
+> But this arrangement allows you to mess with frequency and "rate"
+> independently: you can adjust the frequency by changing the x increment,
+> and you can change the rate at which the note evolves by changing the y
+> increment.  (And you do interpolation between the four bounding corners
+> when x or y are fractional quantities.)
+
+That is a very interesting idea.  I imagine it would sound pretty good.
+I'll probably try coding it up next time I'm hacking audio.  (Alas there's
+simply not enough time for so much these days :(  )
+
+
+> It has limitations: the formants will shift as you shift pitch, if you slow
+> down rate, your initial attack will sound periodic, it probably doesn't
+> handle vibrato in a sensible way.  But for working entirely in the time
+> domain, it's pretty versatile.  And if you precompute slope coefficients at
+> each point on the surface a priori, the interpolation can be very fast.
+
+Perhaps add another dimension, that being the surface of derived filter
+coefficients representing the formants and whatnot (which would make it
+a vector not just a single value), then deconvolve leaving the 'x' axis
+bring the residual input to the 'z' filter.  Just thought this up, so don't
+know how practical/interesting it'd actually be.

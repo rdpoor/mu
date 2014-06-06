@@ -1,0 +1,134 @@
+On Mon, 19 Sep 2011 15:16:47 -0700
+Robert Poor <rdpoor@gmail.com> wrote:
+
+Hi! long time no chat, nice to hear from you.
+
+I had done a talk on a similar topic ~5 years ago, regarding
+model extraction and resynthesis. I'll look for it later and tar up the
+slides.  (It was in html+jpgs if I recall.)
+
+The main idea is:
+
+(a) Find the fundamental.  Important to have a _very_ good estimate for
+this, fractions of a Hz if possible.  The problem arises that the signal
+evolves faster than you can analyse, say, by doing 32K or 64K point
+transforms.  The solution is to define a psycho-acoustically accurate
+metric for pitch error.  (This was the main "new work" part).  Use FFT
+to get within the ballpark, then evaluate the error function for pitch
+estimates in the vicinity and do a gradient descent least-squares
+minimization to find the best pitch estimate.
+
+
+(b) Given the fundamental, resample the signal so that the fundamental
+is some integer number of samples long.  Picking a power of 2
+simplifies subsequent Fourier analysis, although any rate (greater than
+the original) will work at the cost of less efficient algorithms.
+
+(Technically, the resampling step is not necessary.  But the subsequent
+steps get more involved however, with a need to track the phase and
+frequency offsets relative to the fundamental as you move thru FFT
+bins.)
+
+
+(c) FFT analysis.  Overlap by at least 4:1 (that is, slide the input
+window over by n/4 or less on each pass, where n is the length of the
+transform).  Important to maintain phase coherency between FFTs,
+because we'll be finding sub-bin estimates for the harmonics in the
+next step.  Hanning windows seem to work best here.
+
+(d) Determine harmonic evolution.  Look at the time evolution of the
+FFT bin containing the fundamental, across your slices of FFTs.  If the
+FFTs were sliced correctly and phase aligned, signal will be the
+filtered, down-mixed-to-baseband, and downsampled version of the
+fundamental.  Likewise for the other harmonics.
+
+
+If the incoming signal were a pure tone, the time series of the bins
+at the fundamental would be a just the amplitude decay envelope times a
+vector on the unit circle representing the phase offset between your
+analysis and when the note was struck.
+
+A real instrument, however, is not that simple.  There's the
+amplitude-decay envelope, multiplied by a residual rotating phasor
+signifying the non-harmonicity of the harmonic.  You almost never see a
+perfect f, 2f, 3f, 4f, ... harmonic series.  Upper harmonics tend to be
+sharper, at least on stringed instruments.
+
+Look at the ratio of the previous fft's bin (fft[t-1].bin[f]) and the current
+(fft[t].bin[f]).  This will be a complex number.  The amplitude gives the
+envelope decay per fft overlap time.  The phase gives the phase advance
+beyond where the harmonic ought to be, per fft overlap time.
+
+It is useful to express these numbers in units of "per cycle of fundamental".
+
+These numbers, expressed in terms of per cycle of fundamental,
+represent the "crux" of the instrument.  They hold to a good
+approximation even as string tension is varied (within reason). So they
+form the basis from which you can do reasonable pitch-bends and stuff.
+
+Some time after the attack, the ratios will settle down into some
+relatively constant values absolute value < 1.  This is the normal
+exponential decay of the amplitude, and a relatively steady phase
+indicative of a constant frequency offset from where the harmonic
+"ought" to be, were it in perfect ratios.  It turns out, for most
+stringed instruments (at least the ones I had studied), the harmonic
+sequence is actually a mild quadratic:
+        f(n) ~= fundamental * n * (1 + n/30)
+I'd be curious of the ukulele behaves similarly.
+
+During and shortly after the attack, the numbers vary wildly.
+Sometimes you'll see some greater than 1 in absolute value!
+This means non-linear coupling between modes is pumping
+energy into one harmonic at the expense of others.
+
+
+(By-the-way, if you're using this to study a piano sound, try to do
+each of the two or three strings per note individually.  Very difficult
+to do a combined sum of strings extraction, probably np-hard.)
+
+(e) Given all this, construct a model.  Do it in two parts.
+
+(e1) Construct the steady-state decay.  These are simple exponentials
+albeit different ones per harmonic.  Simplest way is to use a
+karplus-strong type of resonator and choose the reflection filter to
+have the desired attenuation at the fundamental and three or so
+of the slowest-decaying harmonics.  This is where the ratio expressed
+in terms of cycles per fundamental comes in.  Remember to use the full
+complex value to account for the phase advance and non-linear harmonics.
+If you want to avoid complex-valued resonators, decompose the ratio
+into a amplitude and a phase.  Do the amplitude part of the response
+with a normal real filter.  Then make up any necessary phase shifts
+with allpass structures.
+
+Time-dilating this part of the model is a matter of taking powers of
+the "per cycle of fundamental" coefficients, and constructing the
+appropriate filters.  E.g., to double the sustain, square-root the
+ratios.
+
+(e2) Construct the non-linear part: Easiest way is to deconvolve the
+steady-state resonator filter against the original signal, to come up
+with an initialization sequence for the resonator.
+
+Depending on the energy distribution over time of this initialization
+sequence, you may be able to make do with just one cycle of it.
+Either truncate the tail, or overlap-and-add at the fundamental period,
+depending which you think sounds better.
+
+But generally, you'll feed this in as an input to the resonator.
+
+Time-dialating this part is _usually_ a matter of resampling /
+interpolation of the initialization sequence, since it _usually_ isn't
+pitched.
+
+Alternatively, use a time-varying filter on the resonator. Construct a
+series of filters according to the ratios per cycle of fundamental.
+Each coefficient becomes a function of time, which can be interpolated
+as needed.  For this to work best, cascade of 2nd order FIRs or IIRs
+works better than one long FIR or IIR.  Express the coefficients
+as {center_frequency, Q} and interpolate in that space, instead of
+interpolating the actual filter taps.  (Also ensures there's no
+possibility of interpolating through a unstable IIR.)
+
+Anyway, that's it for now.  I'll see if I can dig up the talk.
+
+Qua!
