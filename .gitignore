@@ -28,3 +28,6 @@
 /bin
 /binary
 /tmp
+
+# In theory, the Mu01 distro can be rebuilt from scratch
+/Mu01

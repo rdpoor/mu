@@ -17,6 +17,7 @@ SOURCES := \
 	null_stream.cpp \
 	player.cpp \
 	probability_stream.cpp \
+	psi_stream.cpp \
 	random_select_stream.cpp \
 	resample_stream.cpp \
 	reverb_stream.cpp \
@@ -39,7 +40,7 @@ DEFS    =
 # TODO: Switch flags via command line args
 # CFLAGS  = -O3 -Wall
 CFLAGS = -g -O0 -Wall
-IFLAGS  = -I$(INCLUDE_DIR) -I../tarballs/stk-4.4.4/include
+IFLAGS  = -I$(INCLUDE_DIR) -I/Users/r/Projects/Mu/Mu01/include -I../tarballs/stk-4.4.4/include
 
 $(OBJECT_DIR)/%.o : %.cpp $(INCLUDE_DIR)/%.h $(INCLUDE_DIR)/mu.h
 	$(CC) $(CFLAGS) $(IFLAGS) -c $(<) -o $@
