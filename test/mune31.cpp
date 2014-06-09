@@ -18,16 +18,13 @@
 #include "psi_stream.h"
 #include <unistd.h>
 
-#define SOUND_FILE "/Users/r/Projects/Mu/SoundSets/A/69.wav"
-// #define PERIOD 104.7
-#define PERIOD 100            // intentionally mis-estimate period
+#define PSI_FILE "/Users/r/Projects/Mu/SoundSets/A/69.psi"
 
 int main() {
 
   mu::AddStream pitch_stream;
   mu::ConstantStream center_frequency_stream;
   mu::CropStream crop_stream;
-  mu::FileReadStream file_read_stream;
   mu::FileWriteStream file_write_stream;
   mu::LinsegStream time_stream;
   mu::LinsegStream theta_stream;
@@ -43,8 +40,8 @@ int main() {
   double ddur = 10.0;            // time warp factor after initial attack
   double dpit = pow(2.0, -3/12.0); // pitch shift factor
 
-  file_read_stream.fileName(SOUND_FILE).doNormalize(true);
-  mu::Tick frame_count = file_read_stream.getEnd();
+  psi_stream.setPsiFileName(PSI_FILE);
+  mu::Tick frame_count = psi_stream.getFrameCount();
 
   // "u" is input (original) time
   double u0 = 0;
@@ -90,12 +87,8 @@ int main() {
   // ================================================================
   // set up stream network
 
-  psi_stream.setSampleSource(&file_read_stream).setEstimatedPeriod(PERIOD);
   psi_stream.setOmegaSource(&pitch_stream);
   psi_stream.setTauSource(&time_stream);
-  printf("initializing psi data..."); fflush(stdout);
-  psi_stream.setup(player);     // this can take a while
-  printf("\n");
 
   crop_stream.setSource(&psi_stream).setEnd(t3);
   file_write_stream.setSource(&crop_stream).setFileName("/tmp/psi_69.wav");

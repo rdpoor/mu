@@ -23,25 +23,19 @@
   ================================================================
 */
 #include "psi_stream.h"
-#include <strings.h>
 #include <math.h>
-#include <gsl/gsl_errno.h>
-#include <gsl/gsl_math.h>
-#include <gsl/gsl_min.h>
+#include <stdio.h>
+#include <strings.h>
 
 namespace mu {
 
   // static const double kTwoPi = M_PI * 2.0;
 
   PsiStream::PsiStream()
-    : estimated_period_ ( 100.0 ),
-      sample_source_ ( NULL ), 
-      tau_source_ ( NULL ),
+    : tau_source_ ( NULL ),
       omega_source_ ( NULL ),
       expected_tick_ ( 0 ),
-      needs_setup_ ( true ),
       phi_ ( 0.0 ) {
-    temp_buffer_.resize(0, 1);
     sample_buffer_.resize(0, 1);
     dsample_buffer_.resize(0, 1);
     period_buffer_.resize(0, 1);
@@ -53,8 +47,6 @@ namespace mu {
   }
 
   void PsiStream::inspectAux(std::stringstream& ss, int level) {
-    inspectIndent(ss, level); ss << "SampleSource" << std::endl;
-    ss << sample_source_->inspect(level+1);
     inspectIndent(ss, level); ss << "TauSource" << std::endl;
     ss << tau_source_->inspect(level+1);
     inspectIndent(ss, level); ss << "OmegaSource" << std::endl;
@@ -65,15 +57,9 @@ namespace mu {
                                  Tick tick,
                                  Player& player) {
     zeroBuffer(buffer);
-    if ((sample_source_ == NULL) || 
-        (tau_source_ == NULL) || 
+    if ((tau_source_ == NULL) || 
         (omega_source_ == NULL)) {
       return *this;
-    }
-
-    // Fetch sample_buffer_ (and other initialization)  as needed
-    if (needs_setup_) {
-      setup(player);
     }
 
     tau_buffer_.resize(buffer.frames(), 1);
@@ -91,7 +77,7 @@ namespace mu {
       stk::StkFloat tau = tau_buffer_[frame];
       stk::StkFloat omega = omega_buffer_[frame];
       
-      stk::StkFloat sample = generatePhi(tau, omega);
+      stk::StkFloat sample = generateSample(tau, omega);
               
       for (int channel = 0; channel < buffer.channels(); channel++) {
         buffer(frame, channel) = sample;
@@ -100,10 +86,16 @@ namespace mu {
     return *this;
   }
 
+  PsiStream& PsiStream::setPsiFileName( std::string psi_file_name ) {
+      psi_file_name_ = psi_file_name;
+      readPsiFile();
+      return *this;
+  }
+
   // TODO: guarantee that getPeriod(tau) always returns a positive
   // value (or else we're stuck in a loop).
   // TODO: is there a closed form that will replace these two loops?
-  stk::StkFloat PsiStream::generatePhi(stk::StkFloat tau, stk::StkFloat omega) {
+  stk::StkFloat PsiStream::generateSample(stk::StkFloat tau, stk::StkFloat omega) {
 
     // Assure that phi <= tau and within one period
     stk::StkFloat period = getPeriod(tau);
@@ -124,39 +116,6 @@ namespace mu {
     return s0 + (s1 - s0) * alpha;
   }
 
-  void PsiStream::setup(Player& player) {
-    if (!needs_setup_) return;
-
-    // Fetch waveform into a dedicated buffer
-    int n_frames = sample_source_->getEnd() - sample_source_->getStart();
-
-    // TODO: this is really bad.  we're assuming that source is stero...
-    temp_buffer_.resize(n_frames, 2);
-    sample_source_->step(temp_buffer_, 0, player);
-
-    // convert stereo samples in temp_buffer_ to mono samples in
-    // sample_buffer_.
-    sample_buffer_.resize(n_frames, 1);
-    for (int frame = 0; frame < n_frames; frame++) {
-      sample_buffer_[frame] = 
-        (temp_buffer_(frame, 0) + temp_buffer_(frame, 1)) * 0.707;
-    }
-    
-    // Compute deltas
-    dsample_buffer_.resize(n_frames, 1);
-    stk::StkFloat prev = 0.0;
-    for (int frame=sample_buffer_.frames()-1; frame>=0; frame--) {
-      dsample_buffer_[frame] = prev - sample_buffer_[frame];
-      prev = sample_buffer_[frame];
-    }
-
-    // Compute periods
-    period_buffer_.resize(n_frames, 1);
-    computePeriods();
-
-    needs_setup_ = false;
-  }
-
   // Get the period around t=tau in the waveform.  Assumes
   // computePeriod() has been called to setup period_buffer_.
   stk::StkFloat PsiStream::getPeriod(stk::StkFloat tau) {
@@ -174,200 +133,60 @@ namespace mu {
     }
   }
 
-#if 1
+  void PsiStream::readPsiFile() {
+    int n_items_read, n_lines_read, n_frames;
+    double x, y, z;
+    char *line = NULL;
+    size_t linecap = 0;
 
-  struct minimization_params { PsiStream *psi_stream; double tau; };
-
-  // function to minimize
-  double function_to_minimize(double x, void *params) {
-    struct minimization_params * p = (struct minimization_params *)params;
-    PsiStream *ps = p->psi_stream;
-    double tau = p->tau;
-    return ps->min_correlation(x, tau);
-  }
-
-#define TOLERANCE 0.2
-#define MAX_ITER 10
-
-  // debugging hack: make a pseudo-csv for minimiazation fn
-  void PsiStream::cough(double tau) {
-
-    // print out samples from tau - estimated_period_ to tau + estimated_period_
-    printf("# samples\n");
-    for (int i=tau-estimated_period_; i<tau+estimated_period_; i++) {
-      printf("%d, %f\n", i, getFSample(i));
+    FILE* ifd = fopen(psi_file_name_.c_str(), "r");
+    if (NULL == ifd) {
+      // TODO: need to actually handle the error somehow...
+      fprintf(stderr, "Failed to open %s for reading.\n", psi_file_name_.c_str());
+      return;
     }
 
-    double a = estimated_period_ * (1 - TOLERANCE);
-    double b = estimated_period_ * (1 + TOLERANCE);
-    printf("# tau = %f\n", tau);
-    for (int i=a; i<b; i++) {
-      printf("%d, %f\n", i, min_correlation(i, tau));
+    if (getline(&line, &linecap, ifd) == EOF) {
+      fprintf(stderr, "Unexpected EOF while searching for version #.\n");
+      goto err;
     }
-    fflush(stdout);
-
-  }
-    
-  void PsiStream::computePeriods() {
-    // set up gsl minimizer
-    const gsl_min_fminimizer_type *T;
-    gsl_min_fminimizer *s;
-
-    T = gsl_min_fminimizer_brent;
-    s = gsl_min_fminimizer_alloc(T);
-    gsl_set_error_handler_off();
-
-    for (int frame=0; frame < sample_buffer_.frames(); frame++) {
-      period_buffer_[frame] = computePeriod(s, frame, false);
-      // printf("%d, %f\n", frame, period_buffer_[frame]);
+      
+    if (getline(&line, &linecap, ifd) == EOF) {
+      fprintf(stderr, "Unexpected EOF while searching for frame count.\n");
+      goto err;
     }
-    // fflush(stdout);
 
-    gsl_min_fminimizer_free(s);
-  }
+    n_items_read = sscanf(line, "%d\n", &n_frames);
+    if (n_items_read != 1) {
+      fprintf(stderr, "Format error trying to read frame count.\n");
+      goto err;
+    }
 
-  // The void * thing is to avoid exposing the gsl datatypes into the
-  // .h file (which would require all subscribers to include the gsl
-  // files as well).  There's probably a better way.
-  double PsiStream::computePeriod(void *handle, double tau, bool chatty) {
-    gsl_min_fminimizer *s = (gsl_min_fminimizer *)handle;
-    struct minimization_params params = { this, tau };
+    sample_buffer_.resize(n_frames, 1);
+    dsample_buffer_.resize(n_frames, 1);
+    period_buffer_.resize(n_frames, 1);
 
-    gsl_function F;
-    F.function = &function_to_minimize;
-    F.params = &params;
-    double m = estimated_period_;
-    double a = estimated_period_ * (1 - TOLERANCE);
-    double b = estimated_period_ * (1 + TOLERANCE);
-    
-    gsl_min_fminimizer_set(s, &F, m, a, b);
-    
-    int iter = 0;
-    int status = GSL_CONTINUE;
-    while ((iter < MAX_ITER) && (status == GSL_CONTINUE)) {
-      status = gsl_min_fminimizer_iterate(s);
-      if (status == GSL_FAILURE) return estimated_period_;
-      m = gsl_min_fminimizer_x_minimum(s);
-      a = gsl_min_fminimizer_x_lower(s);
-      b = gsl_min_fminimizer_x_upper(s);
-      if (chatty) {
-        printf ("%5d [%.5f, %.5f] %.5f %.5f\n", iter, a, b, m, b - a);
-        fflush(stdout);
+    n_lines_read = 0;
+    for (int i=0; i<n_frames; i++) {
+      if (getline(&line, &linecap, ifd) == EOF) {
+        fprintf(stderr, "Premature end of file.  Read %d out of %d.\n", n_lines_read, n_frames);
+        goto err;
       }
-      status = gsl_min_test_interval(a, b, 0.5, 0.0); // within half of a period
-      if (status == GSL_SUCCESS) return m;
-      iter++;
-    }
-    // return best m yet
-    return m;
-  }
-
-  double PsiStream::min_correlation(double period, double tau) {
-    // Compute discrete autocorrelation at tau+period/2 and
-    // tau - period/2.  
-    //
-    // NOTE: Making the window length a multiple of the estimated
-    // period leads to ripple on the period signal.  Make it fixed
-    // and it works MUCH better.
-    double window_length = 1024; /* 2*period; */
-    double tot = 0.0;
-    double i0 = tau - (period/2) - (window_length/2);
-    double i1 = tau + (period/2) - (window_length/2);
-
-    for (int i = round(window_length)-1; i>=0; i--) {
-      tot += getFSample(i0) * getFSample(i1);
-      i0 += 1.0;
-      i1 += 1.0;
-    }
-    return -tot;
-  }
-
-#else
-  // ================================================================
-  // workable, but far from optimal.  which is why I switched to the
-  // GSL minimizers
-
-  void PsiStream::computePeriods() {
-    for (int frame=sample_buffer_.frames()-1; frame>=0; frame--) {
-      period_buffer_[frame] = computePeriod(frame);
-    }
-  }
-
-  typedef struct {
-    double index;
-    double value;
-  } iv_pair;
-  
-  void swap_iv_pairs(iv_pair &a, iv_pair &b) {
-    double tmp_v = a.value;
-    int tmp_i = a.index;
-    a.value = b.value;
-    a.index = b.index;
-    b.value = tmp_v;
-    b.index = tmp_i;
-  }
-
-  void sort_iv_pairs(iv_pair pairs[]) {
-    if (pairs[0].value > pairs[1].value) swap_iv_pairs(pairs[0], pairs[1]);
-    if (pairs[1].value > pairs[2].value) swap_iv_pairs(pairs[1], pairs[2]);
-    if (pairs[0].value > pairs[1].value) swap_iv_pairs(pairs[0], pairs[1]);
-  }
-  
-  void print_pairs(iv_pair a[]) {
-    for (int i=0; i<3; i++) {
-      printf("[%f %f] ", a[i].index, a[i].value);
-    }
-    printf("\n");
-  }
-
-#define TOLERANCE 0.2
-
-  stk::StkFloat PsiStream::computePeriod(Tick frame) {
-    // return estimated_period_;
-
-    int max_passes = 7;
-    iv_pair pairs[3];
-
-    pairs[0].index = estimated_period_ * (1 - TOLERANCE);
-    pairs[1].index = estimated_period_ * (1 + TOLERANCE);
-    pairs[2].index = estimated_period_;
-    pairs[2].value = correlate(frame, pairs[2].index);
-
-    // At each pass, keep the best value and halve the distance
-    // to it from the other two.
-    for (int pass = 0; pass < max_passes; pass++) {
-      // here, pairs[2] has the highest value.  keep that pair
-      // and move the other two pairs halfway towards that.
-      pairs[0].index = (pairs[0].index + pairs[2].index)/2.0;
-      pairs[0].value = correlate(frame, pairs[0].index);
-      pairs[1].index = (pairs[1].index + pairs[2].index)/2.0;
-      pairs[1].value = correlate(frame, pairs[1].index);
-
-      sort_iv_pairs(pairs);
-      if (frame % 1000 == 0) {
-        printf("tau = %ld pass = %d: ", frame, pass); 
-        print_pairs(pairs); 
-        fflush(stdout);
+      n_items_read = sscanf(line, "%la, %la, %la\n", &x, &y, &z);
+      if (n_items_read != 3) {
+        fprintf(stderr, "at line %d: unrecognized format: %s\n", n_lines_read, line);
+        goto err;
       }
+      sample_buffer_[i] = x;
+      dsample_buffer_[i] = y;
+      period_buffer_[i] = z;
+      n_lines_read += 1;
     }
-    return pairs[2].index;
-  }
 
-  // Compute discrete autocorrelation at tau+period/2 and
-  // tau - period/2.  Use 2*period for window size.
-  stk::StkFloat PsiStream::correlate(double tau, double period) {
-    stk::StkFloat tot = 0.0;
-    stk::StkFloat i0 = tau - (period/2) - period;
-    stk::StkFloat i1 = tau + (period/2) - period;
-    for (int i = round(2*period)-1; i>=0; i--) {
-      tot += getFSample(i0) * getFSample(i1);
-      i0 += 1.0;
-      i1 += 1.0;
-    }
-    return tot;
+    fprintf(stderr, "Read %d frames from %s\n", n_frames, psi_file_name_.c_str());
+  err:
+    fclose(ifd);
   }
-#endif
-
 
 }
 

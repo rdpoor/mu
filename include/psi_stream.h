@@ -2,9 +2,8 @@
  * PsiStream: Phase Synchronous Interpolation.
  *
  * PsiStream gives independent control of the timing and pitch of a
- * quasi-periodic waveform.  It takes three Stream inputs:
+ * quasi-periodic waveform.  It takes two Stream inputs:
  *
- * - signalSource is the waveform to be played back.
  * - tauSource controls the timing of the playback.
  * - omegaSource controls the pitch of the playback.
  *
@@ -16,6 +15,7 @@
  * down one octave.
  *
  * In addition, PsiStream has one instance variable:
+ * - signalFileName is the waveform to be played back.
  * - estimatedPeriod: the period (in samples) of signalSource.
  *
  * How it works: 
@@ -93,18 +93,11 @@ namespace mu {
 
     PsiStream& step(stk::StkFrames& buffer, Tick tick, Player &player);
 
-    double getEstimatedPeriod( void ) { return estimated_period_; }
-    PsiStream& setEstimatedPeriod( double estimated_period ) { 
-      estimated_period_ = estimated_period; 
-      return *this; 
-    }
+    // assumes that setPsiFileName() has been called...
+    Tick getFrameCount() { return sample_buffer_.frames(); }
 
-    Stream *getSampleSource( void ) { return sample_source_; }
-    PsiStream& setSampleSource(Stream *source) { 
-      sample_source_ = source; 
-      needs_setup_ = true;
-      return *this; 
-    }
+    std::string getPsiFileName( void ) { return psi_file_name_; }
+    PsiStream& setPsiFileName( std::string psi_file_name );
 
     Stream *getTauSource( void ) { return tau_source_; }
     PsiStream& setTauSource(Stream *source) { 
@@ -118,25 +111,13 @@ namespace mu {
       return *this; 
     }
 
-    // Precompute periods, etc.  Calling this avoids doing the heavy computation
-    // while the stream is running.  Can only (meaningfully) be called after the
-    // sampleSource is completely available.
-    void setup(Player& player);
-
-    // Not public, but needs to be visible as a callback to the GSL
-    // minimization library.
-    double min_correlation(double period, double tau);
-
   protected:
-    double estimated_period_;
-    Stream *sample_source_;
+    std::string psi_file_name_;
     Stream *tau_source_;
     Stream *omega_source_;
     Tick expected_tick_;        // next tick time (if time is contiguous)
-    bool needs_setup_;          // true if one-time setup() needed
     stk::StkFloat phi_;
-    stk::StkFrames temp_buffer_; // used for stero to mono conversion
-    stk::StkFrames sample_buffer_;
+    stk::StkFrames sample_buffer_;  // samples
     stk::StkFrames dsample_buffer_; // forward difference of sample_buffer_ 
     stk::StkFrames period_buffer_;  // period of sample_buffer_
     stk::StkFrames tau_buffer_;
@@ -169,12 +150,9 @@ namespace mu {
       }
     }
 
-    stk::StkFloat generatePhi(stk::StkFloat tau, stk::StkFloat omega);
+    stk::StkFloat generateSample(stk::StkFloat tau, stk::StkFloat omega);
     stk::StkFloat getPeriod(stk::StkFloat tau);
-    void cough(double tau);     // debugging only
-    void computePeriods();
-    double computePeriod(void *handle, double tau, bool chatty);
-    // stk::StkFloat correlate(double tau, double period);
+    void readPsiFile();
 
   };                            // class PsiStream
   

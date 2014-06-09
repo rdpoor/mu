@@ -42,13 +42,22 @@ DEFS    =
 CFLAGS = -g -O0 -Wall
 IFLAGS  = -I$(INCLUDE_DIR) -I/Users/r/Projects/Mu/Mu01/include -I../tarballs/stk-4.4.4/include
 
+# The following are specific to psi_file_generator: it probably
+# belongs in a different makefile (e.g. Utilities)
+STKLIB  := ../tarballs/stk-4.4.4/src/Release/*.o
+LIBRARY  = -lpthread -framework CoreAudio -framework CoreFoundation -framework CoreMidi -lfftw3 -lm -lgsl
+LFLAGS   = -L/Users/r/Projects/Mu/Mu01/lib
+
 $(OBJECT_DIR)/%.o : %.cpp $(INCLUDE_DIR)/%.h $(INCLUDE_DIR)/mu.h
 	$(CC) $(CFLAGS) $(IFLAGS) -c $(<) -o $@
 
 all: $(OBJECTS)
 
 clean:
-	rm -f $(OBJECT_DIR)/*.o
+	rm -f $(OBJECT_DIR)/*.o psi_file_generator
+
+psi_file_generator : %:%.cpp $(INCLUDE_DIR)/%.h $(INCLUDE_DIR)/mu.h
+	$(CC) $(CFLAGS) $(LFLAGS) $(IFLAGS) -o $(@) $(<) $(STKLIB) $(LIBRARY)
 
 $(OBJECTS): | $(OBJECT_DIR)
 

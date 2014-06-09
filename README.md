@@ -4,7 +4,7 @@ An experiment in blurring the lines between music composition and sound synthesi
 
 ## todo 
 
-* Write better test example for PsiStream
+* Refactor: /lib /src /test /examples /sketches 
 * Create "rebuild from scratch" Makefile for Mu01 
 * Create a way to save and restore period data in PsiStream
 * Add doxygen comments

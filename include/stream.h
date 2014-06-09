@@ -63,6 +63,8 @@ namespace mu {
     // utilities
     
     // zero out a buffer
+    // TODO: This is not specific to Stream.  Refactor into a
+    // general utility file.
     Stream& zeroBuffer(stk::StkFrames& b) {
 #if 0
       bzero(&(b[0]), b.frames() * b.channels() * sizeof(stk::StkFloat));
