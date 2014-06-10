@@ -1,14 +1,14 @@
 #!/bin/sh
 #
-# Condition the environment for Mu development, using only
-# binaries and libraries in a sandboxed directory.
+# Condition the environment for Mu development, using binaries and
+# libraries in a sandboxed directory.
 
-export SANDBOX_NAME='Mu01'
-export SANDBOX_PATH=/Users/r/Projects/Mu/${SANDBOX_NAME}
+export SANDBOX_NAME='Mu'
+export MU_ROOT=/Users/r/Projects/Mu/usr
 
 # ================================================================
 # set the path
-export PATH=${SANDBOX_PATH}/usr/bin:${PATH}
+export PATH=${MU_ROOT}/bin:${PATH}
 
 # ================================================================
 # set the prompt so we know we're in the sandbox

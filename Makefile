@@ -1,34 +1,53 @@
 # http://martinvseticka.eu/temp/make/presentation.html looks like a good tutorial.
+#
+# Strategy:
+#
+# ./usr is the "sandbox" for libraries, executables, etc.  These will be updated
+# on a "make install" command:
+# ./usr/bin     -- executables
+# ./usr/include -- header files
+# ./usr/lib     -- archive files
+# ./usr/share   -- documentation
+#
+# ./doc contains documentation
+# ./examples contains self-contained example files
+# ./examples/binary_sources contain any binary files required by ./examples
+# ./include contains the core header files (copied into ./usr/include)
+# ./sketches contains programming sketches (not for distribution)
+# ./src contains the core source files (that compile into ./usr/lib/libmu.a)
+# ./tarballs contains external dependencies (stk, gsl)
+# ./test contains unit tests
+# ./test/binary_sources contain any binary files required by ./test
+# ./utilities contains self-contained utility programs
+#
+# Some targets:
+#
+# make install => [src tarballs utilities docs] make install
+# make run_tests => make install, make tests, 
+# make examples => make install, [examples] make
 
-SOURCE_PATH = ./src
-OBJECT_PATH = ./obj
-BINARY_PATH = ./bin
-INCLUDE     = ./tarballs/stk-4.4.4/include
+export MU_ROOT=/Users/r/Projects/Mu/usr
 
-CC       = g++
-DEFS     = -DHAVE_GETTIMEOFDAY -D__MACOSX_CORE__ -D__LITTLE_ENDIAN__
-CFLAGS   = -O3 -Wall -I$(INCLUDE)
-LIBRARY  = -lpthread -framework CoreAudio -framework CoreFoundation -framework CoreMidi
+all :
+	cd packages && make all
+	cd src && make all
+	cd utilities && make all
 
-%.o : $(SOURCE_PATH)/%.cpp
-	$(CC) $(CFLAGS) $(DEFS) -c $(<) -o $(OBJECT_PATH)/$@
+install :
+	cd src && make all
 
-all : $(PROGRAMS)
+clean :
+	cd src && make clean
+	cd utilities && make clean
+	cd packages && make clean
+	rm -rf $(MU_ROOT)
 
-STK_OBJECT_PATH = ./tarballs/stk-4.4.4/src/Release
-STK_OBJECT_FILES = $(STK_OBJECT_PATH)/*.o
+packages :
+	cd packages && make install
 
-mune01: $(SOURCE_PATH)/mune01.cpp
-	$(CC) $(LDFLAGS) $(CFLAGS) $(DEFS) -o $(BINARY_PATH)/$(@) $(<) $(STK_OBJECT_FILES) $(LIBRARY)
+tests :
+	cd test && make run_tests
 
-mune02: $(SOURCE_PATH)/mune02.cpp
-	$(CC) $(LDFLAGS) $(CFLAGS) $(DEFS) -o $(BINARY_PATH)/$(@) $(<) $(STK_OBJECT_FILES) $(LIBRARY)
+testing :
+	cd doc && make test
 
-mune03: $(SOURCE_PATH)/mune03.cpp
-	$(CC) $(LDFLAGS) $(CFLAGS) $(DEFS) -o $(BINARY_PATH)/$(@) $(<) $(STK_OBJECT_FILES) $(LIBRARY)
-
-mune04: $(SOURCE_PATH)/mune04.cpp
-	$(CC) $(LDFLAGS) $(CFLAGS) $(DEFS) -o $(BINARY_PATH)/$(@) $(<) $(STK_OBJECT_FILES) $(LIBRARY)
-
-clean:
-	rm -f $(PROGRAMS)

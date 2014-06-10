@@ -4,9 +4,9 @@ An experiment in blurring the lines between music composition and sound synthesi
 
 ## todo 
 
-* Refactor: /lib /src /test /examples /sketches 
-* Create "rebuild from scratch" Makefile for Mu01 
-* Create a way to save and restore period data in PsiStream
+* Add has_errors and get_errors methods to Stream objects.
+* Refactor: /lib /src /test /examples /sketches  [partly]
+* Create "rebuild from scratch" Makefile for Mu01 [partly]
 * Add doxygen comments
 * Add 'make docs' to Makefile
 * Make it easy to run unit tests with libgmalloc turned on.
@@ -37,6 +37,11 @@ out context, print on error only, print always, etc.
 
 ## changelog 
 
+* 2014-06-09: Partway though major refactor: "make install" installs
+library files and headers in ./usr/lib and ./usr/include
+(respectively), eventually will be able to rebuild everything from
+scratch.  tests, examples, sketches each have their own directory (and
+makefile).
 * 2014-05-17: Rename: XFadeStream => FadeStream. Stream::copy_buffer =>
 Stream::copyBuffer.  Stream::zero_buffer => Stream::ZeroBuffer.
 * 2014-05-17: wrote and tested XFadeStream.  Need a sound example
@@ -310,4 +315,51 @@ quality is good as is.
 * TODO: modify PsiStream to read a ".psi" file that contains the
 original waveform, the deltas, and the period at each sample.  Give
 it the means to create the file from a .wav file as well...
+
+### debugging stk's makefile
+
+$ cd src
+$ ./configure -prefix=/Users/r/Projects/Mu/usr
+...
+$ make install
+...
+cp -r ../include/*.h /Users/r/Projects/Mu/usr/include/stk
+install -d /Users/r/Projects/Mu/usr/lib
+install -m 644 libstk.dylib.4.4.4 /Users/r/Projects/Mu/usr/lib
+install: libstk.dylib.4.4.4: No such file or directory
+make[2]: *** [install] Error 71
+make[1]: *** [install] Error 2
+make: *** [/Users/r/Projects/Mu/usr/lib/libstk.a] Error 2
+
+src/Makefile, line 92 reads:
+	$(CC) $(LDFLAGS) -fPIC -dynamiclib -o libstk.$(RELEASE).dylib $(OBJECT_PATH)/*.o $(LIBS)
+which expands to:
+	g++  -fPIC -dynamiclib -o libstk.4.4.4.dylib Release/*.o -lpthread -framework CoreAudio -framework CoreFoundation -framework CoreMidi
+
+so: @libflags@ is "-dynamiclib -o libstk.4.4.4.dylib"
+Tracing back to Makefile.in, the corresponding lines are:
+
+	$(CC) $(LDFLAGS) -fPIC @libflags@ $(OBJECT_PATH)/*.o $(LIBS)
+...
+	install -m 644 $(SHAREDLIB).$(RELEASE) $(DESTDIR)$(PREFIX)$(LIBDIR)
+
+@libflags* get set in ../configure.ac
+
+line 116: AC_SUBST( libflags, ["-shared -Wl,-soname,\$(SHAREDLIB).\$(MAJOR) -o \$(SHAREDLIB).\$(RELEASE)"] )
+line 121:   AC_SUBST( libflags, ["-dynamiclib -o libstk.\$(RELEASE).dylib"] )  # <<< == here's the origin
+
+This first appeared in Version 4.4.3
+
+
+By contrast:
+
+src/Makefile, line 102 reads:
+	install -m 644 $(SHAREDLIB).$(RELEASE) $(DESTDIR)$(PREFIX)$(LIBDIR)
+which expands to :
+	install -m 644 libstk.dylib.4.4.4 /Users/r/Projects/Mu/usr/lib
+
+
+
+
+
 

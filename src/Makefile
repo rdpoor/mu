@@ -1,3 +1,6 @@
+MU_ROOT = ../usr
+RELEASE = 0.0.1
+
 SOURCES := \
 	add_stream.cpp \
 	constant_stream.cpp \
@@ -27,39 +30,61 @@ SOURCES := \
 	single_source_stream.cpp \
 	splay_stream.cpp \
 	splice_stream.cpp \
-	stream.cpp \
-	tik.cpp
+	stream.cpp
 
-OBJECT_DIR := ../obj
-INCLUDE_DIR := ../include
+OBJECTS := $(patsubst %.cpp,%.o,$(SOURCES))
+HEADERS := $(patsubst %.cpp,%.h,$(SOURCES))
 
-OBJECTS := $(patsubst %.cpp,$(OBJECT_DIR)/%.o,$(SOURCES))
+AR = ar -rsc
+RM = /bin/rm
+LN = /bin/ln
+
+STATICLIB = libmu.a
+SHAREDLIB = libmu.dylib
+
+# destinations for make install
+LIB_DIR := $(MU_ROOT)/lib
+HEADER_DIR := $(MU_ROOT)/include/mu
 
 CC      = g++
 DEFS    = 
-# TODO: Switch flags via command line args
-# CFLAGS  = -O3 -Wall
-CFLAGS = -g -O0 -Wall
-IFLAGS  = -I$(INCLUDE_DIR) -I/Users/r/Projects/Mu/Mu01/include -I../tarballs/stk-4.4.4/include
+ifdef MU_DEBUG
+  CFLAGS = -g -O0 -Wall  
+else
+  CFLAGS  = -O3 -Wall
+endif
 
-# The following are specific to psi_file_generator: it probably
-# belongs in a different makefile (e.g. Utilities)
-STKLIB  := ../tarballs/stk-4.4.4/src/Release/*.o
-LIBRARY  = -lpthread -framework CoreAudio -framework CoreFoundation -framework CoreMidi -lfftw3 -lm -lgsl
-LFLAGS   = -L/Users/r/Projects/Mu/Mu01/lib
+IFLAGS = -I$(MU_ROOT)/include/mu -I$(MU_ROOT)/include/stk -I$(MU_ROOT)/include
 
-$(OBJECT_DIR)/%.o : %.cpp $(INCLUDE_DIR)/%.h $(INCLUDE_DIR)/mu.h
+%.o : %.cpp %.h mu.h
 	$(CC) $(CFLAGS) $(IFLAGS) -c $(<) -o $@
 
 all: $(OBJECTS)
 
+install: $(STATICLIB) $(LIB_DIR) $(HEADER_DIR) # $(SHAREDLIB) -- sharedlib doesn't work yet
+	mv $(STATICLIB) $(MU_ROOT)/lib
+	cp -p $(HEADERS) $(HEADER_DIR)
+
 clean:
-	rm -f $(OBJECT_DIR)/*.o psi_file_generator
+	rm -f $(OBJECTS)
 
-psi_file_generator : %:%.cpp $(INCLUDE_DIR)/%.h $(INCLUDE_DIR)/mu.h
-	$(CC) $(CFLAGS) $(LFLAGS) $(IFLAGS) -o $(@) $(<) $(STKLIB) $(LIBRARY)
+$(STATICLIB) : all
+	$(AR) -cr $(STATICLIB) $(OBJECTS)
 
-$(OBJECTS): | $(OBJECT_DIR)
+# not ready for prime time
+# https://developer.apple.com/library/mac/documentation/DeveloperTools/Conceptual/DynamicLibraries/000-Introduction/Introduction.html
+# see https://developer.apple.com/library/mac/documentation/DeveloperTools/Conceptual/DynamicLibraries/100-Articles/CreatingDynamicLibraries.html
+$(SHAREDLIB) : all
+	$(RM) -f $(@) $(SHAREDLIB).$(MAJOR) $(SHAREDLIB)
+	$(CC) $(LDFLAGS) -fPIC -dynamiclib -o libmu.$(RELEASE).dylib *.o $(LIBS)
+	$(LN) -s libmu.$(RELEASE).dylib $(SHAREDLIB)
 
-$(OBJECT_DIR):
-	mkdir $(OBJECT_DIR)
+$(HEADER_DIR):
+	mkdir -p $(HEADER_DIR)
+
+$(LIB_DIR): 
+	mkdir -p $(LIB_DIR)
+
+# psi_file_generator : %:%.cpp $(INCLUDE_DIR)/%.h $(INCLUDE_DIR)/mu.h
+# 	$(CC) $(CFLAGS) $(LFLAGS) $(IFLAGS) -o $(@) $(<) $(STKLIB) $(LIBRARY)
+

@@ -26,7 +26,7 @@
 #ifndef MU_PSI_FILE_GENERATOR_H
 #define MU_PSI_FILE_GENERATOR_H
 
-#include "mu.h"
+#include <mu.h>
 
 namespace mu {
 
