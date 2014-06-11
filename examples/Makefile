@@ -28,6 +28,4 @@ clean :
 
 $(TARGETS) : %:%.cpp
 	$(CC) $(CFLAGS) $(LFLAGS) $(DEFS) $(INCLUDES) -o $(@) $(<) $(LIBRARY)
-	# a blunt hack until I figure out how to fix the dynamic libs for stk
-	$(INSTALL_NAME_TOOL) -change libstk.dylib.4.4.4 $(MU_ROOT)/lib/libstk.dylib.4.4.4 $(@)
 

@@ -31,15 +31,21 @@ export MU_ROOT=/Users/r/Projects/Mu/usr
 all :
 	cd packages && make all
 	cd src && make all
-	cd utilities && make all
 
 install :
-	cd src && make all
+	make all
+	cd src && make install
+
 
 clean :
 	cd src && make clean
 	cd utilities && make clean
 	cd packages && make clean
+
+# Prepare to rebuild from scratch
+scour :
+	make clean
+	cd packages && make scour
 	rm -rf $(MU_ROOT)
 
 packages :

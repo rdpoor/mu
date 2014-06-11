@@ -30,7 +30,14 @@ FFTW-DISTRO := http://www.fftw.org/fftw-3.3.4.tar.gz
 all:  wget gsl stk fftw
 
 clean:
-	rm -rf $(WGET-TARBALL) $(WGET-SOURCES) $(GSL-TARBALL) $(GSL-SOURCES) $(STK-TARBALL) $(STK-SOURCES) $(FFTW-TARBALL) $(FFTW-SOURCES) 
+	(test -e $(WGET-SOURCES) && cd $(WGET-SOURCES) && make clean)
+	(test -e $(GSL-SOURCES) && cd $(GSL-SOURCES) && make clean)
+	(test -e $(STK-SOURCES) && cd $(STK-SOURCES) && make clean)
+	(test -e $(FFTW-SOURCES) && cd $(FFTW-SOURCES) && make clean)
+
+# reset everything.
+scour:
+	rm -rf $(WGET-SOURCES) $(WGET-TARBALL) $(GSL-SOURCES) $(GSL-TARBALL) $(STK-SOURCES) $(STK-TARBALL) $(FFTW-SOURCES) $(FFTW-TARBALL)
 
 # ================================================================
 # MU_ROOT is the install directory
@@ -73,9 +80,13 @@ $(GSL-TARBALL) : | wget
 stk : 	$(STK-TARGET)
 
 # final "touch -c" is to make sure target has newer date than the source directory
+# monkey patch the Makefile after creating it to create an absolute path in the dylib
 $(STK-TARGET) : $(STK-SOURCES) | $(MU_ROOT)
-	(cd $(<) && ./configure --prefix=$(MU_ROOT) && make && make install && make clean && touch -c $(STK-TARGET))
+	(cd $(<) && ./configure --prefix=$(MU_ROOT))
+	(cd $(STK-SOURCES)/src && cp -p Makefile Makefile.orig && sed -f ../../patch-stk-src-makefile.sed Makefile.orig > Makefile )
+	(cd $(<) && make && make install && make clean && touch -c $(STK-TARGET))
 
+# monkey patch configure.ac to get the right name in the .dylib file
 $(STK-SOURCES) : $(STK-TARBALL)
 	$(TAR) xf $(STK-TARBALL)
 	cd $(STK-SOURCES) && cp -p configure.ac configure.ac.orig && sed -f ../patch-stk-configure.sed configure.ac.orig > configure.ac

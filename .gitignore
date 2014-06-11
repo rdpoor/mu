@@ -23,11 +23,15 @@
 # Debugging
 *.dSYM
 
-# External sources
-/tarballs
-/bin
-/binary
-/tmp
+# Packages and distro directory can be rebuilt from scratch
+# This is probably the wrong way to do it...
+/packages/fftw-3.3.4*
+/packages/gsl-1.16*
+/packages/stk-4.5.0*
+/packages/wget-1.15*
+/usr
 
-# In theory, the Mu01 distro can be rebuilt from scratch
-/Mu01
+# Random stuff we play with that's not part of the distro
+/binary
+/sketches
+
