@@ -4,6 +4,11 @@ An experiment in blurring the lines between music composition and sound synthesi
 
 ## todo 
 
+* Should I have different kinds of streams?  one for buffers of audio,
+one for discrete events?
+* Slide guitar
+* If I pitch shift a bunch of notes to A440, what does it sound like to
+randomly play each one?
 * Add has_errors and get_errors methods to Stream objects.
 * Refactor: /lib /src /test /examples /sketches  [partly]
 * Create "rebuild from scratch" Makefile for Mu01 [partly]
@@ -318,48 +323,29 @@ it the means to create the file from a .wav file as well...
 
 ### debugging stk's makefile
 
-$ cd src
-$ ./configure -prefix=/Users/r/Projects/Mu/usr
-...
-$ make install
-...
-cp -r ../include/*.h /Users/r/Projects/Mu/usr/include/stk
-install -d /Users/r/Projects/Mu/usr/lib
-install -m 644 libstk.dylib.4.4.4 /Users/r/Projects/Mu/usr/lib
-install: libstk.dylib.4.4.4: No such file or directory
-make[2]: *** [install] Error 71
-make[1]: *** [install] Error 2
-make: *** [/Users/r/Projects/Mu/usr/lib/libstk.a] Error 2
+The current STK makefile doesn't create the shared libstk.dylib
+correctly.  There are a couple of problems, but I monkey patch a
+couple of files in $HOME/src/Makefile to work around it.
 
-src/Makefile, line 92 reads:
-	$(CC) $(LDFLAGS) -fPIC -dynamiclib -o libstk.$(RELEASE).dylib $(OBJECT_PATH)/*.o $(LIBS)
-which expands to:
-	g++  -fPIC -dynamiclib -o libstk.4.4.4.dylib Release/*.o -lpthread -framework CoreAudio -framework CoreFoundation -framework CoreMidi
+See 
+http://stackoverflow.com/questions/24146452/how-to-create-an-absolute-path-reference-in-a-dylib
+http://stackoverflow.com/questions/6569478/detect-if-executable-file-is-on-users-path
+http://stackoverflow.com/questions/10319652/check-if-a-file-is-executable
+http://stackoverflow.com/questions/592620/how-to-check-if-a-program-exists-from-a-bash-script
 
-so: @libflags@ is "-dynamiclib -o libstk.4.4.4.dylib"
-Tracing back to Makefile.in, the corresponding lines are:
+### slide guitar
 
-	$(CC) $(LDFLAGS) -fPIC @libflags@ $(OBJECT_PATH)/*.o $(LIBS)
-...
-	install -m 644 $(SHAREDLIB).$(RELEASE) $(DESTDIR)$(PREFIX)$(LIBDIR)
+see examples/mune28 for a programming pattern
 
-@libflags* get set in ../configure.ac
+inst.rest(dur);
+inst.pluck(double dur, double pitch, double portamento_rate, double portamento_error, double portamento_correction_rate)
+inst.gliss(double dur, double pitch, double portamento_rate, double portamento_error, double portamento_correction_rate)
 
-line 116: AC_SUBST( libflags, ["-shared -Wl,-soname,\$(SHAREDLIB).\$(MAJOR) -o \$(SHAREDLIB).\$(RELEASE)"] )
-line 121:   AC_SUBST( libflags, ["-dynamiclib -o libstk.\$(RELEASE).dylib"] )  # <<< == here's the origin
+inst.pluck() starts a new note (with an attack).  inst.gliss() extends
+the current note and shifts pitch without a new attack.
 
-This first appeared in Version 4.4.3
+portamento_rate is semitones per second: how fast we glide from one pitch to another, which can be zero for a fretted
+note (via pluck()) or hammer-on (via gliss()).  
 
-
-By contrast:
-
-src/Makefile, line 102 reads:
-	install -m 644 $(SHAREDLIB).$(RELEASE) $(DESTDIR)$(PREFIX)$(LIBDIR)
-which expands to :
-	install -m 644 libstk.dylib.4.4.4 /Users/r/Projects/Mu/usr/lib
-
-
-
-
-
-
+portamento_error is in semitones: the note will change to (pitch + portamento_error * frand()), and then settle back
+to pitch over portamento_correction_rate seconds.

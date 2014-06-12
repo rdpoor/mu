@@ -21,6 +21,7 @@ SOURCES := \
 	player.cpp \
 	probability_stream.cpp \
 	psi_stream.cpp \
+	psi_waveform.cpp \
 	random_select_stream.cpp \
 	resample_stream.cpp \
 	reverb_stream.cpp \

@@ -76,6 +76,7 @@
 
 #include "mu.h"
 #include "stream.h"
+#include "psi_waveform.h"
 
 namespace mu {
 
@@ -94,9 +95,9 @@ namespace mu {
     PsiStream& step(stk::StkFrames& buffer, Tick tick, Player &player);
 
     // assumes that setPsiFileName() has been called...
-    Tick getFrameCount() { return sample_buffer_.frames(); }
+    Tick getFrameCount() { return psi_waveform_->getFrameCount(); }
 
-    std::string getPsiFileName( void ) { return psi_file_name_; }
+    std::string getPsiFileName( void ) { return psi_waveform_->getFileName(); }
     PsiStream& setPsiFileName( std::string psi_file_name );
 
     Stream *getTauSource( void ) { return tau_source_; }
@@ -112,47 +113,17 @@ namespace mu {
     }
 
   protected:
-    std::string psi_file_name_;
+    PsiWaveform *psi_waveform_;
     Stream *tau_source_;
     Stream *omega_source_;
     Tick expected_tick_;        // next tick time (if time is contiguous)
     stk::StkFloat phi_;
-    stk::StkFrames sample_buffer_;  // samples
-    stk::StkFrames dsample_buffer_; // forward difference of sample_buffer_ 
-    stk::StkFrames period_buffer_;  // period of sample_buffer_
     stk::StkFrames tau_buffer_;
     stk::StkFrames omega_buffer_;
 
   private:
 
-    // Fetch the ith' sample from sample_buffer_, returning 0
-    // if i is out of range.
-    stk::StkFloat getSample( long i ) {
-      if ((i < 0) || (i>=sample_buffer_.frames())) {
-        return 0.0;
-      } else {
-        return sample_buffer_[i];
-      }
-    }
-
-    // Fetch the t'th sample from sample_buffer_ using linear
-    // interpolation for any fractional part of t.  Returns 0.0 if t
-    // is out of range.  Assumes:
-    // 
-    // dsample_buffer_[i] = sample_buffer[i+1]-sample_buffer[i];
-    stk::StkFloat getFSample( double t ) {
-      if ((t < 0) || (t >= sample_buffer_.frames())) {
-        return 0.0;
-      } else {
-        long int i = (long int)t;
-        double alpha = t - i;
-        return sample_buffer_[i] + alpha * dsample_buffer_[i];
-      }
-    }
-
     stk::StkFloat generateSample(stk::StkFloat tau, stk::StkFloat omega);
-    stk::StkFloat getPeriod(stk::StkFloat tau);
-    void readPsiFile();
 
   };                            // class PsiStream
   
