@@ -2,7 +2,6 @@ MU_ROOT := ../usr
 
 SOURCES := $(wildcard *.cpp)
 TARGETS := $(patsubst %.cpp,%,$(SOURCES))
-INCLUDES := $(patsubst %.cpp,%.h,$(SOURCES))
 
 CC       = g++
 ifdef $(MU_DEBUG)

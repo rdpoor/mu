@@ -18,6 +18,7 @@ SOURCES := \
 	multiply_stream.cpp \
 	nrt_player.cpp \
 	null_stream.cpp \
+	pitch_utilities.cpp \
 	player.cpp \
 	probability_stream.cpp \
 	psi_stream.cpp \

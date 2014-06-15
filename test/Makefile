@@ -1,49 +1,33 @@
-INTEGRATION_TEST_TARGETS := $(patsubst %.cpp,%,$(wildcard mune*.cpp))
+MU_ROOT := ../usr
 
-UNIT_TEST_TARGETS := $(patsubst %.cpp,%,$(wildcard ut_*.cpp))
-
-SKETCH_TARGETS := $(patsubst %.cpp,%,$(wildcard sketch_*.cpp))
-
-ALL_TARGETS := $(INTEGRATION_TEST_TARGETS) $(UNIT_TEST_TARGETS) $(SKETCH_TARGETS)
+SOURCES := $(wildcard *.cpp)
+TARGETS := $(patsubst %.cpp,%,$(SOURCES))
 
 CC       = g++
-# TODO: switch flags via command line arg
-# CFLAGS   = -O3 -Wall
+ifdef $(MU_DEBUG)
 CFLAGS   = -O0 -g -Wall
-LFLAGS   = -L/Users/r/Projects/Mu/Mu01/lib
-DEFS     = -DHAVE_GETTIMEOFDAY -D__MACOSX_CORE__ -D__LITTLE_ENDIAN__
-INCLUDES = -I../include -I../tarballs/stk-4.4.4/include
-MULIB   := ../obj/*.o
-# TODO: switch libraries via command line arg
-STKLIB  := ../tarballs/stk-4.4.4/src/Release/*.o
-# STKLIB  := ../tarballs/stk-4.4.4/src/Debug/*.o
-LIBRARY  = -lpthread -framework CoreAudio -framework CoreFoundation -framework CoreMidi -lfftw3 -lm -lgsl
+else
+CFLAGS   = -O3 -Wall
+endif
+
+LFLAGS   = -L$(MU_ROOT)/lib
+DEFS     = 
+INCLUDES = -I$(MU_ROOT)/include/mu -I$(MU_ROOT)/include/stk
+LIBRARY  = -lpthread -framework CoreAudio -framework CoreFoundation -framework CoreMidi -lm -lgsl -lstk -lmu
 
 .PHONY:	clean
 
-all :	integration-tests unit-tests sketches
+all :	$(TARGETS)
 
 clean :
-	rm -f $(ALL_TARGETS)
+	rm -f $(TARGETS)
 	rm -rf *.dSYM
 
-integration-tests :	$(INTEGRATION_TEST_TARGETS)
+$(TARGETS) : %:%.cpp assert.o
+	$(CC) $(CFLAGS) $(LFLAGS) $(DEFS) $(INCLUDES) -o $(@) $(<) assert.o $(LIBRARY)
 
-run-integration-tests : integration-tests
-	for x in $(INTEGRATION_TEST_TARGETS); do echo ======== $$x; ./$$x; done
-
-$(INTEGRATION_TEST_TARGETS) : %:%.cpp
-	$(CC) $(CFLAGS) $(LFLAGS) $(DEFS) $(INCLUDES) -o $(@) $(<) $(MULIB) $(STKLIB) $(LIBRARY)
+run-tests : $(TARGETS)
+	for x in $(TARGETS); do echo ======== $$x; ./$$x; done
 
 unit-tests :	$(UNIT_TEST_TARGETS)
 
-run-unit-tests : unit-tests
-	for x in $(UNIT_TEST_TARGETS); do echo ======== $$x; ./$$x; done
-
-$(UNIT_TEST_TARGETS) : %:%.cpp assert.o
-	$(CC) $(CFLAGS) $(LFLAGS) $(DEFS) $(INCLUDES) -o $(@) $(<) assert.o $(MULIB) $(STKLIB) $(LIBRARY)
-
-sketches :	$(SKETCH_TARGETS)
-
-$(SKETCH_TARGETS) : %:%.cpp
-	$(CC) $(CFLAGS) $(LFLAGS) $(DEFS) $(INCLUDES) -o $(@) $(<) $(MULIB) $(STKLIB) $(LIBRARY)

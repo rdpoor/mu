@@ -10,19 +10,18 @@ one for discrete events?
 * If I pitch shift a bunch of notes to A440, what does it sound like to
 randomly play each one?
 * Add has_errors and get_errors methods to Stream objects.
-* Refactor: /lib /src /test /examples /sketches  [partly]
-* Create "rebuild from scratch" Makefile for Mu01 [partly]
 * Add doxygen comments
 * Add 'make docs' to Makefile
-* Make it easy to run unit tests with libgmalloc turned on.
+* Make it easy to run unit tests with libgmalloc turned on.  Create 
+MU_DEBUG switch for makefile(s) to use debug libs, etc.
 * Write unit test for FileReadStream and FileWriteStream.
 * Stop Player when tick >= source.getEnd().  Clean up implementations.
-* Create MU_DEBUG switch for makefile(s) to use debug libs, etc.
 * Optimize a few inner loops (copy buffer, zero part of buffer...)
 * Can we (should we?) change Tick to Seconds?
 * step() should return Stream * (not more specialized subclass).
 * Beef up assert.c=>assert.cpp Create a tester object that can print
-out context, print on error only, print always, etc.
+out context, print on error only, print always, etc.  Better, find
+an existing test package.
 * FileReadStream should allow negative Tick times (implicit crop)
 * Create F(t)Stream and test file.
 * setSource() and related should check for compatible frameRate(), channelCount()
@@ -32,12 +31,9 @@ out context, print on error only, print always, etc.
 * Think about automatic conversion from mono to stereo -- what happens
   when you connect a mono source to a stereo stream object?  Should that
   be an error or expand automatically?
-* Abstract out common elements of a single-input stream, make into 
-  a generic super class.
 * When do we release resources?  Do we need a Transport.pause() method
   distinct from Transport.stop()?
 * Add command line parsing such as argp.h
-* Create mu/Makefile to make all sub-projects: mu, test, stk
 * Rename Stream => SP (StreamProcessor) for brevity and clarity.  Or not.
 
 ## changelog 
@@ -349,3 +345,27 @@ note (via pluck()) or hammer-on (via gliss()).
 
 portamento_error is in semitones: the note will change to (pitch + portamento_error * frand()), and then settle back
 to pitch over portamento_correction_rate seconds.
+
+Hmmm.  For now, make it simpler and remove the error and correction rate.
+
+### Deterministic streams and connection objects
+
+Someday it would be useful to be able to connect a stream to more than
+one output, iff it is "deterministic", that is, each call to step()
+with the same arguments will produce exactly the same result.
+FileReaderStream is deterministic, ReverbStream is non-deterministic.
+Stated another way, a stream is deterministic if it contains no hidden
+state.
+
+To make this work, create:
+
+* a "connector" object that patches stream elements together
+* a traversal method that knows how to traverse the stream graph
+* a "deterministic" flag on each stream element 
+
+With this, a stream element may connect to multiple outputs if it (and
+all upstream elements) are deterministic.
+
+Abstracting out a connector object and a traversal method would have
+other benefits as well: it would detect attempts to create circular
+graphs, automatic mono/stereo conversion, copy an entire subtree, etc.
