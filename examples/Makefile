@@ -15,8 +15,6 @@ DEFS     =
 INCLUDES = -I$(MU_ROOT)/include/mu -I$(MU_ROOT)/include/stk -I$(MU_ROOT)/include
 LIBRARY  = -lpthread -framework CoreAudio -framework CoreFoundation -framework CoreMidi -lm -lgsl -lstk -lmu
 
-INSTALL_NAME_TOOL = /usr/bin/install_name_tool
-
 .PHONY:	clean
 
 all :	$(TARGETS)

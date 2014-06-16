@@ -1,28 +1,27 @@
-SCORE_TARGETS := $(patsubst %.cpp,%,$(wildcard *.cpp))
+MU_ROOT := ../usr
 
-ALL_TARGETS := $(SCORE_TARGETS)
+SOURCES := $(wildcard *.cpp)
+TARGETS := $(patsubst %.cpp,%,$(SOURCES))
 
 CC       = g++
-# TODO: switch flags via command line arg
-# CFLAGS   = -O3 -Wall
-CFLAGS   = -O0 -g -Wall
-DEFS     = -DHAVE_GETTIMEOFDAY -D__MACOSX_CORE__ -D__LITTLE_ENDIAN__
-INCLUDES = -I../include -I../tarballs/stk-4.4.4/include
-MULIB   := ../obj/*.o
-# TODO: switch libraries via command line arg
-STKLIB  := ../tarballs/stk-4.4.4/src/Release/*.o
-# STKLIB  := ../tarballs/stk-4.4.4/src/Debug/*.o
-LIBRARY  = -lpthread -framework CoreAudio -framework CoreFoundation -framework CoreMidi
+ifdef MU_DEBUG
+  CFLAGS   = -O0 -g -Wall
+else
+  CFLAGS   = -O3 -Wall
+endif
+
+LFLAGS   = -L$(MU_ROOT)/lib
+DEFS     = 
+INCLUDES = -I$(MU_ROOT)/include/mu -I$(MU_ROOT)/include/stk -I$(MU_ROOT)/include
+LIBRARY  = -lpthread -framework CoreAudio -framework CoreFoundation -framework CoreMidi -lm -lgsl -lstk -lmu
 
 .PHONY:	clean
 
-all :	scores
+all :	$(TARGETS)
 
 clean :
-	rm -f $(ALL_TARGETS)
+	rm -f $(TARGETS)
+	rm -rf *.dSYM
 
-scores :	$(SCORE_TARGETS)
-
-$(SCORE_TARGETS) : %:%.cpp
-	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $(@) $(<) $(MULIB) $(STKLIB) $(LIBRARY)
-
+$(TARGETS) : %:%.cpp
+	$(CC) $(CFLAGS) $(LFLAGS) $(DEFS) $(INCLUDES) -o $(@) $(<) $(LIBRARY)

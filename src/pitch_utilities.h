@@ -57,8 +57,8 @@ namespace mu {
     }
 
     double midiPitchToPitchClass( double midi_pitch ) {
-      double pc = fmod(midi_pitch, 12.0);
-      return (pc < 0.0) ? pc + 12.0 : pc;
+      // "floored division" (mod with result between 0 .. 12)
+      return midi_pitch - 12.0 * floor(midi_pitch / 12.0);
     }
 
     double midiPitchToOctave( double midi_pitch ) {
