@@ -34,7 +34,7 @@
 
 namespace mu {
 
-  class MultiplyStream : public MultiSourceStream {
+  class MultiplyStream : public MultiSourceStream<MultiplyStream> {
   public:
 
     MultiplyStream( void );

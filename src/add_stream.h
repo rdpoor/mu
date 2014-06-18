@@ -34,7 +34,7 @@
 
 namespace mu {
 
-  class AddStream : public MultiSourceStream {
+  class AddStream : public MultiSourceStream<AddStream> {
   public:
 
     AddStream();

@@ -35,15 +35,18 @@
 
 namespace mu {
 
-  class SingleSourceStream : public Stream {
+  template <typename T> class SingleSourceStream : public Stream {
   public:
-    SingleSourceStream();
-    ~SingleSourceStream();
+    SingleSourceStream()
+      : source_ ( NULL ) {
+    }
+    ~SingleSourceStream() {
+    }
     virtual void step(stk::StkFrames& buffer, Tick tick, Player &player) = 0;
     virtual Tick getStart( void ) { return (source_ == NULL) ? kIndefinite : source_->getStart(); }
     virtual Tick getEnd( void ) { return (source_ == NULL) ? kIndefinite : source_->getEnd(); }
-    virtual Stream *getSource() { return source_; }
-
+    Stream *getSource() { return source_; }
+    T& setSource(Stream *source) { source_ = source; return *static_cast<T *>(this); }
   protected:
     Stream *source_;
     stk::StkFrames buffer_;

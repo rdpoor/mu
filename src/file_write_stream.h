@@ -33,7 +33,7 @@
 
 namespace mu {
 
-  class FileWriteStream : public SingleSourceStream {
+  class FileWriteStream : public SingleSourceStream<FileWriteStream> {
   public:
 
     // static const stk::FileWrite::FILE_TYPE kDefaultFileType = stk::FileWrite::FILE_WAV;
@@ -46,8 +46,6 @@ namespace mu {
     void inspectAux(std::stringstream& ss, int level);
 
     void step(stk::StkFrames& buffer, Tick tick, Player &player);
-
-    FileWriteStream& setSource(Stream *source) { source_ = source; return *this; }
 
     std::string getFileName( void ) { return file_name_; }
     FileWriteStream& setFileName(std::string file_name) { 

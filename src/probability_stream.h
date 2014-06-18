@@ -35,7 +35,7 @@
 
 namespace mu {
 
-  class ProbabilityStream : public SingleSourceStream {
+  class ProbabilityStream : public SingleSourceStream<ProbabilityStream> {
   public:
 
     ProbabilityStream( void );
@@ -47,8 +47,6 @@ namespace mu {
 
     Tick getStart();
     Tick getEnd();
-
-    ProbabilityStream& setSource(Stream *source) { source_ = source; return *this; }
 
     double getProbability( void ) { return probability_; }
     ProbabilityStream& setProbability(double probability) { probability_ = probability; return *this; }

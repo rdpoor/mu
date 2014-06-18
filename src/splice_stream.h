@@ -37,7 +37,7 @@
 
 namespace mu {
 
-  class SpliceStream : public MultiSourceStream {
+  class SpliceStream : public MultiSourceStream<SpliceStream> {
   public:
     
     SpliceStream( void );
@@ -72,7 +72,6 @@ namespace mu {
     // private instance variables
 
     Tick prev_tick_;
-
     long int cursor_;
   };                            // class SpliceStream
 

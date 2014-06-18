@@ -35,16 +35,65 @@
 
 namespace mu {
 
-  class MultiSourceStream : public Stream {
+  template <typename T> class MultiSourceStream : public Stream {
   public:
-    virtual void step(stk::StkFrames& buffer, Tick tick, Player &player) = 0;
     
-    Tick getStart( void );
-    Tick getEnd( void );
+    Tick getStart( void ) {
+      if (sources_.size() == 0) {
+        return kIndefinite;
+      } else {
+        Tick earliest_start = LONG_MAX;
+        for (long int i=0; i<sources_.size(); i++) {
+          Stream *source = sources_.at(i);
+          Tick start = source->getStart();
+          if (start == kIndefinite) {
+            return kIndefinite;
+          } else {
+            earliest_start = std::min(earliest_start, start);
+          }
+        }
+        return earliest_start;
+      }
+    }
+    
+    Tick getEnd( void ) {
+      if (sources_.size() == 0) {
+        return kIndefinite;
+      } else {
+        Tick latest_end = LONG_MIN;
+        for (long int i=0; i<sources_.size(); i++) {
+          Stream *source = sources_.at(i);
+          Tick end = source->getEnd();
+          if (end == kIndefinite) {
+            return kIndefinite;
+          } else {
+            latest_end = std::max(latest_end, end);
+          }
+        }
+        return latest_end;
+      }
+    }
 
-    MultiSourceStream& addSource(Stream *source);
-    MultiSourceStream& removeSource(Stream *source);
-    MultiSourceStream& removeAllSources();
+    T& addSource(Stream *source) {
+      sources_.push_back(source);
+      return *static_cast<T *>(this);
+    }
+  
+    T& removeSource(Stream *source) {
+      for (int i=0; i<sources_.size(); i++) {
+        if (sources_.at(i) == source) {
+          sources_.erase(sources_.begin()+i);
+          break;
+        }
+      }
+      return *static_cast<T *>(this);
+    }
+    
+    T& removeAllSources() {
+      sources_.clear();
+      return *static_cast<T *>(this);
+    }
+    
     size_t getSourceCount() { return sources_.size(); }
 
     // Allow readonly access to the underlying sources.  This is

@@ -47,7 +47,7 @@ namespace mu {
                                      Player& player,
                                      Tick frame_index );
   
-  class MapStream : public SingleSourceStream {
+  class MapStream : public SingleSourceStream<MapStream> {
   public:
 
     // static const MapStreamCallback kDefaultCallback = NULL;
@@ -58,9 +58,6 @@ namespace mu {
     std::string getClassName() { return "MapStream"; }
 
     void step(stk::StkFrames& buffer, Tick tick, Player &player);
-
-    // needed(??) so setSource() returns a MapStream and not a SingleSourceStream
-    MapStream& setSource(Stream *source) { source_ = source; return *this; }
 
     MapStreamCallback getCallback() const { return callback_; }
     MapStream& setCallback(MapStreamCallback callback) { callback_ = callback; return *this; }

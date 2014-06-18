@@ -35,7 +35,7 @@
 
 namespace mu {
 
-  class LoopStream : public SingleSourceStream {
+  class LoopStream : public SingleSourceStream<LoopStream> {
   public:
 
     static const Tick kDefaultLoopDuration = 44100;
@@ -50,10 +50,6 @@ namespace mu {
 
     Tick getStart( void ) { return kIndefinite; }
     Tick getEnd( void ) { return kIndefinite; }
-
-    // needed(??) so setSource() returns a LoopStream and not a SingleSourceStream
-    // TODO: figure out the right way to do this
-    LoopStream& setSource(Stream *source) { source_ = source; return *this; }
 
     Tick getLoopDuration() const { return loop_duration_; }
     LoopStream& setLoopDuration(Tick loop_duration) { loop_duration_ = loop_duration; return *this; }

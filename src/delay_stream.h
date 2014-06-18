@@ -34,7 +34,7 @@
 
 namespace mu {
 
-  class DelayStream : public SingleSourceStream {
+  class DelayStream : public SingleSourceStream<DelayStream> {
   public:
 
     static const Tick kDefaultDelay = 0;
@@ -49,10 +49,6 @@ namespace mu {
 
     Tick getStart( void );
     Tick getEnd( void );
-
-    // needed(??) so setSource() returns a DelayStream and not a SingleSourceStream
-    // TODO: figure out the right way to do this
-    DelayStream& setSource(Stream *source) { source_ = source; return *this; }
 
     Tick getDelay() const { return delay_; }
     DelayStream& setDelay(Tick delay) { delay_ = delay; return *this; }

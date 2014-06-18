@@ -25,11 +25,4 @@
 #include "single_source_stream.h"
 
 namespace mu {
-  SingleSourceStream::SingleSourceStream()
-    : source_ ( NULL ) {
-  }
-
-  SingleSourceStream::~SingleSourceStream() {
-  }
-
 }

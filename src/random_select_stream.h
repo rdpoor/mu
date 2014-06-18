@@ -41,7 +41,7 @@
 
 namespace mu {
 
-  class RandomSelectStream : public MultiSourceStream {
+  class RandomSelectStream : public MultiSourceStream<RandomSelectStream> {
   public:
     
     RandomSelectStream( void );

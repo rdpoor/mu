@@ -43,7 +43,7 @@
 
 namespace mu {
 
-  class FadeStream : public SingleSourceStream {
+  class FadeStream : public SingleSourceStream<FadeStream> {
   public:
 
     static const Tick kDefaultFadeTime = 0;
@@ -61,8 +61,6 @@ namespace mu {
 
     Tick getEnd( void );
     FadeStream& setEnd(Tick end) { end_ = end; return *this; }
-
-    FadeStream& setSource(Stream *source) { source_ = source; return *this; }
 
     Tick getFadeTime( void ) { return fade_time_; }
     FadeStream& setFadeTime(Tick fade_time) { fade_time_ = fade_time; return *this; }

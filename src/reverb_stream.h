@@ -28,12 +28,11 @@
 
 #include "NRev.h"
 #include "mu.h"
-#include "stream.h"
+#include "single_source_stream.h"
 
 namespace mu {
 
-  // TODO: Make subclass of SingleSourceStream
-  class ReverbStream : public Stream {
+  class ReverbStream : public SingleSourceStream<ReverbStream> {
   public:
 
     ReverbStream( void );
@@ -46,9 +45,6 @@ namespace mu {
 
     Tick getEnd();
 
-    Stream *getSource() { return source_; }
-    ReverbStream& setSource(Stream *source) { source_ = source; return *this; }
-
     stk::StkFloat getRatio( void ) { return wet_; }
     ReverbStream& setRatio(stk::StkFloat ratio) { 
       wet_ = ratio;
@@ -57,8 +53,6 @@ namespace mu {
     }
   
   protected:
-    Stream *source_;
-    stk::StkFrames buffer_;
     stk::StkFloat dry_;
     stk::StkFloat wet_;
     stk::NRev *reverb_;
