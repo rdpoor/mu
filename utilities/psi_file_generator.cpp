@@ -40,9 +40,9 @@ namespace mu {
   // - the finite difference between samples of the original waveform
   // - the period measured around each sample
 
-  void PsiFileGenerator::generatePsiFile(std::string wav_file_name, 
-                                         std::string psi_file_name,
-                                         double estimated_period) {
+  void PsiFileGenerator::analyzeFile(std::string wav_file_name, 
+                                     std::string psi_file_name,
+                                     double estimated_period) {
     wav_file_name_ = wav_file_name;
     psi_file_name_ = psi_file_name;
     estimated_period_ = estimated_period;
@@ -83,9 +83,6 @@ namespace mu {
     // compute periods
     period_buffer_.resize(n_frames, 1);
     computePeriods();
-
-    // write the results to a .psi file
-    writePsiData();
   }
 
   void PsiFileGenerator::zeroBuffer(stk::StkFrames &b) {
@@ -121,6 +118,24 @@ namespace mu {
             n_frames, 
             psi_file_name_.c_str());
     fclose(ofd);
+  }
+
+  int cmp_double(const void *px, const void *py)
+  {
+    double x = *(double *)px, y = *(double *)py;
+    return (x < y) ? -1 : (x > y) ? 1 : 0;
+  }
+  
+  double PsiFileGenerator::medianPeriod() {
+    int n_items = period_buffer_.size();
+    int n_bytes = n_items * sizeof(double);
+
+    double *periods = (double *)malloc(n_bytes);
+    memcpy(periods, &period_buffer_[0], n_bytes);
+    qsort(periods, n_items, sizeof(double), cmp_double);
+    double median = periods[n_items/2];
+    free(periods);
+    return median;
   }
 
   struct minimization_params { PsiFileGenerator *psi_file_generator; double tau; };
@@ -216,6 +231,18 @@ void usage(int ac, char *av[]) {
   exit(-1);
 }
 
+/*
+ * SYNOPSIS:
+ * 
+ * ./psi_file_generator wav_file_name psi_file_name estimated_period
+ * Create psi_file as a .csv file with:
+ *   sample, dsample/dt, period
+ * for each sample.  (Warning: these files get large!)
+ *
+ * ./psi_file_generator wav_file_name - estimated_period
+ * Calculate and print on stdout:
+ *   wav_file_name, measured_period, estimated_period
+ */
 int main(int ac, char *av[]) {
   if (ac != 4) usage(ac, av);
   mu::PsiFileGenerator pfg;
@@ -223,7 +250,14 @@ int main(int ac, char *av[]) {
   std::string psi_file_name = av[2];
   double estimated_period = atof(av[3]);
 
-  pfg.generatePsiFile(wav_file_name,
-                      psi_file_name,
-                      estimated_period);
+  pfg.analyzeFile(wav_file_name,
+                  psi_file_name,
+                  estimated_period);
+  if (psi_file_name.compare("-") == 0) {
+    // write filename, median_period, estimated_period
+    printf("%s, %f, %f\n", wav_file_name.c_str(), pfg.medianPeriod(), estimated_period);
+  } else {
+    // write the results to a .psi file
+    pfg.writePsiData();
+  }
 }

@@ -22,45 +22,36 @@ int main() {
   mu::NrtPlayer player;
   stk::StkFrames buffer;
 
-  // fprintf(stderr,"A");
   buffer.setDataRate(FRAME_RATE);
   buffer.resize(FRAME_COUNT, CHANNEL_COUNT);
 
-  // fprintf(stderr,"B");
   loop_stream.setSource(NULL).setLoopDuration(LOOP_DURATION_EQ);
   ASSERT(loop_stream.getStart() == mu::kIndefinite);
   ASSERT(loop_stream.getEnd() == mu::kIndefinite);
 
-  // fprintf(stderr,"C");
   loop_stream.step(buffer, 0, player);
-  // fprintf(stderr,"C1");
   ASSERT(buffer(0,0) == 0);
 
-  // fprintf(stderr,"D");
   loop_stream.setSource(&identity_stream).setLoopDuration(LOOP_DURATION_EQ);
   ASSERT(loop_stream.getStart() == mu::kIndefinite);
   ASSERT(loop_stream.getEnd() == mu::kIndefinite);
 
-  // fprintf(stderr,"E");
   loop_stream.step(buffer, 0, player);
   ASSERT(buffer(0,0) == 0);
   ASSERT(buffer(0,1) == 0);
   ASSERT(buffer(FRAME_COUNT-1,0) == FRAME_COUNT-1);
   ASSERT(buffer(FRAME_COUNT-1,1) == FRAME_COUNT-1);
 
-  // fprintf(stderr,"F");
   loop_stream.step(buffer, FRAME_COUNT, player);
   ASSERT(buffer(0,0) == 0);
   ASSERT(buffer(0,1) == 0);
   ASSERT(buffer(FRAME_COUNT-1,0) == FRAME_COUNT-1);
   ASSERT(buffer(FRAME_COUNT-1,1) == FRAME_COUNT-1);
 
-  // fprintf(stderr,"G");
   loop_stream.setSource(&identity_stream).setLoopDuration(LOOP_DURATION_LT);
   ASSERT(loop_stream.getStart() == mu::kIndefinite);
   ASSERT(loop_stream.getEnd() == mu::kIndefinite);
 
-  // fprintf(stderr,"H");
   loop_stream.step(buffer, 0, player);
   ASSERT(buffer(0,0) == 0);
   ASSERT(buffer(0,1) == 0);
@@ -99,6 +90,7 @@ int main() {
   loop_stream.setSource(&crop_stream);
   ASSERT(loop_stream.getStart() == mu::kIndefinite);
   ASSERT(loop_stream.getEnd() == mu::kIndefinite);
-  
+
+  // adding setStart() and setEnd() to LoopStream()
   
 }

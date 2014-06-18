@@ -36,11 +36,18 @@ namespace mu {
     PsiFileGenerator( void ) {}
     ~PsiFileGenerator( void ) {}
 
-    // Read in a .wav file, create a .psi file to avoid all the heavy
-    // lifting at runtime.
-    void generatePsiFile(std::string wav_file_name, 
-                         std::string psi_file_name,
-                         double estimated_period);
+    // Read in and analyze .wav file
+    void analyzeFile(std::string wav_file_name, 
+                     std::string psi_file_name,
+                     double estimated_period);
+
+    // write data to psi file (only after analyzeFile() has been
+    // called)
+    void writePsiData();
+
+    // compute median period (only after analyzeFile() has been
+    // called)
+    double medianPeriod();
 
     // Not public, but needs to be visible as a callback to the GSL
     // minimization library.
@@ -56,7 +63,6 @@ namespace mu {
 
   private:
     void zeroBuffer(stk::StkFrames &b);
-    void writePsiData();
     void computePeriods();
     double computePeriod(void *handle, double tau, bool chatty);
 

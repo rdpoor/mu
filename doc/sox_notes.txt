@@ -1,0 +1,17 @@
+How to:
+
+convert from N files to mono, normalizing to -3 db:
+      sox input.wav output.wav remix − gain −n −3
+
+find the frequency of a sound file:
+     sox input.wav -n stat # (the -n arg means discard the output)
+
+shift frequency (cents)"
+      sox -S input.wav output.wav speed -1200c
+
+shift frequency down by one octave (using cents):
+      sox -S input.wav output.wav speed -1200c
+
+shift frequency down by one octave (using ratio):
+      sox -S input.wav output.wav speed 0.5 # (the -S arg shows progress)
+
