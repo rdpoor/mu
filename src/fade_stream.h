@@ -54,7 +54,7 @@ namespace mu {
     std::string getClassName() { return "FadeStream"; }
     virtual void inspectAux(std::stringstream& ss, int level);
 
-    FadeStream& step(stk::StkFrames& buffer, Tick tick, Player &player);
+    void step(stk::StkFrames& buffer, Tick tick, Player &player);
 
     Tick getStart( void );
     FadeStream& setStart(Tick start) {  start_ = start; return *this; }

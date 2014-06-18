@@ -50,13 +50,11 @@ namespace mu {
     ss << omega_source_->inspect(level+1);
   }
 
-  PsiStream& PsiStream::step(stk::StkFrames& buffer,
-                                 Tick tick,
-                                 Player& player) {
+  void PsiStream::step(stk::StkFrames& buffer, Tick tick, Player& player) {
     zeroBuffer(buffer);
     if ((tau_source_ == NULL) || 
         (omega_source_ == NULL)) {
-      return *this;
+      return;
     }
 
     tau_buffer_.resize(buffer.frames(), 1);
@@ -70,17 +68,33 @@ namespace mu {
     }
     expected_tick_ = tick + buffer.frames();
 
-    for (int frame=0; frame<tau_buffer_.frames(); frame++) {
-      stk::StkFloat tau = tau_buffer_[frame];
-      stk::StkFloat omega = omega_buffer_[frame];
-      
-      stk::StkFloat sample = generateSample(tau, omega);
-              
-      for (int channel = 0; channel < buffer.channels(); channel++) {
-        buffer(frame, channel) = sample;
+    if (buffer.channels() == 1) {
+      for (int frame=0; frame<tau_buffer_.frames(); frame++) {
+        stk::StkFloat tau = tau_buffer_[frame];
+        stk::StkFloat omega = omega_buffer_[frame];
+        stk::StkFloat sample = generateSample(tau, omega);
+        buffer(frame, 0) = sample;
+      }
+    } else if (buffer.channels() == 2) {
+      for (int frame=0; frame<tau_buffer_.frames(); frame++) {
+        stk::StkFloat tau = tau_buffer_[frame];
+        stk::StkFloat omega = omega_buffer_[frame];
+        stk::StkFloat sample = generateSample(tau, omega);
+        buffer(frame, 0) = sample;
+        buffer(frame, 1) = sample;
+      }
+    } else {
+      for (int frame=0; frame<tau_buffer_.frames(); frame++) {
+        stk::StkFloat tau = tau_buffer_[frame];
+        stk::StkFloat omega = omega_buffer_[frame];
+        stk::StkFloat sample = generateSample(tau, omega);
+        for (int channel = 0; channel < buffer.channels(); channel++) {
+          buffer(frame, channel) = sample;
+        }
       }
     }
-    return *this;
+
+    return;
   }
 
   PsiStream& PsiStream::setPsiFileName( std::string psi_file_name ) {

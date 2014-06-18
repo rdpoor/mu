@@ -45,9 +45,7 @@ namespace mu {
     std::string getClassName() { return "FileWriteStream"; }
     void inspectAux(std::stringstream& ss, int level);
 
-    FileWriteStream& step(stk::StkFrames& buffer, 
-                          Tick tick,
-                          Player &player);
+    void step(stk::StkFrames& buffer, Tick tick, Player &player);
 
     FileWriteStream& setSource(Stream *source) { source_ = source; return *this; }
 

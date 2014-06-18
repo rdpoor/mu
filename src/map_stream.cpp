@@ -33,9 +33,7 @@ namespace mu {
   MapStream::~MapStream() {
   }
 
-  MapStream& MapStream::step(stk::StkFrames& buffer,
-                             Tick tick,
-                             Player& player) {
+  void MapStream::step(stk::StkFrames& buffer, Tick tick, Player& player) {
     // fill buffer if there's a source
     if (source_ != NULL) {
       source_->step(buffer, tick, player);
@@ -47,8 +45,6 @@ namespace mu {
         callback_(buffer, tick+i, player, i); 
       }
     }
-
-    return *this;
   }
 
 }

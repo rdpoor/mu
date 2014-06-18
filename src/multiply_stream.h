@@ -43,7 +43,7 @@ namespace mu {
     std::string getClassName() { return "MultiplyStream"; }
     virtual void inspectAux(std::stringstream& ss, int level);
 
-    MultiplyStream& step(stk::StkFrames& buffer, Tick tick, Player &player);
+    void step(stk::StkFrames& buffer, Tick tick, Player &player);
 
   };                            // class MultiplyStream
 

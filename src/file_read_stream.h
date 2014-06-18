@@ -41,9 +41,7 @@ namespace mu {
     std::string getClassName() { return "FileReadStream"; }
     void inspectAux(std::stringstream& ss, int level);
 
-    FileReadStream& step(stk::StkFrames& buffer, 
-                     Tick tick,
-                     Player &player);
+    void step(stk::StkFrames& buffer, Tick tick, Player &player);
     Tick getStart( void );
     Tick getEnd( void );
 

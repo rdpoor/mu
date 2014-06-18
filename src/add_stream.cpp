@@ -42,7 +42,7 @@ namespace mu {
     }
   }
     
-  AddStream& AddStream::step(stk::StkFrames& buffer, Tick tick, Player& player) {
+  void AddStream::step(stk::StkFrames& buffer, Tick tick, Player& player) {
     int active_streams = 0;
     Tick buffer_start = tick;
     Tick buffer_end = tick + buffer.frames();
@@ -82,7 +82,6 @@ namespace mu {
 
     // if no stream has contributed to output, explicitly zero it
     if (active_streams == 0) { zeroBuffer(buffer); }
-    return *this;
   }
 
 }

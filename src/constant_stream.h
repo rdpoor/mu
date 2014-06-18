@@ -44,7 +44,7 @@ namespace mu {
     std::string getClassName() { return "ConstantStream"; }
     virtual void inspectAux(std::stringstream& ss, int level);
 
-    ConstantStream& step(stk::StkFrames& buffer, Tick tick, Player& player);
+    void step(stk::StkFrames& buffer, Tick tick, Player& player);
 
     stk::StkFloat getValue() const { return value_; }
     ConstantStream& setValue(stk::StkFloat value) { value_ = value; return *this; }

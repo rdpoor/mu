@@ -41,13 +41,12 @@ namespace mu {
     ss << source_->inspect(level+1);
   }
 
-  DelayStream& DelayStream::step(stk::StkFrames& buffer, Tick tick, Player& player) {
+  void DelayStream::step(stk::StkFrames& buffer, Tick tick, Player& player) {
     if (source_ == NULL) {
       zeroBuffer(buffer);
     } else {
       source_->step(buffer, tick - delay_, player);
     }
-    return *this;
   }
 
   Tick DelayStream::getStart() {

@@ -32,8 +32,6 @@ namespace mu {
     inspectIndent(ss, level); 
     ss << "#<" << getClassName() << " " << this << ">" << std::endl;
     inspectIndent(ss, level+1); 
-    // wtf?
-    // ss << "getStart() = " << ((getStart()==kIndefinite)?"kIndefinite":getStart()) << std::endl;
     if (getStart() == kIndefinite) {
       ss << "getStart() = " << "kIndefinite" << std::endl;
     } else {

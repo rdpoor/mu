@@ -37,7 +37,7 @@ namespace mu {
 
   class MultiSourceStream : public Stream {
   public:
-    virtual MultiSourceStream& step(stk::StkFrames& buffer, Tick tick, Player &player) = 0;
+    virtual void step(stk::StkFrames& buffer, Tick tick, Player &player) = 0;
     
     Tick getStart( void );
     Tick getEnd( void );

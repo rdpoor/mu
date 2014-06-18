@@ -46,7 +46,7 @@ namespace mu {
     std::string getClassName() { return "CropStream"; }
     virtual void inspectAux(std::stringstream& ss, int level);
 
-    CropStream& step(stk::StkFrames& buffer, Tick tick, Player &player);
+    void step(stk::StkFrames& buffer, Tick tick, Player &player);
 
     // needed(??) so setSource() returns a LoopStream and not a SingleSourceStream
     // TODO: figure out the right way to do this

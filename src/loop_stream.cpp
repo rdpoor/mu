@@ -41,9 +41,9 @@ namespace mu {
     ss << source_->inspect(level+1);
   }
 
-  LoopStream& LoopStream::step(stk::StkFrames& buffer, Tick tick, Player& player) {
+  void LoopStream::step(stk::StkFrames& buffer, Tick tick, Player& player) {
     // fprintf(stderr,"LoopStream::%p.step(%p, %ld, %p)\n", this, &buffer, tick, &player);
-    if (source_ == NULL) { return *this; }
+    if (source_ == NULL) { return; }
 
     long int frames_copied = 0;
 
@@ -82,8 +82,6 @@ namespace mu {
       // fprintf(stderr,"g");
       frames_copied += frames_to_copy;
     }
-
-    return *this;
   }
 
 }

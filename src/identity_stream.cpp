@@ -34,9 +34,7 @@ namespace mu {
     TRACE("IdentityStream::~IdentityStream()\n");
   }
   
-  IdentityStream& IdentityStream::step(stk::StkFrames& buffer, 
-                                       Tick tick,
-                                       Player &player) {
+  void IdentityStream::step(stk::StkFrames& buffer, Tick tick, Player &player) {
     Tick frame_count = buffer.frames();
     Tick channel_count = buffer.channels();
     
@@ -60,7 +58,6 @@ namespace mu {
         }
       }
     }
-    return *this;
   }
 
 }

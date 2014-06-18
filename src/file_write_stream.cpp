@@ -43,9 +43,7 @@ namespace mu {
   }
 
 
-  FileWriteStream& FileWriteStream::step(stk::StkFrames& buffer, 
-                                         Tick tick,
-                                         Player& player) {
+  void FileWriteStream::step(stk::StkFrames& buffer, Tick tick, Player& player) {
     
     if (source_ == NULL) {
       zeroBuffer(buffer);
@@ -65,8 +63,6 @@ namespace mu {
     } else {
       file_write_.close();
     }
-
-    return *this;
   }
 
 } // namespace mu

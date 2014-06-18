@@ -9,14 +9,14 @@
 // ================
 class S1 : public mu::Stream {
 public:
-  S1& step(stk::StkFrames& buffer, mu::Tick tick, mu::Player &player) { return *this; }
+  void step(stk::StkFrames& buffer, mu::Tick tick, mu::Player &player) { return; }
 protected:
 };
 
 // ================
 class S2 : public mu::Stream {
 public:
-  S2& step(stk::StkFrames& buffer, mu::Tick tick, mu::Player &player) { return *this; }
+  void step(stk::StkFrames& buffer, mu::Tick tick, mu::Player &player) { return; }
   mu::Tick getStart() { return 42; }
   mu::Tick getEnd() { return 44; }
 protected:
@@ -25,7 +25,7 @@ protected:
 // ================
 class S3 : public mu::Stream {
 public:
-  S3& step(stk::StkFrames& buffer, mu::Tick tick, mu::Player &player) { return *this; }
+  void step(stk::StkFrames& buffer, mu::Tick tick, mu::Player &player) { return; }
   mu::Tick getStart( void ) { return start_; }
   S3& setStart( mu::Tick start) { start_ = start; return *this; }
   mu::Tick getEnd( void ) { return end_; }

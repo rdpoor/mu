@@ -42,7 +42,7 @@ namespace mu {
 
     std::string getClassName() { return "NullStream"; }
 
-    NullStream& step(stk::StkFrames& buffer, Tick tick, Player& player);
+    void step(stk::StkFrames& buffer, Tick tick, Player& player);
     
   protected:
   };                            // class NullStream

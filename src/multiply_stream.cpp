@@ -43,7 +43,7 @@ namespace mu {
   }
     
   // TODO: should we write ones rather than zeros?
-  MultiplyStream& MultiplyStream::step(stk::StkFrames& buffer, Tick tick, Player& player) {
+  void MultiplyStream::step(stk::StkFrames& buffer, Tick tick, Player& player) {
     if (sources_.size() == 0) {
       zeroBuffer(buffer);
     } else {
@@ -67,7 +67,6 @@ namespace mu {
         }
       }
     }
-    return *this;
   }
 
 }

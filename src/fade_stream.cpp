@@ -51,24 +51,11 @@ namespace mu {
     ss << source_->inspect(level+1);
   }
 
-  FadeStream& FadeStream::step(stk::StkFrames& buffer, 
-                                 Tick tick, 
-                                 Player& player) {
-
-    // 11264 - 11418
-    // ###
-    // bug hunting. I suspect the buffer is not always
-    // getting written.
-    for (long int i=0; i<buffer.frames(); i++) {
-      for (int j=0; j<buffer.channels(); j++) {
-        buffer(i,j) = 0.5;
-      }
-    }
-
+  void FadeStream::step(stk::StkFrames& buffer, Tick tick, Player& player) {
     if (source_ == NULL) {
       COVERAGE_CHECK("FadeSteam::step() A\n");
       zeroBuffer(buffer);
-      return *this;
+      return;
     }
 
     Tick buf_s = tick;
@@ -161,7 +148,7 @@ namespace mu {
           buffer(x-buf_s, j) = 0.0;
         }
       }
-      if (x1 == buf_e) return *this;
+      if (x1 == buf_e) return;
     }
 
     // Ramp gain up between t1 (inclusive) and t2 (exclusive)
@@ -185,7 +172,7 @@ namespace mu {
           buffer(x-buf_s, j) = buffer_(i, j) * gain;
         }
       }
-      if (x1 == buf_e) return *this;
+      if (x1 == buf_e) return;
     }
 
     // Copy source verbatim between t2 (inclusive) and t3 (exclusive)
@@ -197,7 +184,7 @@ namespace mu {
       SEQUENCE_CHECK("C");
       COVERAGE_CHECK("FadeSteam::step() F\n");
       source_->step(buffer, tick, player);
-      return *this;
+      return;
     } else if (dx > 0) {
       // copy some frames verbatim
       SEQUENCE_CHECK("D");
@@ -205,7 +192,7 @@ namespace mu {
       buffer_.resize(dx, buffer.channels());
       source_->step(buffer_, x0, player);
       copyBuffer(buffer_, 0, buffer, x0-buf_s, dx);
-      if (x1 == buf_e) return *this;
+      if (x1 == buf_e) return;
     }
 
     // Ramp gain down between t3 (inclusive) and t4 (exclusive)
@@ -227,7 +214,7 @@ namespace mu {
           buffer(x-buf_s, j) = buffer_(i, j) * gain;
         }
       }
-      if (x1 == buf_e) return *this;
+      if (x1 == buf_e) return;
     }
     
     // Write zeros between t4 and t5
@@ -245,15 +232,13 @@ namespace mu {
           buffer(x-buf_s, j) = 0.0;
         }
       }
-      if (x1 == buf_e) return *this;
+      if (x1 == buf_e) return;
     }
 
     // one of the above clauses should have filled out the buffer
     fprintf(stderr,
             "warning: at end of step, buf_s=%ld, buf_e=%ld, x0=%ld, x1=%ld\n",
             buf_s, buf_e, x0, x1);
-
-    return *this;
   }
   
   Tick FadeStream::getStart() {

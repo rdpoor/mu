@@ -17,7 +17,7 @@ namespace mu {
     ss << source_->inspect(level+1);
   }
     
-  ReverbStream& ReverbStream::step(stk::StkFrames& buffer, Tick tick, Player &player) {
+  void ReverbStream::step(stk::StkFrames& buffer, Tick tick, Player &player) {
     if (source_ == NULL) {
       zeroBuffer (buffer);
     } else {
@@ -35,7 +35,6 @@ namespace mu {
         }
       }
     }
-    return *this;
   }
 
   Tick ReverbStream::getEnd() {

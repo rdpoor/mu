@@ -46,7 +46,7 @@ namespace mu {
     std::string getClassName() { return "LoopStream"; }
     virtual void inspectAux(std::stringstream& ss, int level);
 
-    LoopStream& step(stk::StkFrames& buffer, Tick tick, Player &player);
+    void step(stk::StkFrames& buffer, Tick tick, Player &player);
 
     Tick getStart( void ) { return kIndefinite; }
     Tick getEnd( void ) { return kIndefinite; }

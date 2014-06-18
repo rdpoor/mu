@@ -34,7 +34,7 @@ namespace mu {
   RandomSelectStream::~RandomSelectStream() { 
   }
 
-  RandomSelectStream& RandomSelectStream::step(stk::StkFrames& buffer, Tick tick, Player &player) {
+  void RandomSelectStream::step(stk::StkFrames& buffer, Tick tick, Player &player) {
     if (sources_.size() == 0) {
       zeroBuffer(buffer);
     } else {
@@ -42,7 +42,6 @@ namespace mu {
       prev_tick_ = tick;
       current_stream_->step(buffer, tick, player);
     }
-    return *this;
   }
 
   Tick RandomSelectStream::getStart() { 

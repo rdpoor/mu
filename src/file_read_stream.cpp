@@ -38,9 +38,7 @@ namespace mu {
     inspectIndent(ss, level); ss << "getFileName() = " << getFileName() << std::endl;
   }
 
-  FileReadStream& FileReadStream::step(stk::StkFrames& buffer, 
-                                       Tick tick,
-                                       Player& player) {
+  void FileReadStream::step(stk::StkFrames& buffer, Tick tick, Player& player) {
     // fprintf(stderr,"FileReadStream::%p.step(%p, %ld, %p)\n", this, &buffer, tick, &player);
     // fprintf(stderr,"FRS: A %s ", file_name_.c_str());
     if (!file_read_.isOpen()) {
@@ -84,7 +82,6 @@ namespace mu {
 
     // fprintf(stderr,"FRS: G\n");
     // fprintf(stderr, "step: %p %f %p\r", &buffer, time, &player);
-    return *this;
   }
 
   Tick FileReadStream::getStart() { return 0; }

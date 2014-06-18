@@ -57,7 +57,7 @@ namespace mu {
 
     std::string getClassName() { return "MapStream"; }
 
-    MapStream& step(stk::StkFrames& buffer, Tick tick, Player &player);
+    void step(stk::StkFrames& buffer, Tick tick, Player &player);
 
     // needed(??) so setSource() returns a MapStream and not a SingleSourceStream
     MapStream& setSource(Stream *source) { source_ = source; return *this; }

@@ -42,18 +42,33 @@ namespace mu {
     inspectIndent(ss, level); ss << "getPhase() = " << getPhase() << std::endl;
   }
     
-  SineStream& SineStream::step(stk::StkFrames& buffer, Tick tick, Player &player) {
+  void SineStream::step(stk::StkFrames& buffer, Tick tick, Player &player) {
 
     // fprintf(stderr,"SineStream::step(tick=%ld)\n",tick);
 
-    for (Tick i=0; i<buffer.frames(); i++) { 
-      double t = (double)(tick + i)/buffer.dataRate();
-      double value = amplitude_ * sin(t * 2.0 * M_PI * frequency_ + phase_);
-      for (int j = 0; j < buffer.channels(); j++) {
-        buffer(i,j) = value;
+    if (buffer.channels() == 1) {
+      for (Tick i=0; i<buffer.frames(); i++) { 
+        double t = (double)(tick + i)/buffer.dataRate();
+        double value = amplitude_ * sin(t * 2.0 * M_PI * frequency_ + phase_);
+        buffer(i,0) = value;
+      }
+    } else if (buffer.channels() == 2) {
+      for (Tick i=0; i<buffer.frames(); i++) { 
+        double t = (double)(tick + i)/buffer.dataRate();
+        double value = amplitude_ * sin(t * 2.0 * M_PI * frequency_ + phase_);
+        buffer(i,0) = value;
+        buffer(i,1) = value;
+      }
+    } else {
+      for (Tick i=0; i<buffer.frames(); i++) { 
+        double t = (double)(tick + i)/buffer.dataRate();
+        double value = amplitude_ * sin(t * 2.0 * M_PI * frequency_ + phase_);
+        for (int j = 0; j < buffer.channels(); j++) {
+          buffer(i,j) = value;
+        }
       }
     }
-    return *this;
+
   }
 
 }

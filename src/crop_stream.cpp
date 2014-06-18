@@ -43,9 +43,7 @@ namespace mu {
     ss << source_->inspect(level+1);
   }
 
-  CropStream& CropStream::step(stk::StkFrames& buffer,
-                             Tick tick,
-                             Player& player) {
+  void CropStream::step(stk::StkFrames& buffer, Tick tick, Player& player) {
 
     // fprintf(stderr,"CropStream::step(tick=%ld)\n",tick);
 
@@ -90,7 +88,6 @@ namespace mu {
         copyBuffer(buffer_, 0, buffer, frame_offset, frame_count);
       }
     }
-    return *this;
   }
 
   // If both source_->getStart() and start_ are defined, then getStart() is

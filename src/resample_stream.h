@@ -46,7 +46,7 @@ namespace mu {
     std::string getClassName() { return "ResampleStream"; }
     virtual void inspectAux(std::stringstream& ss, int level);
 
-    ResampleStream& step(stk::StkFrames& buffer, Tick tick, Player &player);
+    void step(stk::StkFrames& buffer, Tick tick, Player &player);
 
     Stream *getSampleSource( void ) { return sample_source_; }
     ResampleStream& setSampleSource(Stream *source) { sample_source_ = source; return *this; }

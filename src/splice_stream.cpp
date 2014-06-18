@@ -64,7 +64,7 @@ namespace mu {
   // infinite stream superceded by a short stream > 512 frames later
   // short stream, blank space > 512 frames, another short stream
   //
-  SpliceStream& SpliceStream::step(stk::StkFrames& buffer, Tick tick, Player &player) {
+  void SpliceStream::step(stk::StkFrames& buffer, Tick tick, Player &player) {
     // reset if needed
     if ((prev_tick_ == kIndefinite) || (tick <= prev_tick_)) { 
       setupCursor(tick, tick + buffer.frames()); 
@@ -112,7 +112,6 @@ namespace mu {
         cursor_ += 1; 
       }
     }
-    return *this;
   }
 
   Tick SpliceStream::getStart() {

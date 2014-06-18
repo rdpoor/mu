@@ -35,7 +35,7 @@ namespace mu {
   ProbabilityStream::~ProbabilityStream( void ) { 
   }
 
-  ProbabilityStream& ProbabilityStream::step(stk::StkFrames& buffer, Tick tick, Player &player) {
+  void ProbabilityStream::step(stk::StkFrames& buffer, Tick tick, Player &player) {
     if ((prev_tick_ == kIndefinite) || (tick <= prev_tick_)) { reset(); }
     prev_tick_ = tick;
     
@@ -44,7 +44,6 @@ namespace mu {
     } else {
       current_stream_->step(buffer, tick, player);
     }
-    return *this;
   }
 
   Tick ProbabilityStream::getStart() {

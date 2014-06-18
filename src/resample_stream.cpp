@@ -45,13 +45,11 @@ namespace mu {
     ss << timing_source_->inspect(level+1);
   }
 
-  ResampleStream& ResampleStream::step(stk::StkFrames& buffer,
-                             Tick tick,
-                             Player& player) {
+  void ResampleStream::step(stk::StkFrames& buffer, Tick tick, Player& player) {
 
     zeroBuffer(buffer);
     if ((sample_source_ == NULL) || (timing_source_ == NULL)) {
-      return *this;
+      return;
     }
 
     timing_buffer_.resize(buffer.frames(), buffer.channels());
@@ -94,7 +92,6 @@ namespace mu {
         }
       }
     }
-    return *this;
   }
 
 }

@@ -46,7 +46,7 @@ namespace mu {
     std::string getClassName() { return "SpliceStream"; }
     virtual void inspectAux(std::stringstream& ss, int level);
 
-    SpliceStream& step(stk::StkFrames& buffer, Tick tick, Player &player);
+    void step(stk::StkFrames& buffer, Tick tick, Player &player);
 
     Tick getStart();
     Tick getEnd();

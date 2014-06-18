@@ -43,7 +43,7 @@ namespace mu {
 
     std::string getClassName() { return "ProbabilityStream"; }
   
-    ProbabilityStream& step(stk::StkFrames& buffer, Tick tick, Player &player);
+    void step(stk::StkFrames& buffer, Tick tick, Player &player);
 
     Tick getStart();
     Tick getEnd();

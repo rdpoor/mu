@@ -37,9 +37,8 @@ namespace mu {
     inspectIndent(ss, level); ss << "getValue() = " << getValue() << std::endl;
   }
     
-  ConstantStream& ConstantStream::step(stk::StkFrames& buffer, Tick tick, Player &player) {
+  void ConstantStream::step(stk::StkFrames& buffer, Tick tick, Player &player) {
     for (Tick i=buffer.size()-1; i>=0; i--) { buffer[i] = value_; }
-    return *this;
   }
 
 }

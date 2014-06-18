@@ -30,7 +30,6 @@ SOURCES := \
 	sequence_stream.cpp \
 	sine_stream.cpp \
 	single_source_stream.cpp \
-	splay_stream.cpp \
 	splice_stream.cpp \
 	stream.cpp
 

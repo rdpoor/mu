@@ -39,7 +39,7 @@ namespace mu {
   public:
     SingleSourceStream();
     ~SingleSourceStream();
-    virtual SingleSourceStream& step(stk::StkFrames& buffer, Tick tick, Player &player) = 0;
+    virtual void step(stk::StkFrames& buffer, Tick tick, Player &player) = 0;
     virtual Tick getStart( void ) { return (source_ == NULL) ? kIndefinite : source_->getStart(); }
     virtual Tick getEnd( void ) { return (source_ == NULL) ? kIndefinite : source_->getEnd(); }
     virtual Stream *getSource() { return source_; }

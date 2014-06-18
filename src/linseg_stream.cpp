@@ -63,7 +63,7 @@ namespace mu {
 
   }
 
-  LinsegStream& LinsegStream::step(stk::StkFrames& buffer, Tick tick, Player &player) {
+  void LinsegStream::step(stk::StkFrames& buffer, Tick tick, Player &player) {
     if (breakpoints_.size() == 0) {
       zeroBuffer(buffer);
 
@@ -76,8 +76,6 @@ namespace mu {
         }
       }
     }
-
-    return *this;
   }
 
   Tick LinsegStream::getStart() {
