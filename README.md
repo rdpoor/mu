@@ -4,21 +4,19 @@ An experiment in blurring the lines between music composition and sound synthesi
 
 ## todo 
 
+* LoopStream should provide setStart() and setEnd() (built-in crop stream)
+* FileReadStream should allow step() with arbitrary tick.
 * Should I have different kinds of streams?  one for buffers of audio,
 one for discrete events?
 * Slide guitar
-* If I pitch shift a bunch of notes to A440, what does it sound like to
-randomly play each one?
 * Add has_errors and get_errors methods to Stream objects.
 * Add doxygen comments
 * Add 'make docs' to Makefile
-* Make it easy to run unit tests with libgmalloc turned on.  Create 
-MU_DEBUG switch for makefile(s) to use debug libs, etc.
+* Make it easy to run unit tests with libgmalloc turned on.  
 * Write unit test for FileReadStream and FileWriteStream.
 * Stop Player when tick >= source.getEnd().  Clean up implementations.
 * Optimize a few inner loops (copy buffer, zero part of buffer...)
 * Can we (should we?) change Tick to Seconds?
-* step() should return Stream * (not more specialized subclass).
 * Beef up assert.c=>assert.cpp Create a tester object that can print
 out context, print on error only, print always, etc.  Better, find
 an existing test package.

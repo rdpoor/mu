@@ -54,6 +54,7 @@ namespace mu {
     std::string file_name_;
     bool do_normalize_;
 
+    stk::StkFrames temp_buffer_;
     stk::FileRead file_read_;
 
   };                            // class FileReadStream
