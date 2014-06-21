@@ -14,8 +14,7 @@
 
 mu::Stream *getSoundFile(std::string file_name) {
   mu::FileReadStream *frs = &((new mu::FileReadStream())->fileName(file_name).doNormalize(true));
-  mu::CropStream *cs = &(new mu::CropStream())->setSource(frs).setStart(0);
-  return cs;
+  return frs;
 }
 
 int main() {

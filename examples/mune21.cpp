@@ -2,7 +2,6 @@
  * Make some fun and varying drum pattern using mu::ProbabilityStream
  */
 #include "add_stream.h"
-#include "crop_stream.h"
 #include "delay_stream.h"
 #include "file_read_stream.h"
 #include "loop_stream.h"
@@ -34,12 +33,11 @@ mu::Stream *make_probabilty_stream(std::string file_name,
   int p_max = max(probabilities);
   // can we share frs among multiple streams?
   mu::FileReadStream *frs = &(new mu::FileReadStream())->fileName(file_name).doNormalize(true);
-  mu::CropStream *cs = &(new mu::CropStream())->setStart(0).setSource(frs);
   mu::AddStream *as = new mu::AddStream();
   for (long int i=0; i<probabilities.size(); i++) {
     mu::Tick delay = BEAT_DURATION_TICS * duration_in_beats * i / probabilities.size();
     double probability = (double)probabilities.at(i) / (double)p_max;
-    mu::DelayStream *ds = &(new mu::DelayStream())->setDelay(delay).setSource(cs);
+    mu::DelayStream *ds = &(new mu::DelayStream())->setDelay(delay).setSource(frs);
     mu::ProbabilityStream *ps = &(new mu::ProbabilityStream())->setSource(ds).setProbability(probability);
     as->addSource(ps);
   }

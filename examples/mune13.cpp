@@ -17,9 +17,8 @@ public:
   
   SequenceStream() { }
   ~SequenceStream( void ) { }
-  SequenceStream& step(stk::StkFrames& buffer, mu::Tick tick, mu::Player &player) {
+  void step(stk::StkFrames& buffer, mu::Tick tick, mu::Player &player) {
     add_stream_.step(buffer, tick, player);
-    return *this;
   }
   mu::Tick getStart(){ return add_stream_.getStart(); }
   mu::Tick getEnd(){ return add_stream_.getEnd(); }

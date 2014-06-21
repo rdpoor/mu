@@ -2,7 +2,6 @@
  * Make an arpeggiated chord.  Is there a way to simplify this?
  */
 #include "add_stream.h"
-#include "crop_stream.h"
 #include "delay_stream.h"
 #include "file_read_stream.h"
 #include "loop_stream.h"
@@ -22,10 +21,6 @@ int main() {
   mu::FileReadStream file_read_stream_1;
   mu::FileReadStream file_read_stream_2;
   mu::FileReadStream file_read_stream_3;
-  mu::CropStream crop_stream_0;
-  mu::CropStream crop_stream_1;
-  mu::CropStream crop_stream_2;
-  mu::CropStream crop_stream_3;
   mu::DelayStream delay_stream_0;
   mu::DelayStream delay_stream_1;
   mu::DelayStream delay_stream_2;
@@ -36,17 +31,11 @@ int main() {
 
   // connect elements
 
-  fprintf(stderr, "A");
-  crop_stream_0.setSource(&file_read_stream_0);
-  crop_stream_1.setSource(&file_read_stream_1);
-  crop_stream_2.setSource(&file_read_stream_2);
-  crop_stream_3.setSource(&file_read_stream_3);
-
   fprintf(stderr, "B");
-  delay_stream_0.setSource(&crop_stream_0);
-  delay_stream_1.setSource(&crop_stream_1);
-  delay_stream_2.setSource(&crop_stream_2);
-  delay_stream_3.setSource(&crop_stream_3);
+  delay_stream_0.setSource(&file_read_stream_0);
+  delay_stream_1.setSource(&file_read_stream_1);
+  delay_stream_2.setSource(&file_read_stream_2);
+  delay_stream_3.setSource(&file_read_stream_3);
 
   fprintf(stderr, "C");
   add_stream.addSource(&delay_stream_0);
@@ -68,11 +57,6 @@ int main() {
   file_read_stream_1.fileName(SOUND_DIR SOUND_1 ".wav").doNormalize(true);
   file_read_stream_2.fileName(SOUND_DIR SOUND_2 ".wav").doNormalize(true);
   file_read_stream_3.fileName(SOUND_DIR SOUND_3 ".wav").doNormalize(true);
-
-  crop_stream_0.setStart(0);    // because FileReadStream can't tolerate negative tick times
-  crop_stream_1.setStart(0);
-  crop_stream_2.setStart(0);
-  crop_stream_3.setStart(0);
 
   delay_stream_0.setDelay(882 * 1); // make this relative to player.getFrameRate()
   delay_stream_1.setDelay(882 * 2);

@@ -2,7 +2,6 @@
  * Create a class that creates an arpeggiated chord.
  */
 #include "add_stream.h"
-#include "crop_stream.h"
 #include "delay_stream.h"
 #include "file_read_stream.h"
 #include "loop_stream.h"
@@ -23,9 +22,8 @@ public:
   
   ArpeggiateStream() : arpeggio_delay_ (kDefaultArpeggioDelay) { }
   ~ArpeggiateStream( void ) { }
-  ArpeggiateStream& step(stk::StkFrames& buffer, mu::Tick tick, mu::Player &player) {
+  void step(stk::StkFrames& buffer, mu::Tick tick, mu::Player &player) {
     add_stream_.step(buffer, tick, player);
-    return *this;
   }
   mu::Tick getStart(){ return add_stream_.getStart(); }
   mu::Tick getEnd(){ return add_stream_.getEnd(); }
@@ -46,13 +44,12 @@ protected:
 
 ArpeggiateStream& ArpeggiateStream::addFile(std::string file_name) {
   mu::FileReadStream *frs = &(new mu::FileReadStream())->fileName(file_name).doNormalize(true);
-  mu::CropStream *cs = &(new mu::CropStream())->setSource(frs).setStart(0);
   long int n_notes = add_stream_.getSourceCount();
   fprintf(stderr, "dly_ = %ld, size() = %ld, tot=%ld\n",  
           arpeggio_delay_, 
           n_notes,
           arpeggio_delay_ * n_notes);
-  mu::DelayStream *ds = &(new mu::DelayStream())->setSource(cs).setDelay(arpeggio_delay_ * n_notes);
+  mu::DelayStream *ds = &(new mu::DelayStream())->setSource(frs).setDelay(arpeggio_delay_ * n_notes);
   add_stream_.addSource(ds);
 
   return *this;

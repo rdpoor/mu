@@ -4,7 +4,6 @@
 
 // #include "LentPitShift.h"
 #include "PitShift.h"
-#include "crop_stream.h"
 #include "file_read_stream.h"
 #include "loop_stream.h"
 #include "mu.h"
@@ -37,7 +36,7 @@ public:
     pit_shift_ = NULL;
   }
 
-  PitchShiftStream& step(stk::StkFrames& buffer, mu::Tick tick, mu::Player &player) {
+  void step(stk::StkFrames& buffer, mu::Tick tick, mu::Player &player) {
     if (source_ == NULL) {
       zeroBuffer (buffer);
     } else {
@@ -56,7 +55,6 @@ public:
       }
       // fprintf(stderr,"F");
     }
-    return *this;
   }
 
   mu::Stream *getSource() { return source_; }
@@ -79,8 +77,7 @@ protected:
 
 mu::Stream *getSoundFile(std::string file_name) {
   mu::FileReadStream *frs = &((new mu::FileReadStream())->fileName(file_name).doNormalize(true));
-  mu::CropStream *cs = &(new mu::CropStream())->setSource(frs).setStart(0);
-  return cs;
+  return frs;
 }
 
 mu::SequenceStream *makeSequence( double tempo ) {

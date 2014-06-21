@@ -4,7 +4,6 @@
 
 #include "add_stream.h"
 #include "constant_stream.h"
-#include "crop_stream.h"
 #include "file_read_stream.h"
 #include "file_write_stream.h"
 #include "linseg_stream.h"
@@ -26,13 +25,13 @@ class PitchMap {
   }
 protected:
   std::map<std::string, double> map_;
-}
+};
 
 class StringNote {
 public:
 protected:
-  mu::LinSegStream time_stream_;
-  mu::LinSegStream pitch_stream_;
+  mu::LinsegStream time_stream_;
+  mu::LinsegStream pitch_stream_;
   mu::PsiStream psi_stream_;
   double original_period_;
 };                              // class StringNote
@@ -46,7 +45,7 @@ protected:
   
 };                              // class String
 
-Stream& generateNotes(Hand& hand) {
+mu::Stream& generateNotes(String& hand) {
   hand.pluck(dur_q, "e4", 0.0);
   hand.gliss(dur_e, "c5", gliss_rate);
   hand.gliss(dur_q, "b4", gliss_rate);

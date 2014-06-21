@@ -3,7 +3,6 @@
  * (See also mune12.cpp)
  */
 #include "sequence_stream.h"
-#include "crop_stream.h"
 #include "file_read_stream.h"
 #include "loop_stream.h"
 #include "mu.h"
@@ -16,8 +15,7 @@
 
 mu::Stream *getSoundFile(std::string file_name) {
   mu::FileReadStream *frs = &((new mu::FileReadStream())->fileName(file_name).doNormalize(true));
-  mu::CropStream *cs = &(new mu::CropStream())->setSource(frs).setStart(0);
-  return cs;
+  return frs;
 }
 
 int main() {

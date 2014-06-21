@@ -3,7 +3,6 @@
  * a new sound sample to play back.
  */
 #include "multi_source_stream.h"
-#include "crop_stream.h"
 #include "file_read_stream.h"
 #include "loop_stream.h"
 #include "mu.h"
@@ -16,12 +15,12 @@
  * Maintain a collection of input streams.  Every time the tick counter
  * backs up, select a different input stream as the current stream.
  */
-class ResetStream : public mu::MultiSourceStream {
+class ResetStream : public mu::MultiSourceStream<ResetStream> {
 public:
   
   ResetStream() : prev_tick_ (mu::kIndefinite) { }
   ~ResetStream( void ) { }
-  ResetStream& step(stk::StkFrames& buffer, mu::Tick tick, mu::Player &player) {
+  void step(stk::StkFrames& buffer, mu::Tick tick, mu::Player &player) {
     if (sources_.size() == 0) {
       fprintf(stderr,"A");
       zeroBuffer(buffer);
@@ -31,12 +30,7 @@ public:
       prev_tick_ = tick;
       current_stream_->step(buffer, tick, player);
     }
-    return *this;
   }
-  MultiSourceStream& addSource(Stream *source) {
-    return MultiSourceStream::addSource(source);
-  }
-
   mu::Tick getStart(){ return current_stream_->getStart(); }
   mu::Tick getEnd(){ return current_stream_->getEnd(); }
 

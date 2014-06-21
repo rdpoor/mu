@@ -221,7 +221,7 @@ public:
     reverb_ = NULL;
   }
 
-  ReverbStream &step(stk::StkFrames& buffer, mu::Tick tick, mu::Player &player) {
+  void step(stk::StkFrames& buffer, mu::Tick tick, mu::Player &player) {
     if (source_ == NULL) {
       zeroBuffer (buffer);
     } else {
@@ -239,7 +239,6 @@ public:
         }
       }
     }
-    return *this;
   }
 
   mu::Tick getEnd() {
@@ -306,14 +305,14 @@ int main() {
   // create some handy dynamics
   double global_gain = 0.33;
 
-  double dyn_ppp = global_gain*16/128.0;
+  // double dyn_ppp = global_gain*16/128.0;
   double dyn_pp = global_gain*32/128.0;
   double dyn_p = global_gain*48/128.0;
   double dyn_mp = global_gain*64/128.0;
   double dyn_mf = global_gain*80/128.0;
   double dyn_f = global_gain*96/128.0;
-  double dyn_ff = global_gain*112/128.0;
-  double dyn_fff = global_gain*127/128.0;
+  // double dyn_ff = global_gain*112/128.0;
+  // double dyn_fff = global_gain*127/128.0;
 
   // create some handy durations
   double dur_q = (44100 * 0.37); // quarter
