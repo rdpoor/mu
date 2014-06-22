@@ -4,8 +4,14 @@ An experiment in blurring the lines between music composition and sound synthesi
 
 ## todo 
 
-* LoopStream should provide setStart() and setEnd() (built-in crop stream)
-* FileReadStream should allow step() with arbitrary tick.
+* Create scores/tnvm/{Makefile main.cpp bass.cpp ...} with one
+instrument per file.  main.cpp simply mixes all the streams together.
+* Should Stream provide a tickHasJumped() method to indicate a
+discontinuity in the tick counter?  Or as a mixin for classes that
+need it?
+* Some stream elements -- e.g. MultiplyStream, SineStream -- would
+benefit from a constant input and a stream input.  (Look for examples
+that have used ConstantStream.)
 * Should I have different kinds of streams?  one for buffers of audio,
 one for discrete events?
 * Slide guitar
@@ -13,19 +19,17 @@ one for discrete events?
 * Add doxygen comments
 * Add 'make docs' to Makefile
 * Make it easy to run unit tests with libgmalloc turned on.  
-* Write unit test for FileReadStream and FileWriteStream.
+* Write unit test for FileWriteStream.
 * Stop Player when tick >= source.getEnd().  Clean up implementations.
 * Optimize a few inner loops (copy buffer, zero part of buffer...)
 * Can we (should we?) change Tick to Seconds?
 * Beef up assert.c=>assert.cpp Create a tester object that can print
 out context, print on error only, print always, etc.  Better, find
 an existing test package.
-* FileReadStream should allow negative Tick times (implicit crop)
 * Create F(t)Stream and test file.
 * setSource() and related should check for compatible frameRate(), channelCount()
 * setSource() and related should check for circular loops.
 * Write a generalized graph traversal method for inspect and loop detection.
-* Think about mono to stereo (and stereo to mono) stream elements: pan.
 * Think about automatic conversion from mono to stereo -- what happens
   when you connect a mono source to a stereo stream object?  Should that
   be an error or expand automatically?
@@ -249,7 +253,7 @@ If the x_fade does not have time to fade all the way in before
 starting to fade out, then there will be a smooth transition, even
 though the gain never reaches unity.
 
-### finding memory smashers
+### Finding memory smashers
 
 My test examples have started to exibit non-repeatable crashes and
 malloc errors.  I suspect that I've written a memory smasher (or two);
@@ -267,7 +271,7 @@ https://developer.apple.com/library/mac/documentation/Darwin/Reference/ManPages/
 
 DYLD_INSERT_LIBRARIES=/usr/lib/libgmalloc.dylib
 
-### Finding memory smashers
+### Finding memory smashers (redux)
 
 [1] compile with -O0 -g to make debugger friendly object files
 [2] DYLD_INSERT_LIBRARIES=/usr/lib/libgmalloc.dylib to use libgmalloc
@@ -313,7 +317,7 @@ quality is good as is.
 
 * TODO: modify PsiStream to read a ".psi" file that contains the
 original waveform, the deltas, and the period at each sample.  Give
-it the means to create the file from a .wav file as well...
+it the means to create the file from a .wav file as well...[DONE]
 
 ### debugging stk's makefile
 
@@ -367,3 +371,20 @@ all upstream elements) are deterministic.
 Abstracting out a connector object and a traversal method would have
 other benefits as well: it would detect attempts to create circular
 graphs, automatic mono/stereo conversion, copy an entire subtree, etc.
+
+### Streams vs Events
+
+I've been pondering if Streams should support discrete events in
+addition to blocks of sample data.  At the same time, I've been
+wondering if the Stream base class should provide a tickHasJumped()
+method to signal discontinuities in the stream data.
+
+These are related.
+
+When a call to step(buffer, tick, player) is continuous (i.e. tick
+equals prev_tick + buffer.frames()), that can be thought of as a
+continuation of a previous event.  When the call to step() is
+discontinuous, that can be thought of as a new event.
+
+I'm not sure how this translates into a design, but a germ of an idea
+is in there.

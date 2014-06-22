@@ -26,16 +26,20 @@
 
 namespace mu {
   /*
-   * addStream(s) adds stream \c s to a collection of streams S.
+   * SpliceStream(s) adds stream \c s to a collection of streams S.
    * Streams are sorted by getStart() time.  stream S[n] plays from
    * S[n].getStart() until S[n+1].getStart().  The last stream in the
    * sequence plays from S[n].getStart() until S[n].getEnd().
    *
-   * The start of the SpliceStream is the minimum start time of
-   * the sources.  The end of the SpliceStream is NOT the maximum
-   * start time of the sources; it is the end time of the last
-   * source stream, i.e. the source stream with the greatest start
-   * time.
+   * The start of the SpliceStream is the minimum start time of the
+   * sources.  The end of the SpliceStream is NOT the maximum start
+   * time of the sources; it is the end time of the last source
+   * stream, i.e. the source stream with the greatest start time.
+   *
+   * Note that there's a conceptual problem with SpliceStream: it
+   * assumes that all source streams are fully deterministic, and that
+   * their start (and end) times will not change.  Some streams, such
+   * as RandomSelectStream, are non-deterministic.
    */
 
   // ================================================================
