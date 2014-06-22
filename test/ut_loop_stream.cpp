@@ -92,5 +92,61 @@ int main() {
   ASSERT(loop_stream.getEnd() == mu::kIndefinite);
 
   // adding setStart() and setEnd() to LoopStream()
+  printf("=== testing setStart() and setEnd()\n");
+  loop_stream.setSource(&identity_stream).setLoopDuration(FRAME_COUNT).
+    setStart(mu::kIndefinite).setEnd(mu::kIndefinite);
+  // resulting waveform is a "sawtooth", 0 at every multiple of
+  // FRAME_COUNT
+
+  ASSERT(loop_stream.getStart() == mu::kIndefinite);
+  ASSERT(loop_stream.getEnd() == mu::kIndefinite);
+
+  loop_stream.step(buffer, 0, player);
+  ASSERT(buffer(0,0) == 0);
+  ASSERT(buffer(FRAME_COUNT-1,0) == FRAME_COUNT-1);
+
+  loop_stream.step(buffer, -FRAME_COUNT, player);
+  ASSERT(buffer(0,0) == 0);
+  ASSERT(buffer(FRAME_COUNT-1,0) == FRAME_COUNT-1);
+
+  loop_stream.step(buffer, FRAME_COUNT, player);
+  ASSERT(buffer(0,0) == 0);
+  ASSERT(buffer(FRAME_COUNT-1,0) == FRAME_COUNT-1);
+
+  loop_stream.setSource(&identity_stream).setLoopDuration(FRAME_COUNT).
+    setStart(100).setEnd(mu::kIndefinite);
+
+  loop_stream.step(buffer, 0, player);
+  ASSERT(buffer(0,0) == 0);
+  ASSERT(buffer(99,0) == 0);
+  ASSERT(buffer(100,0) == 100);
+  ASSERT(buffer(FRAME_COUNT-1,0) == FRAME_COUNT-1);
+
+  loop_stream.step(buffer, -FRAME_COUNT, player);
+  ASSERT(buffer(0,0) == 0);
+  ASSERT(buffer(FRAME_COUNT-1,0) == 0);
+
+  loop_stream.step(buffer, FRAME_COUNT, player);
+  ASSERT(buffer(0,0) == 0);
+  ASSERT(buffer(FRAME_COUNT-1,0) == FRAME_COUNT-1);
+
+  loop_stream.setSource(&identity_stream).setLoopDuration(FRAME_COUNT).
+    setStart(100).setEnd(200);
+
+  loop_stream.step(buffer, 0, player);
+  ASSERT(buffer(0,0) == 0);
+  ASSERT(buffer(99,0) == 0);
+  ASSERT(buffer(100,0) == 100);
+  ASSERT(buffer(199,0) == 199);
+  ASSERT(buffer(200,0) == 0);
+  ASSERT(buffer(FRAME_COUNT-1,0) == 0);
+
+  loop_stream.step(buffer, -FRAME_COUNT, player);
+  ASSERT(buffer(0,0) == 0);
+  ASSERT(buffer(FRAME_COUNT-1,0) == 0);
+
+  loop_stream.step(buffer, FRAME_COUNT, player);
+  ASSERT(buffer(0,0) == 0);
+  ASSERT(buffer(FRAME_COUNT-1,0) == 0);
   
 }

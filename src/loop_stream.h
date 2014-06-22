@@ -49,14 +49,24 @@ namespace mu {
     void step(stk::StkFrames& buffer, Tick tick, Player &player);
 
     Tick getStart( void ) { return kIndefinite; }
+    LoopStream &setStart(Tick start) {
+      start_ = start;
+      return *this;
+    }
+
     Tick getEnd( void ) { return kIndefinite; }
+    LoopStream &setEnd(Tick end) {
+      end_ = end;
+      return *this;
+    }
 
     Tick getLoopDuration() const { return loop_duration_; }
     LoopStream& setLoopDuration(Tick loop_duration) { loop_duration_ = loop_duration; return *this; }
 
   protected:
     Tick loop_duration_;
-
+    Tick start_;
+    Tick end_;
   };                            // class LoopStream
 
 }                               // namespace mu
