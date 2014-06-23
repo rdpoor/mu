@@ -2,16 +2,6 @@
  * Together Now, Very Minor.  Bass Part.
  */
 #include "bass.h"
-#include "layout.h"
-
-#include "add_stream.h"
-#include "crop_stream.h"
-#include "delay_stream.h"
-#include "fade_stream.h"
-#include "file_read_stream.h"
-#include "null_stream.h"
-#include "stream.h"
-
 #include <map>
 
 // ================================================================

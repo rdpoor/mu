@@ -1,14 +1,7 @@
 /*
  * Together Now, Very Minor.  Click track.
  */
-#include "bass.h"
-#include "layout.h"
-
-#include "file_read_stream.h"
-#include "loop_stream.h"
-#include "multiply_stream.h"
-#include "constant_stream.h"
-#include "add_stream.h"
+#include "click_track.h"
 
 #define PERCUSSION_SOUND_DIR "/Users/r/Projects/Musics/TNVM/sources/ThumpsAndScratches/"
 

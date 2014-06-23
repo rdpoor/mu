@@ -23,7 +23,7 @@ clean :
 	rm -f tnvm $(OBJECTS)
 	rm -rf *.dSYM
 
-%.o : %.cpp layout.h
+%.o : %.cpp tnvm.h
 	$(CC) $(CFLAGS) $(IFLAGS) $(INCLUDES) -c $(<) -o $@
 
 tnvm : $(OBJECTS)

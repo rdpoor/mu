@@ -4,8 +4,10 @@ An experiment in blurring the lines between music composition and sound synthesi
 
 ## todo 
 
-* Create scores/tnvm/{Makefile main.cpp bass.cpp ...} with one
-instrument per file.  main.cpp simply mixes all the streams together.
+* scores/tnvm/percussion.cpp (and mune21) show a technique for
+generating percussion parts with variation.  Another (perhaps more
+satisfyin) approach would be to have a fixed pattern, but randomize
+the dynamics, e.g. with a LinsegStream or StepStream.
 * Should Stream provide a tickHasJumped() method to indicate a
 discontinuity in the tick counter?  Or as a mixin for classes that
 need it?

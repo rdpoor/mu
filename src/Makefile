@@ -3,6 +3,7 @@ RELEASE = 0.0.1
 
 SOURCES := \
 	add_stream.cpp \
+	channelizer_stream.cpp \
 	constant_stream.cpp \
 	crop_stream.cpp \
 	delay_stream.cpp \

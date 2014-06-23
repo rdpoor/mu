@@ -1,4 +1,10 @@
 /*
+ * ChannelizerStream fits mono sources to stereo sinks and vice versa.
+ * It really should not be necessary.  At the very least, a stream
+ * should announce how many channels it provides so we don't have to
+ * set it manually.
+ */
+/*
   ================================================================
   Copyright (C) 2014 Robert D. Poor
   
@@ -22,45 +28,43 @@
   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
   ================================================================
 */
-#include "delay_stream.h"
+
+#ifndef MU_CHANNELIZER_STREAM_H
+#define MU_CHANNELIZER_STREAM_H
+
+#include "mu.h"
+#include "single_source_stream.h"
 
 namespace mu {
 
-  DelayStream::DelayStream() :
-    delay_ ( kDefaultDelay ) {
-  }
+  class ChannelizerStream : public SingleSourceStream<ChannelizerStream> {
+  public:
 
-  DelayStream::~DelayStream() {
-  }
+    ChannelizerStream( void );
+    ~ChannelizerStream( void );
 
-  void DelayStream::inspectAux(std::stringstream& ss, int level) {
-    inspectIndent(ss, level); ss << "getDelay() = " << getDelay() << std::endl;
-    inspectIndent(ss, level); ss << "Input" << std::endl;
-    ss << source_->inspect(level+1);
-  }
+    std::string getClassName() { return "ChannelizerStream"; }
+    virtual void inspectAux(std::stringstream& ss, int level);
 
-  void DelayStream::step(stk::StkFrames& buffer, Tick tick, Player& player) {
-    if (source_ == NULL) {
-      zeroBuffer(buffer);
-    } else {
-      source_->step(buffer, tick - delay_, player);
+    void step(stk::StkFrames& buffer, Tick tick, Player &player);
+
+    unsigned int getSourceChannelCount() const { return source_channel_count_; }
+    ChannelizerStream& setSourceChannelCount(Tick source_channel_count) { 
+      source_channel_count_ = source_channel_count; 
+      return *this; 
     }
-  }
 
-  Tick DelayStream::getStart() {
-    if ((source_ == NULL) || (source_->getStart() == kIndefinite)) {
-      return kIndefinite;
-    } else {
-      return (source_->getStart() + delay_);
-    }
-  }
+    
+  protected:
+    stk::StkFrames tmp_buffer_;
+    unsigned int source_channel_count_;
 
-  Tick DelayStream::getEnd() {
-    if ((source_ == NULL) || (source_->getEnd() == kIndefinite)) {
-      return kIndefinite;
-    } else {
-      return (source_->getEnd() + delay_);
-    }
-  }
+  };                            // class ChannelizerStream
 
-}
+}                               // namespace mu
+
+#endif
+
+// Local Variables:
+// mode: c++
+// End:

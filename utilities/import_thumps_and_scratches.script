@@ -1,0 +1,17 @@
+/sw/bin/sox /Users/r/Projects/Musics/TNVM/sources/ThumpsAndScratches/s00.wav /Users/r/Projects/Mu/SoundSets/TAS/s00.wav remix - gain -n -3 silence 1 0.01 -40d gain -n -3
+/sw/bin/sox /Users/r/Projects/Musics/TNVM/sources/ThumpsAndScratches/s01.wav /Users/r/Projects/Mu/SoundSets/TAS/s01.wav remix - gain -n -3 silence 1 0.01 -40d gain -n -3
+/sw/bin/sox /Users/r/Projects/Musics/TNVM/sources/ThumpsAndScratches/s02.wav /Users/r/Projects/Mu/SoundSets/TAS/s02.wav remix - gain -n -3 silence 1 0.01 -40d gain -n -3
+/sw/bin/sox /Users/r/Projects/Musics/TNVM/sources/ThumpsAndScratches/s03.wav /Users/r/Projects/Mu/SoundSets/TAS/s03.wav remix - gain -n -3 silence 1 0.01 -40d gain -n -3
+/sw/bin/sox /Users/r/Projects/Musics/TNVM/sources/ThumpsAndScratches/s04.wav /Users/r/Projects/Mu/SoundSets/TAS/s04.wav remix - gain -n -3 silence 1 0.01 -40d gain -n -3
+/sw/bin/sox /Users/r/Projects/Musics/TNVM/sources/ThumpsAndScratches/s05.wav /Users/r/Projects/Mu/SoundSets/TAS/s05.wav remix - gain -n -3 silence 1 0.01 -40d gain -n -3
+/sw/bin/sox /Users/r/Projects/Musics/TNVM/sources/ThumpsAndScratches/s06.wav /Users/r/Projects/Mu/SoundSets/TAS/s06.wav remix - gain -n -3 silence 1 0.01 -40d gain -n -3
+/sw/bin/sox /Users/r/Projects/Musics/TNVM/sources/ThumpsAndScratches/s07.wav /Users/r/Projects/Mu/SoundSets/TAS/s07.wav remix - gain -n -3 silence 1 0.01 -40d gain -n -3
+/sw/bin/sox /Users/r/Projects/Musics/TNVM/sources/ThumpsAndScratches/s08.wav /Users/r/Projects/Mu/SoundSets/TAS/s08.wav remix - gain -n -3 silence 1 0.01 -40d gain -n -3
+/sw/bin/sox /Users/r/Projects/Musics/TNVM/sources/ThumpsAndScratches/s09.wav /Users/r/Projects/Mu/SoundSets/TAS/s09.wav remix - gain -n -3 silence 1 0.01 -40d gain -n -3
+/sw/bin/sox /Users/r/Projects/Musics/TNVM/sources/ThumpsAndScratches/s10.wav /Users/r/Projects/Mu/SoundSets/TAS/s10.wav remix - gain -n -3 silence 1 0.01 -40d gain -n -3
+/sw/bin/sox /Users/r/Projects/Musics/TNVM/sources/ThumpsAndScratches/s11.wav /Users/r/Projects/Mu/SoundSets/TAS/s11.wav remix - gain -n -3 silence 1 0.01 -40d gain -n -3
+/sw/bin/sox /Users/r/Projects/Musics/TNVM/sources/ThumpsAndScratches/s12.wav /Users/r/Projects/Mu/SoundSets/TAS/s12.wav remix - gain -n -3 silence 1 0.01 -40d gain -n -3
+/sw/bin/sox /Users/r/Projects/Musics/TNVM/sources/ThumpsAndScratches/s13.wav /Users/r/Projects/Mu/SoundSets/TAS/s13.wav remix - gain -n -3 silence 1 0.01 -40d gain -n -3
+/sw/bin/sox /Users/r/Projects/Musics/TNVM/sources/ThumpsAndScratches/s14.wav /Users/r/Projects/Mu/SoundSets/TAS/s14.wav remix - gain -n -3 silence 1 0.01 -40d gain -n -3
+/sw/bin/sox /Users/r/Projects/Musics/TNVM/sources/ThumpsAndScratches/s15.wav /Users/r/Projects/Mu/SoundSets/TAS/s15.wav remix - gain -n -3 silence 1 0.01 -40d gain -n -3
+/sw/bin/sox /Users/r/Projects/Musics/TNVM/sources/ThumpsAndScratches/s16.wav /Users/r/Projects/Mu/SoundSets/TAS/s16.wav remix - gain -n -3 silence 1 0.01 -40d gain -n -3

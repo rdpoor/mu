@@ -1,13 +1,8 @@
-#include "mu.h"
-#include "add_stream.h"
-#include "rt_player.h"
-#include "reverb_stream.h"
-#include "constant_stream.h"
-#include "multiply_stream.h"
-#include "file_write_stream.h"
+#include "tnvm.h"
 
 #include "bass.h"
 #include "click_track.h"
+#include "percussion.h"
 
 int main() {
   mu::AddStream main_mix;
@@ -17,11 +12,9 @@ int main() {
   mu::MultiplyStream master_fader;
   mu::FileWriteStream file_write_stream;
 
-  mu::Stream *bass_stream = make_bass_stream();
-  mu::Stream *click_track_stream = make_click_track_stream();
-
-  main_mix.addSource(bass_stream);
-  main_mix.addSource(click_track_stream);
+  main_mix.addSource(make_bass_stream());
+  main_mix.addSource(make_click_track_stream());
+  main_mix.addSource(make_percussion_stream());
 
   master_gain.setValue(0.25);
   master_fader.addSource(&master_gain);

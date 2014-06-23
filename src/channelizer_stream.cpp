@@ -22,45 +22,51 @@
   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
   ================================================================
 */
-#include "delay_stream.h"
+#include "channelizer_stream.h"
 
 namespace mu {
 
-  DelayStream::DelayStream() :
-    delay_ ( kDefaultDelay ) {
+  ChannelizerStream::ChannelizerStream() {
+    tmp_buffer_.resize(stk::RT_BUFFER_SIZE, 2);
   }
 
-  DelayStream::~DelayStream() {
+  ChannelizerStream::~ChannelizerStream() {
   }
 
-  void DelayStream::inspectAux(std::stringstream& ss, int level) {
-    inspectIndent(ss, level); ss << "getDelay() = " << getDelay() << std::endl;
+  void ChannelizerStream::inspectAux(std::stringstream& ss, int level) {
+    inspectIndent(ss, level); ss << "getSourceChannelCount() = " << getSourceChannelCount() << std::endl;
     inspectIndent(ss, level); ss << "Input" << std::endl;
     ss << source_->inspect(level+1);
   }
 
-  void DelayStream::step(stk::StkFrames& buffer, Tick tick, Player& player) {
+  void ChannelizerStream::step(stk::StkFrames& buffer, Tick tick, Player& player) {
     if (source_ == NULL) {
       zeroBuffer(buffer);
+    } else if (buffer.channels() == source_channel_count_) {
+      source_->step(buffer, tick, player);
     } else {
-      source_->step(buffer, tick - delay_, player);
-    }
-  }
+      tmp_buffer_.resize(buffer.frames(), source_channel_count_);
+      source_->step(tmp_buffer_, tick, player);
 
-  Tick DelayStream::getStart() {
-    if ((source_ == NULL) || (source_->getStart() == kIndefinite)) {
-      return kIndefinite;
-    } else {
-      return (source_->getStart() + delay_);
+      if (source_channel_count_ == 1) {
+        for (int channel = buffer.channels(); channel >= 0; channel--) {
+          for (int frame = buffer.frames(); frame >= 0; frame--) {
+            double sample = tmp_buffer_(frame, 0);
+            buffer(frame, channel) = sample;
+          }
+        }
+      } else if (source_channel_count_ == 2) {
+        for (int channel = buffer.channels(); channel >= 0; channel--) {
+          for (int frame = buffer.frames(); frame >= 0; frame--) {
+            double sample = (tmp_buffer_(frame, 0) + tmp_buffer_(frame, 1)) * 0.5;
+            buffer(frame, channel) = sample;
+          }
+        }
+      } else {
+        // should raise error
+      }
     }
-  }
 
-  Tick DelayStream::getEnd() {
-    if ((source_ == NULL) || (source_->getEnd() == kIndefinite)) {
-      return kIndefinite;
-    } else {
-      return (source_->getEnd() + delay_);
-    }
   }
 
 }
