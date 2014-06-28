@@ -71,7 +71,6 @@ namespace mu {
     // ================================================================
     // private instance variables
 
-    Tick prev_tick_;
     long int cursor_;
   };                            // class SpliceSP
 

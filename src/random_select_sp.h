@@ -56,7 +56,6 @@ namespace mu {
     
   protected:
     RandomSelectSP& reset();
-    Tick prev_tick_;
     SampleProcessor *current_stream_;
   };                            // class RandomSelectSP
 

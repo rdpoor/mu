@@ -46,7 +46,6 @@ namespace mu {
   // constructors
 
   SpliceSP::SpliceSP( void ) :
-      prev_tick_ (kIndefinite),
       cursor_ (-1) {
     buffer_.resize(stk::RT_BUFFER_SIZE, 2);
     }
@@ -70,10 +69,9 @@ namespace mu {
   //
   void SpliceSP::step(stk::StkFrames& buffer, Tick tick, bool is_new_event) {
     // reset if needed
-    if ((prev_tick_ == kIndefinite) || (tick <= prev_tick_)) { 
+    if (is_new_event) {
       setupCursor(tick, tick + buffer.frames()); 
     }
-    prev_tick_ = tick;
 
     // simplify logic...
     zeroBuffer(buffer);

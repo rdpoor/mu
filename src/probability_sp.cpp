@@ -27,8 +27,7 @@
 namespace mu {
 
   ProbabilitySP::ProbabilitySP( void )
-    : prev_tick_  (kIndefinite),
-      current_stream_ ( NULL ),
+    : current_stream_ ( NULL ),
       probability_ (1.0) {
   }
 
@@ -36,8 +35,7 @@ namespace mu {
   }
 
   void ProbabilitySP::step(stk::StkFrames& buffer, Tick tick, bool is_new_event) {
-    if ((prev_tick_ == kIndefinite) || (tick <= prev_tick_)) { reset(); }
-    prev_tick_ = tick;
+    if (is_new_event) { reset(); }
     
     if (current_stream_ == NULL ) {
       zeroBuffer(buffer);

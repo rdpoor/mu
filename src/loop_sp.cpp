@@ -70,16 +70,17 @@ namespace mu {
       // frames_to_copy is how many frames we can copy before we run into a loop point
       //   or into the end of buffer
       // (current_tick % loop_duration_) is the time associated with buffer_[0]
+      bool is_new = is_new_event || (current_tick % loop_duration_) == 0;
       if (frames_to_copy == buffer.frames()) {
         // optimize a common case: no copy needed
-        source_->step(buffer, (current_tick % loop_duration_), is_new_event);
+        source_->step(buffer, (current_tick % loop_duration_), is_new);
         // fprintf(stderr,"c1");
 
       } else {
         // resize buffer_ to receive frames_to_copy frames from source
         buffer_.resize(frames_to_copy, buffer.channels());
         // fill with source data
-        source_->step(buffer_, (current_tick % loop_duration_), is_new_event);
+        source_->step(buffer_, (current_tick % loop_duration_), is_new);
         // copy from buffer_[0] into buffer[frames_copied] for frames_to_copy frames
         copyBuffer(buffer_, 0, buffer, frames_copied + (start_tick - tick), frames_to_copy);
 

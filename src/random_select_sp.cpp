@@ -27,8 +27,7 @@
 namespace mu {
   
   RandomSelectSP::RandomSelectSP()
-    : prev_tick_ (kIndefinite),
-      current_stream_ (NULL) {
+    : current_stream_ (NULL) {
   }
   
   RandomSelectSP::~RandomSelectSP() { 
@@ -38,8 +37,7 @@ namespace mu {
     if (sources_.size() == 0) {
       zeroBuffer(buffer);
     } else {
-      if ((tick < prev_tick_) || (current_stream_ == NULL)) { reset(); }
-      prev_tick_ = tick;
+      if (is_new_event) { reset(); }
       current_stream_->step(buffer, tick, is_new_event);
     }
   }

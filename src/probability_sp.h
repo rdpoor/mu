@@ -55,7 +55,6 @@ namespace mu {
 
     ProbabilitySP& reset();
 
-    Tick prev_tick_;
     SampleProcessor * current_stream_;
     double probability_;
   
