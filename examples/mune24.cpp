@@ -1,6 +1,6 @@
 /*
- * Build a Strummed instrument using FadeStream and customized
- * (sketch) AddStream.
+ * Build a Strummed instrument using FadeSP and customized
+ * (sketch) AddSP.
  *
  * See also mune12.cpp, mune17.cpp, mune22.cpp, mune23.cpp
  *
@@ -9,20 +9,20 @@
  * time as other strings, but a single string will never play two
  * notes at once.
  *
- * Despite using a FadeStream, this still creates lots of crackles
+ * Despite using a FadeSP, this still creates lots of crackles
  * at the transition from one note to the next.  See mune25 for a
  * simpler experiement...
  */
 #include "mu.h"
 
-#include "add_stream.h"
-#include "constant_stream.h"
-#include "crop_stream.h"
-#include "delay_stream.h"
-#include "fade_stream.h"
-#include "file_read_stream.h"
-#include "null_stream.h"
-#include "multiply_stream.h"
+#include "add_sp.h"
+#include "constant_sp.h"
+#include "crop_sp.h"
+#include "delay_sp.h"
+#include "fade_sp.h"
+#include "file_read_sp.h"
+#include "null_sp.h"
+#include "multiply_sp.h"
 #include "rt_player.h"
 #include <map>
 #include <unistd.h>
@@ -31,17 +31,17 @@
 
 // ================================================================
 /*
- * SeqStream accepts a number of stream and sorts them by start time.
+ * SeqSP accepts a number of stream and sorts them by start time.
  * When source stream N+1 is scheduled to start, stream N fades out and
  * stream N+1 fades in.  This is a short crossfade to avoid clicks.
  */
 
-class SeqStream : public mu::AddStream {
+class SeqSP : public mu::AddSP {
 public:
   static const int kDefaultFadeTime = 20;
 
-  SeqStream &addSource(Stream *source) {
-    AddStream::addSource(&(new mu::FadeStream())->
+  SeqSP &addSource(SampleProcessor *source) {
+    AddSP::addSource(&(new mu::FadeSP())->
                          setSource(source).setFadeTime(kDefaultFadeTime));
     sortSources();
     setFadeStartAndEndTimes();
@@ -50,14 +50,14 @@ public:
 
   void sortSources();
   
-  static bool sortPredicate(mu::Stream *s0, mu::Stream *s1);
+  static bool sortPredicate(mu::SampleProcessor *s0, mu::SampleProcessor *s1);
 
   void setFadeStartAndEndTimes() {
-    mu::FadeStream *prev = NULL;
+    mu::FadeSP *prev = NULL;
     for (long int i=0; i<sources_.size(); i++) {
       // This cast is guaranteed to be legit because we added the
       // fade stream in addSource() (above).
-      mu::FadeStream *curr = (mu::FadeStream *)sources_.at(i);
+      mu::FadeSP *curr = (mu::FadeSP *)sources_.at(i);
       curr->setEnd(mu::kIndefinite);
       if (prev == NULL) {
         curr->setStart(mu::kIndefinite);
@@ -71,16 +71,16 @@ public:
     }
   }
 
-};                              // class SeqStream
+};                              // class SeqSP
 
-void SeqStream::sortSources() {
+void SeqSP::sortSources() {
   std::sort(sources_.begin(), sources_.end(), sortPredicate);
 }
 
 // A sorting predicate that sorts elements according to the start
 // time of each source.  A start time of kIndefinite sorts earlier
 // than all other times.
-bool SeqStream::sortPredicate(mu::Stream *s0, mu::Stream *s1) {
+bool SeqSP::sortPredicate(mu::SampleProcessor *s0, mu::SampleProcessor *s1) {
   if (s0->getStart() == mu::kIndefinite) {
     return true;
   } else if (s1->getStart() == mu::kIndefinite) {
@@ -92,29 +92,29 @@ bool SeqStream::sortPredicate(mu::Stream *s0, mu::Stream *s1) {
 
 // ================================================================
 /*
- * StreamSet maps between a pitch number (i.e. midi pitch) and
+ * SPSet maps between a pitch number (i.e. midi pitch) and
  * a stream that produces that pitch.  A normal example is mapping
- * a pitch to a FileReadStream().
+ * a pitch to a FileReadSP().
  */
-class StreamSet {
+class SPSet {
 public:
-  StreamSet( void ) {
+  SPSet( void ) {
   }
-  ~StreamSet( void ) {
+  ~SPSet( void ) {
   }
-  virtual mu::Stream *findStream(int pitch) = 0;
+  virtual mu::SampleProcessor *findSP(int pitch) = 0;
 
 protected:
-  mu::NullStream null_stream_;
-};                              // class StreamSet
+  mu::NullSP null_sp_;
+};                              // class SPSet
 
 // ================================================================
-class FileReadStreamSet : public StreamSet {
+class FileReadSPSet : public SPSet {
 public:
-  mu::Stream *findStream(int pitch) {
+  mu::SampleProcessor *findSP(int pitch) {
     if (cache_.find(pitch) == cache_.end()) {
       std::string file_name = makeFileName(pitch);
-      mu::FileReadStream *frs = new mu::FileReadStream();
+      mu::FileReadSP *frs = new mu::FileReadSP();
       frs->fileName(file_name).doNormalize(true);
       cache_[pitch] = frs;
     }
@@ -122,7 +122,7 @@ public:
   }
 
   std::string getDirectoryName( void ) { return directory_name_; }
-  FileReadStreamSet& setDirectoryName(std::string directory_name) { 
+  FileReadSPSet& setDirectoryName(std::string directory_name) { 
     directory_name_ = directory_name; 
     return *this;
   }
@@ -134,8 +134,8 @@ protected:
     return ss.str();
   }
   std::string directory_name_;
-  std::map<int, mu::FileReadStream *> cache_;
-};                              // class FileReadStreamSet
+  std::map<int, mu::FileReadSP *> cache_;
+};                              // class FileReadSPSet
 
 
 // ================================================================
@@ -149,18 +149,18 @@ public:
   ~FrettedInstrument( void ) {
   }
 
-  StreamSet *getStreamSet() { return stream_set_; }
-  FrettedInstrument& setStreamSet( StreamSet *stream_set ) { stream_set_ = stream_set; return *this; }
+  SPSet *getSPSet() { return stream_set_; }
+  FrettedInstrument& setSPSet( SPSet *stream_set ) { stream_set_ = stream_set; return *this; }
 
   FrettedInstrument& addString(int open_tuning) {
     open_pitches_.push_back(open_tuning);
-    SeqStream *seq_stream = new SeqStream();
-    strings_.push_back(seq_stream);
-    output_.addSource(seq_stream);
+    SeqSP *seq_sp = new SeqSP();
+    strings_.push_back(seq_sp);
+    output_.addSource(seq_sp);
     return *this;
   }
   /*
-   * Generate a strum by adding to each SeqStream.  Strum is offset
+   * Generate a strum by adding to each SeqSP.  Strum is offset
    * to start time.  If rate is positive, it's a downstroke.  If
    * negative, it's an upstroke.
    *
@@ -182,48 +182,50 @@ public:
     return *this;
   }
 
-  mu::Stream *getStream() { return &output_; }
+  mu::SampleProcessor *getSP() { return &output_; }
 
 protected:
   
-  void strum_aux(mu::Tick start, mu::Stream *stream, int open_pitch, int fret) {
-    SeqStream *seq_stream = (SeqStream *)stream;
+  void strum_aux(mu::Tick start, mu::SampleProcessor *stream, int open_pitch, int fret) {
+    SeqSP *seq_sp = (SeqSP *)stream;
     if (fret == kSustain) {
       // sustain just means to let previous stream run.
     } else if (fret == kDamped) {
-      // null_stream has indefinite extent.  CropStream forces it to
+      // null_sp has indefinite extent.  CropSP forces it to
       // start at the desired time.
-      mu::CropStream *cs = &(new mu::CropStream())->
+      mu::CropSP *cs = &(new mu::CropSP())->
         setStart(start).
-        setSource(&null_stream_);
-      seq_stream->addSource(cs);
+        setSource(&null_sp_);
+      seq_sp->addSource(cs);
     } else {
-      mu::Stream *s = stream_set_->findStream(open_pitch + fret);
+      mu::SampleProcessor *s = stream_set_->findSP(open_pitch + fret);
       if (s != NULL) {
-        mu::DelayStream *ds = &(new mu::DelayStream())->
+        mu::DelaySP *ds = &(new mu::DelaySP())->
           setDelay(start).
           setSource(s);
-        seq_stream->addSource(ds);
+        seq_sp->addSource(ds);
       }
     }
   }
 
+  typedef std::vector<mu::SampleProcessor *> SPVector;
+
   std::vector<int> open_pitches_;
-  mu::StreamVector strings_;
-  mu::AddStream output_;
-  mu::NullStream null_stream_;
-  StreamSet *stream_set_;
+  mu::SPVector strings_;
+  mu::AddSP output_;
+  mu::NullSP null_sp_;
+  SPSet *stream_set_;
 
 };                              // class FrettedInstrument
 
 // ================================================================
 int main() {
   mu::RtPlayer player;
-  FileReadStreamSet file_read_stream_set;
+  FileReadSPSet file_read_sp_set;
   FrettedInstrument fretted_instrument;
 
-  file_read_stream_set.setDirectoryName("/Users/r/Projects/Mu/SoundSets/A/");
-  fretted_instrument.setStreamSet(&file_read_stream_set);
+  file_read_sp_set.setDirectoryName("/Users/r/Projects/Mu/SoundSets/A/");
+  fretted_instrument.setSPSet(&file_read_sp_set);
 
   fretted_instrument.addString(67); // 392.0 hz, G4
   fretted_instrument.addString(60); // 261.6 hz, C4
@@ -257,20 +259,20 @@ int main() {
 
   fretted_instrument.strum(t, (int []){2, 3, 1, 0}, 4000); t += TDE;
 
-  mu::MultiplyStream multiply_stream;
-  mu::ConstantStream constant_stream;
+  mu::MultiplySP multiply_sp;
+  mu::ConstantSP constant_sp;
 
   // gain control?
-  constant_stream.setValue(0.25);
-  multiply_stream.addSource(fretted_instrument.getStream());
-  multiply_stream.addSource(&constant_stream);
+  constant_sp.setValue(0.25);
+  multiply_sp.addSource(fretted_instrument.getSP());
+  multiply_sp.addSource(&constant_sp);
 
-  player.setSource(&multiply_stream);
+  player.setSource(&multiply_sp);
   player.start();
   fprintf(stderr, "Type [return] to quit:"); getchar();
   player.stop();
 
-  std::cout << multiply_stream.inspect();
+  std::cout << multiply_sp.inspect();
 
   return 0;
 }

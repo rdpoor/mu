@@ -261,7 +261,7 @@ int main(int argc, char *argv[]) {
   unsigned int bufferFrames = RT_BUFFER_SIZE;
   try {
     dac.openStream( &parameters, NULL, format, (unsigned int)file.fileRate(), &bufferFrames, &tick, (void *)&tickData);
-  } catch (RtError &error) {
+  } catch (RtAudioError &error) {
     error.printMessage();
     // goto cleanup; -- hmm - how to handle this?
   }
@@ -287,7 +287,7 @@ int main(int argc, char *argv[]) {
     if (!dac.isStreamRunning()) {
       try {
         dac.startStream();
-      } catch ( RtError &error ) {
+      } catch ( RtAudioError &error ) {
         error.printMessage();
         // goto cleanup;  -- hmm.  how to handle this?
       }
@@ -301,7 +301,7 @@ int main(int argc, char *argv[]) {
   if (dac.isStreamOpen()) {
     try {
       dac.closeStream();
-    } catch ( RtError &error ) {
+    } catch ( RtAudioError &error ) {
       error.printMessage();
     }
   }

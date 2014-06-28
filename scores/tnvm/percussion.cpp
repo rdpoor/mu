@@ -14,7 +14,7 @@ int max(std::vector<int> v) {
   return s;
 }
 
-static mu::Stream *make_probabilty_stream(std::string file_name, 
+static mu::SampleProcessor *make_probabilty_sp(std::string file_name, 
                                           std::vector<int> probabilities,
                                           mu::Tick start_frame,
                                           mu::Tick end_frame,
@@ -22,20 +22,20 @@ static mu::Stream *make_probabilty_stream(std::string file_name,
   
   int p_max = max(probabilities);
   // can we share frs among multiple streams?
-  mu::FileReadStream *frs = &(new mu::FileReadStream())->fileName(file_name).doNormalize(true);
-  mu::ChannelizerStream *chs = &(new mu::ChannelizerStream())->setSourceChannelCount(1).setSource(frs);
-  mu::AddStream *as = new mu::AddStream();
+  mu::FileReadSP *frs = &(new mu::FileReadSP())->fileName(file_name).doNormalize(true);
+  mu::ChannelizerSP *chs = &(new mu::ChannelizerSP())->setSourceChannelCount(1).setSource(frs);
+  mu::AddSP *as = new mu::AddSP();
   for (long int i=0; i<probabilities.size(); i++) {
     mu::Tick delay = BEAT_TO_FRAME(loop_duration_in_beats) * i / probabilities.size();
     double probability = (double)probabilities.at(i) / (double)p_max;
-    mu::DelayStream *ds = &(new mu::DelayStream())->setDelay(delay).setSource(chs);
-    mu::ProbabilityStream *ps = &(new mu::ProbabilityStream())->setSource(ds).setProbability(probability);
+    mu::DelaySP *ds = &(new mu::DelaySP())->setDelay(delay).setSource(chs);
+    mu::ProbabilitySP *ps = &(new mu::ProbabilitySP())->setSource(ds).setProbability(probability);
     as->addSource(ps);
   }
-  mu::LoopStream *ls = &(new mu::LoopStream())->
+  mu::LoopSP *ls = &(new mu::LoopSP())->
     setLoopDuration(BEAT_TO_FRAME(loop_duration_in_beats)).
     setSource(as);
-  mu::CropStream *cs = &(new mu::CropStream())->setSource(ls).setStart(start_frame).setEnd(end_frame);
+  mu::CropSP *cs = &(new mu::CropSP())->setSource(ls).setStart(start_frame).setEnd(end_frame);
   return cs;
 }
 
@@ -56,12 +56,12 @@ static mu::Stream *make_probabilty_stream(std::string file_name,
 // s14.wav: tic/thmp
 // s15.wav: bmp
 // s16.wav: bmp
-mu::Stream *make_percussion_stream() {
-  mu::AddStream *as = new mu::AddStream();
+mu::SampleProcessor *make_percussion_sp() {
+  mu::AddSP *as = new mu::AddSP();
   
   static const int p0[] = {7, 0, 0, 3, 0, 0, 0, 0, 7, 0, 0, 3, 0, 0, 0, 1};
 
-  as->addSource(make_probabilty_stream(SOUND_DIR "s12.wav",
+  as->addSource(make_probabilty_sp(SOUND_DIR "s12.wav",
                                        std::vector<int>(p0, p0 + sizeof(p0) / sizeof(int)),
                                        MEASURE_TO_FRAME(M_INTRO),
                                        MEASURE_TO_FRAME(M_END),

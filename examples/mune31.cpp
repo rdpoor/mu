@@ -1,38 +1,38 @@
 /*
- * Test PsiStream.  This particular one: Plays the note shifted down 8
+ * Test PsiSP.  This particular one: Plays the note shifted down 8
  * semitones Leaves the attack at the original rate Slows the rate
  * down to "zero" (sustained note) Adds vibrato partway through the
  * note. Extends the overall duration about 10x.
  */
 
-#include "add_stream.h"
-#include "constant_stream.h"
-#include "crop_stream.h"
-#include "file_read_stream.h"
-#include "file_write_stream.h"
-#include "linseg_stream.h"
+#include "add_sp.h"
+#include "constant_sp.h"
+#include "crop_sp.h"
+#include "file_read_sp.h"
+#include "file_write_sp.h"
+#include "linseg_sp.h"
 #include "mu.h"
-#include "multiply_stream.h"
+#include "multiply_sp.h"
 #include "rt_player.h"
-#include "sine_stream.h"
-#include "psi_stream.h"
+#include "sine_sp.h"
+#include "psi_sp.h"
 #include <unistd.h>
 
 #define PSI_FILE "/Users/r/Projects/Mu/SoundSets/A/69.psi"
 
 int main() {
 
-  mu::AddStream pitch_stream;
-  mu::ConstantStream center_frequency_stream;
-  mu::CropStream crop_stream;
-  mu::FileWriteStream file_write_stream;
-  mu::LinsegStream time_stream;
-  mu::LinsegStream theta_stream;
-  mu::LinsegStream vibrato_envelope;
-  mu::MultiplyStream vibrato_stream;
+  mu::AddSP pitch_sp;
+  mu::ConstantSP center_frequency_sp;
+  mu::CropSP crop_sp;
+  mu::FileWriteSP file_write_sp;
+  mu::LinsegSP time_sp;
+  mu::LinsegSP theta_sp;
+  mu::LinsegSP vibrato_envelope;
+  mu::MultiplySP vibrato_sp;
   mu::RtPlayer player;
-  mu::SineStream sine_stream;
-  mu::PsiStream psi_stream;
+  mu::SineSP sine_sp;
+  mu::PsiSP psi_sp;
 
   // ================================================================
   // timing
@@ -40,8 +40,8 @@ int main() {
   double ddur = 10.0;            // time warp factor after initial attack
   double dpit = pow(2.0, -3/12.0); // pitch shift factor
 
-  psi_stream.setPsiFileName(PSI_FILE);
-  mu::Tick frame_count = psi_stream.getFrameCount();
+  psi_sp.setPsiFileName(PSI_FILE);
+  mu::Tick frame_count = psi_sp.getFrameCount();
 
   // "u" is input (original) time
   double u0 = 0;
@@ -61,38 +61,38 @@ int main() {
   printf("u3 = %f, t3 = %f\n", u3, t3);
 
   // ================================================================
-  // pitch_stream: constant dpit + enveloped vibrato
+  // pitch_sp: constant dpit + enveloped vibrato
 
-  center_frequency_stream.setValue(dpit);
+  center_frequency_sp.setValue(dpit);
 
-  sine_stream.setFrequency(4.0).setAmplitude(1.0);
-  vibrato_stream.addSource(&sine_stream);
-  vibrato_stream.addSource(&vibrato_envelope);
+  sine_sp.setFrequency(4.0).setAmplitude(1.0);
+  vibrato_sp.addSource(&sine_sp);
+  vibrato_sp.addSource(&vibrato_envelope);
 
   vibrato_envelope.addBreakpoint(t0, 0.0);
   vibrato_envelope.addBreakpoint(t1, 0.0);
   vibrato_envelope.addBreakpoint(t2, 0.02);
   vibrato_envelope.addBreakpoint(t3, 0.0);
   
-  pitch_stream.addSource(&center_frequency_stream);
-  pitch_stream.addSource(&vibrato_stream);
+  pitch_sp.addSource(&center_frequency_sp);
+  pitch_sp.addSource(&vibrato_sp);
 
   // ================================================================
-  // time_stream: dtau/dt = 1.0 during initial transient, then ddur
+  // time_sp: dtau/dt = 1.0 during initial transient, then ddur
 
-  time_stream.addBreakpoint(t0, u0);
-  time_stream.addBreakpoint(t1, u1);
-  time_stream.addBreakpoint(t3, u3);
+  time_sp.addBreakpoint(t0, u0);
+  time_sp.addBreakpoint(t1, u1);
+  time_sp.addBreakpoint(t3, u3);
 
   // ================================================================
   // set up stream network
 
-  psi_stream.setOmegaSource(&pitch_stream);
-  psi_stream.setTauSource(&time_stream);
+  psi_sp.setOmegaSource(&pitch_sp);
+  psi_sp.setTauSource(&time_sp);
 
-  crop_stream.setSource(&psi_stream).setEnd(t3);
-  file_write_stream.setSource(&crop_stream).setFileName("/tmp/psi_69.wav");
-  player.setSource(&file_write_stream);
+  crop_sp.setSource(&psi_sp).setEnd(t3);
+  file_write_sp.setSource(&crop_sp).setFileName("/tmp/psi_69.wav");
+  player.setSource(&file_write_sp);
 
   // ================================================================
   // Go!

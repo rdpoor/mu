@@ -4,14 +4,14 @@
 
 // #include "LentPitShift.h"
 #include "PitShift.h"
-#include "file_read_stream.h"
-#include "loop_stream.h"
+#include "file_read_sp.h"
+#include "loop_sp.h"
 #include "mu.h"
 #include "rt_player.h"
-#include "sequence_stream.h"
+#include "sequence_sp.h"
 #include <unistd.h>
 
-class PitchShiftStream : public mu::Stream {
+class PitchShiftSP : public mu::SampleProcessor {
 private:
   void setup() {
 //     if (lent_pit_shift_ == NULL) { 
@@ -27,11 +27,11 @@ private:
 
 public:
 
-  PitchShiftStream( void )
+  PitchShiftSP( void )
     : ratio_(1.0), pit_shift_(NULL) {
   }
 
-  ~PitchShiftStream( void ) {
+  ~PitchShiftSP( void ) {
     delete pit_shift_;
     pit_shift_ = NULL;
   }
@@ -57,31 +57,31 @@ public:
     }
   }
 
-  mu::Stream *getSource() { return source_; }
-  PitchShiftStream& setSource(mu::Stream *source) { source_ = source; return *this; }
+  mu::SampleProcessor *getSource() { return source_; }
+  PitchShiftSP& setSource(mu::SampleProcessor *source) { source_ = source; return *this; }
 
   stk::StkFloat getRatio( void ) { return ratio_; }
-  PitchShiftStream& setRatio(stk::StkFloat ratio) { ratio_ = ratio; return *this; }
+  PitchShiftSP& setRatio(stk::StkFloat ratio) { ratio_ = ratio; return *this; }
   
 protected:
-  mu::Stream *source_;
+  mu::SampleProcessor *source_;
   stk::StkFrames buffer_;
   stk::StkFloat ratio_;
   stk::PitShift *pit_shift_;
-}; // class PitchShiftStream
+}; // class PitchShiftSP
 
 
 #define SOUND_DIR "/Users/r/Projects/Musics/TNVM/sources/PluckFinger/"
 
 #define Q (44100*2)
 
-mu::Stream *getSoundFile(std::string file_name) {
-  mu::FileReadStream *frs = &((new mu::FileReadStream())->fileName(file_name).doNormalize(true));
+mu::SampleProcessor *getSoundFile(std::string file_name) {
+  mu::FileReadSP *frs = &((new mu::FileReadSP())->fileName(file_name).doNormalize(true));
   return frs;
 }
 
-mu::SequenceStream *makeSequence( double tempo ) {
-  mu::SequenceStream *ss = new mu::SequenceStream();
+mu::SequenceSP *makeSequence( double tempo ) {
+  mu::SequenceSP *ss = new mu::SequenceSP();
   ss->addSource(getSoundFile(SOUND_DIR "E4" ".wav"), 0.0*tempo);
   ss->addSource(getSoundFile(SOUND_DIR "C5" ".wav"), 1.0*tempo);
   ss->addSource(getSoundFile(SOUND_DIR "B4" ".wav"), 1.5*tempo);
@@ -95,27 +95,27 @@ mu::SequenceStream *makeSequence( double tempo ) {
 }
 
 int main() {
-  mu::SequenceStream *sequence_stream_a = makeSequence(44100/2);
-  mu::SequenceStream *sequence_stream_b = makeSequence(44110/2);
-  mu::SequenceStream *sequence_stream_c = makeSequence(44120/2);
-  PitchShiftStream pitch_shift_stream_a;
-  PitchShiftStream pitch_shift_stream_b;
-  PitchShiftStream pitch_shift_stream_c;
-  mu::AddStream add_stream;
-  mu::LoopStream loop_stream;
+  mu::SequenceSP *sequence_sp_a = makeSequence(44100/2);
+  mu::SequenceSP *sequence_sp_b = makeSequence(44110/2);
+  mu::SequenceSP *sequence_sp_c = makeSequence(44120/2);
+  PitchShiftSP pitch_shift_sp_a;
+  PitchShiftSP pitch_shift_sp_b;
+  PitchShiftSP pitch_shift_sp_c;
+  mu::AddSP add_sp;
+  mu::LoopSP loop_sp;
   mu::RtPlayer player;
 
-  pitch_shift_stream_b.setSource(sequence_stream_b).setRatio(0.25);
-  pitch_shift_stream_a.setSource(sequence_stream_a).setRatio(0.5);
-  pitch_shift_stream_c.setSource(sequence_stream_c).setRatio(0.66667);
+  pitch_shift_sp_b.setSource(sequence_sp_b).setRatio(0.25);
+  pitch_shift_sp_a.setSource(sequence_sp_a).setRatio(0.5);
+  pitch_shift_sp_c.setSource(sequence_sp_c).setRatio(0.66667);
 
-  add_stream.addSource(&pitch_shift_stream_a);
-  add_stream.addSource(&pitch_shift_stream_b);
-  add_stream.addSource(&pitch_shift_stream_c);
+  add_sp.addSource(&pitch_shift_sp_a);
+  add_sp.addSource(&pitch_shift_sp_b);
+  add_sp.addSource(&pitch_shift_sp_c);
 
-  loop_stream.setSource(&add_stream).setLoopDuration(add_stream.getEnd());
-  player.setSource(&loop_stream);
-  // player.setSource(&add_stream);
+  loop_sp.setSource(&add_sp).setLoopDuration(add_sp.getEnd());
+  player.setSource(&loop_sp);
+  // player.setSource(&add_sp);
 
   player.start();
   sleep(20);

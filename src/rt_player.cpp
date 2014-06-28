@@ -45,7 +45,7 @@ namespace mu {
   // taken in reading or writing any state here.
   //
   // Implementation note: RtAudio expects to receive samples in an
-  // array of doubles.  Stream objects expect to be called with an
+  // array of doubles.  SampleProcessor objects expect to be called with an
   // StkFrames object.  The main work in this method is to copy data
   // out of the StkFrames object into RtAudio's buffer object.
   //
@@ -121,7 +121,7 @@ namespace mu {
   RtPlayer& RtPlayer::stop(bool immediately) {
     TRACE("RtPlayer::stop()\n");
     if (is_running_) {
-      // dac_.isStreamRunning() ?
+      // dac_.isSPRunning() ?
       dac_.closeStream();
       is_running_ = false;
     }

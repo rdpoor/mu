@@ -8,7 +8,7 @@
 /*
  * StreamSet maps between a pitch number (i.e. midi pitch) and
  * a stream that produces that pitch.  A typical subclass maps
- * a pitch to a FileReadStream().
+ * a pitch to a FileReadSP().
  */
 class StreamSet {
 public:
@@ -16,19 +16,19 @@ public:
   }
   ~StreamSet( void ) {
   }
-  virtual mu::Stream *findStream(std::string name) = 0;
+  virtual mu::SampleProcessor *findSP(std::string name) = 0;
 
 protected:
-  mu::NullStream null_stream_;
+  mu::NullSP null_sp_;
 };                              // class StreamSet
 
 // ================================================================
 class FileReadStreamSet : public StreamSet {
 public:
-  mu::Stream *findStream(std::string name) {
+  mu::SampleProcessor *findSP(std::string name) {
     if (cache_.find(name) == cache_.end()) {
       std::string file_name = makeFileName(name);
-      mu::FileReadStream *frs = new mu::FileReadStream();
+      mu::FileReadSP *frs = new mu::FileReadSP();
       frs->fileName(file_name).doNormalize(true);
       cache_[name] = frs;
     }
@@ -48,7 +48,7 @@ protected:
     return ss.str();
   }
   std::string directory_name_;
-  std::map<std::string, mu::FileReadStream *> cache_;
+  std::map<std::string, mu::FileReadSP *> cache_;
 };                              // class FileReadStreamSet
 
 // ================================================================
@@ -96,34 +96,34 @@ public:
   StreamSet *getStreamSet( void ) { return stream_set_; }
   Hand& setStreamSet(StreamSet *stream_set) { stream_set_ = stream_set; return *this; }
 
-  mu::Stream *getStream( void ) { return &add_stream_; }
+  mu::SampleProcessor *getSP( void ) { return &add_sp_; }
 
 protected:
   // add a note to the stream.  Does not alter time_.
   Hand& make_note(double time, double duration, std::string pitch, double legato) {
     if (pitch.empty()) return *this;
 
-    mu::Stream *s = stream_set_->findStream(pitch);
-    mu::CropStream *cs = &(new mu::CropStream())->
+    mu::SampleProcessor *s = stream_set_->findSP(pitch);
+    mu::CropSP *cs = &(new mu::CropSP())->
       setStart(0).
       setEnd((mu::Tick)(duration * legato)).
       setSource(s);
-    mu::DelayStream *ds = &(new mu::DelayStream())->
+    mu::DelaySP *ds = &(new mu::DelaySP())->
       setDelay((mu::Tick)time).
       setSource(cs);
-    mu::FadeStream *fs = &(new mu::FadeStream())->
+    mu::FadeSP *fs = &(new mu::FadeSP())->
       setFadeTime(100).
       setSource(ds);
-    add_stream_.addSource(fs);
+    add_sp_.addSource(fs);
     return *this;
   }
 
   double time_;
-  mu::AddStream add_stream_;
+  mu::AddSP add_sp_;
   StreamSet *stream_set_;
 };                              // class Hand
 
-mu::Stream *make_bass_stream() {
+mu::SampleProcessor *make_bass_sp() {
   FileReadStreamSet *stream_set = new FileReadStreamSet();
   Hand *bass = new Hand();
 
@@ -334,5 +334,5 @@ mu::Stream *make_bass_stream() {
   // Fin.
   bass->setTime(MEASURE_TO_FRAME(M_END));
 
-  return bass->getStream();
+  return bass->getSP();
 }

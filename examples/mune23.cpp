@@ -10,43 +10,43 @@
  */
 #include "mu.h"
 
-#include "add_stream.h"
-#include "constant_stream.h"
-#include "crop_stream.h"
-#include "delay_stream.h"
-#include "file_read_stream.h"
-#include "null_stream.h"
-#include "multiply_stream.h"
+#include "add_sp.h"
+#include "constant_sp.h"
+#include "crop_sp.h"
+#include "delay_sp.h"
+#include "file_read_sp.h"
+#include "null_sp.h"
+#include "multiply_sp.h"
 #include "rt_player.h"
-#include "splice_stream.h"
+#include "splice_sp.h"
 #include <map>
 #include <unistd.h>
 
 #define SOUND_DIR "/Users/r/Projects/Musics/TNVM/sources/PluckFinger/"
 
 /*
- * StreamSet maps between a pitch number (i.e. midi pitch) and
+ * SPSet maps between a pitch number (i.e. midi pitch) and
  * a stream that produces that pitch.  A normal example is mapping
- * a pitch to a FileReadStream().
+ * a pitch to a FileReadSP().
  */
-class StreamSet {
+class SPSet {
 public:
-  StreamSet( void ) {
+  SPSet( void ) {
   }
-  ~StreamSet( void ) {
+  ~SPSet( void ) {
   }
-  virtual mu::Stream *findStream(int pitch) = 0;
+  virtual mu::SampleProcessor *findSP(int pitch) = 0;
 
 protected:
-  mu::NullStream null_stream_;
-};                              // class StreamSet
+  mu::NullSP null_sp_;
+};                              // class SPSet
 
-class FileReadStreamSet : public StreamSet {
+class FileReadSPSet : public SPSet {
 public:
-  mu::Stream *findStream(int pitch) {
+  mu::SampleProcessor *findSP(int pitch) {
     if (cache_.find(pitch) == cache_.end()) {
       std::string file_name = makeFileName(pitch);
-      mu::FileReadStream *frs = new mu::FileReadStream();
+      mu::FileReadSP *frs = new mu::FileReadSP();
       frs->fileName(file_name).doNormalize(true);
       cache_[pitch] = frs;
     }
@@ -54,7 +54,7 @@ public:
   }
 
   std::string getDirectoryName( void ) { return directory_name_; }
-  FileReadStreamSet& setDirectoryName(std::string directory_name) { 
+  FileReadSPSet& setDirectoryName(std::string directory_name) { 
     directory_name_ = directory_name; 
     return *this;
   }
@@ -66,8 +66,8 @@ protected:
     return ss.str();
   }
   std::string directory_name_;
-  std::map<int, mu::FileReadStream *> cache_;
-};                              // class FileReadStreamSet
+  std::map<int, mu::FileReadSP *> cache_;
+};                              // class FileReadSPSet
 
 
 class FrettedInstrument {
@@ -80,18 +80,18 @@ public:
   ~FrettedInstrument( void ) {
   }
 
-  StreamSet *getStreamSet() { return stream_set_; }
-  FrettedInstrument& setStreamSet( StreamSet *stream_set ) { stream_set_ = stream_set; return *this; }
+  SPSet *getSPSet() { return stream_set_; }
+  FrettedInstrument& setSPSet( SPSet *stream_set ) { stream_set_ = stream_set; return *this; }
 
   FrettedInstrument& addString(int open_tuning) {
     open_pitches_.push_back(open_tuning);
-    mu::SpliceStream *splice_stream = new mu::SpliceStream();
-    strings_.push_back(splice_stream);
-    output_.addSource(splice_stream);
+    mu::SpliceSP *splice_sp = new mu::SpliceSP();
+    strings_.push_back(splice_sp);
+    output_.addSource(splice_sp);
     return *this;
   }
   /*
-   * Generate a strum by adding to each SpliceStream.  Strum is offset
+   * Generate a strum by adding to each SpliceSP.  Strum is offset
    * to start time.  If rate is positive, it's a downstroke.  If
    * negative, it's an upstroke.
    *
@@ -113,42 +113,42 @@ public:
     return *this;
   }
 
-  mu::Stream *getStream() { return &output_; }
+  mu::SampleProcessor *getSP() { return &output_; }
 
 protected:
   
-  void strum_aux(mu::Tick start, mu::Stream *stream, int open_pitch, int fret) {
-    mu::SpliceStream *splice_stream = (mu::SpliceStream *)stream;
+  void strum_aux(mu::Tick start, mu::SampleProcessor *stream, int open_pitch, int fret) {
+    mu::SpliceSP *splice_sp = (mu::SpliceSP *)stream;
     if (fret == kSustain) {
     } else if (fret == kDamped) {
-      // null_stream has indefinite extent.  CropStream forces it to start at the desired time.
-      mu::CropStream *cs = &(new mu::CropStream())->setStart(start).setSource(&null_stream_);
-      splice_stream->addSource(cs);
+      // null_sp has indefinite extent.  CropSP forces it to start at the desired time.
+      mu::CropSP *cs = &(new mu::CropSP())->setStart(start).setSource(&null_sp_);
+      splice_sp->addSource(cs);
     } else {
-      mu::Stream *s = stream_set_->findStream(open_pitch + fret);
+      mu::SampleProcessor *s = stream_set_->findSP(open_pitch + fret);
       if (s != NULL) {
-        mu::DelayStream *ds = &(new mu::DelayStream())->setDelay(start).setSource(s);
-        splice_stream->addSource(ds);
+        mu::DelaySP *ds = &(new mu::DelaySP())->setDelay(start).setSource(s);
+        splice_sp->addSource(ds);
       }
     }
   }
 
   std::vector<int> open_pitches_;
-  mu::StreamVector strings_;
-  mu::AddStream output_;
-  mu::NullStream null_stream_;
-  StreamSet *stream_set_;
+  mu::SPVector strings_;
+  mu::AddSP output_;
+  mu::NullSP null_sp_;
+  SPSet *stream_set_;
 
 };                              // class FrettedInstrument
 
 
 int main() {
   mu::RtPlayer player;
-  FileReadStreamSet file_read_stream_set;
+  FileReadSPSet file_read_sp_set;
   FrettedInstrument fretted_instrument;
 
-  file_read_stream_set.setDirectoryName("/Users/r/Projects/Mu/SoundSets/A/");
-  fretted_instrument.setStreamSet(&file_read_stream_set);
+  file_read_sp_set.setDirectoryName("/Users/r/Projects/Mu/SoundSets/A/");
+  fretted_instrument.setSPSet(&file_read_sp_set);
 
   fretted_instrument.addString(67); // 392.0 hz, G4
   fretted_instrument.addString(60); // 261.6 hz, C4
@@ -182,20 +182,20 @@ int main() {
 
   fretted_instrument.strum(t, (int []){2, 3, 1, 0}, 4000); t += TDE;
 
-  mu::MultiplyStream multiply_stream;
-  mu::ConstantStream constant_stream;
+  mu::MultiplySP multiply_sp;
+  mu::ConstantSP constant_sp;
 
   // gain control?
-  constant_stream.setValue(0.25);
-  multiply_stream.addSource(fretted_instrument.getStream());
-  multiply_stream.addSource(&constant_stream);
+  constant_sp.setValue(0.25);
+  multiply_sp.addSource(fretted_instrument.getSP());
+  multiply_sp.addSource(&constant_sp);
 
-  player.setSource(&multiply_stream);
+  player.setSource(&multiply_sp);
   player.start();
   fprintf(stderr, "Type [return] to quit:"); getchar();
   player.stop();
 
-  std::cout << multiply_stream.inspect();
+  std::cout << multiply_sp.inspect();
 
   return 0;
 }

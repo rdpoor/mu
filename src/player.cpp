@@ -53,8 +53,8 @@ namespace mu {
     frame_size_ = frame_size; return *this;
   }
   
-  Stream *Player::getSource() const { return source_; }
-  Player& Player::setSource(Stream *source) {
+  SampleProcessor *Player::getSource() const { return source_; }
+  Player& Player::setSource(SampleProcessor *source) {
     TRACE("Player::getSource()\n");
     source_ = source; return *this;
   }

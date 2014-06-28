@@ -47,8 +47,8 @@ namespace mu {
     unsigned int getFrameSize() const;
     Player& setFrameSize(unsigned int frame_size);
 
-    Stream *getSource() const;
-    Player& setSource(Stream *source);
+    SampleProcessor *getSource() const;
+    Player& setSource(SampleProcessor *source);
 
     Tick getTick() const;
     Player& setTick(Tick tick);
@@ -71,7 +71,7 @@ namespace mu {
     unsigned int channel_count_;
     stk::StkFloat frame_rate_;
     unsigned int frame_size_;
-    Stream *source_;
+    SampleProcessor *source_;
     Tick tick_;
 
   };                            // class Player

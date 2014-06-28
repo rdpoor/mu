@@ -1,11 +1,11 @@
 /*
- * Test LoopStream using IdentityStream and MapStream
+ * Test LoopSP using IdentitySP and MapSP
  */
-#include "loop_stream.h"
-#include "map_stream.h"
+#include "loop_sp.h"
+#include "map_sp.h"
 #include "mu.h"
 #include "nrt_player.h"
-#include "identity_stream.h"
+#include "identity_sp.h"
 #include <unistd.h>
 
 #define LOOP_INTERVAL (1000)
@@ -29,14 +29,14 @@ void validate(stk::StkFrames& buffer, mu::Tick tick, mu::Player& player, mu::Tic
 }
 
 int main() {
-  mu::IdentityStream identity_stream;
-  mu::LoopStream loop_stream;
-  mu::MapStream map_stream;
+  mu::IdentitySP identity_sp;
+  mu::LoopSP loop_sp;
+  mu::MapSP map_sp;
   mu::NrtPlayer player;
 
-  loop_stream.setSource(&identity_stream).setLoopDuration(LOOP_INTERVAL);
-  map_stream.setSource(&loop_stream).setCallback(validate);
-  player.setSource(&map_stream);
+  loop_sp.setSource(&identity_sp).setLoopDuration(LOOP_INTERVAL);
+  map_sp.setSource(&loop_sp).setCallback(validate);
+  player.setSource(&map_sp);
 
   player.start();
   sleep(5);

@@ -1,33 +1,33 @@
 /*
- * Test ResampleStream
+ * Test ResampleSP
  */
 
-#include "crop_stream.h"
-#include "file_read_stream.h"
-#include "linseg_stream.h"
-#include "loop_stream.h"
+#include "crop_sp.h"
+#include "file_read_sp.h"
+#include "linseg_sp.h"
+#include "loop_sp.h"
 #include "mu.h"
-#include "resample_stream.h"
+#include "resample_sp.h"
 #include "rt_player.h"
 
 #define SOUND_DIR "/Users/r/Projects/Musics/TNVM/sources/PluckFinger/"
 
-mu::Stream *getSoundFile(std::string file_name) {
-  mu::FileReadStream *frs = &((new mu::FileReadStream())->fileName(file_name).doNormalize(true));
+mu::SampleProcessor *getSoundFile(std::string file_name) {
+  mu::FileReadSP *frs = &((new mu::FileReadSP())->fileName(file_name).doNormalize(true));
   return frs;
 }
 
 int main() {
-  mu::ResampleStream resample_stream;
-  mu::LinsegStream linseg_stream;
-  mu::LoopStream loop_stream;
+  mu::ResampleSP resample_sp;
+  mu::LinsegSP linseg_sp;
+  mu::LoopSP loop_sp;
   mu::RtPlayer player;
 
-  linseg_stream.removeAllBreakpoints();
-  linseg_stream.addBreakpoint(0, 0.0);
-  linseg_stream.addBreakpoint(44100*1, 44100.0);
-  linseg_stream.addBreakpoint(44100*2, 0.0);
-  linseg_stream.addBreakpoint(44100*4, 44100*0.5);
+  linseg_sp.removeAllBreakpoints();
+  linseg_sp.addBreakpoint(0, 0.0);
+  linseg_sp.addBreakpoint(44100*1, 44100.0);
+  linseg_sp.addBreakpoint(44100*2, 0.0);
+  linseg_sp.addBreakpoint(44100*4, 44100*0.5);
 
   mu::Tick t0 = (44100*4)+1;
 
@@ -44,29 +44,29 @@ int main() {
   mu::Tick u2 = 14221;          // loop point 2
   mu::Tick u3 = 51152;          // end of sound file
 
-  linseg_stream.addBreakpoint(t0, u0);
+  linseg_sp.addBreakpoint(t0, u0);
   t0 += (u2-u0)/dpitch;
-  linseg_stream.addBreakpoint(t0,u2);
+  linseg_sp.addBreakpoint(t0,u2);
 
   for (int i=0; i<5; i++) {
     t0 += (u2-u1)/dpitch;
-    linseg_stream.addBreakpoint(t0,u1);
+    linseg_sp.addBreakpoint(t0,u1);
     t0 += (u2-u1)/dpitch;
-    linseg_stream.addBreakpoint(t0,u2);
+    linseg_sp.addBreakpoint(t0,u2);
   }
   t0 += (u3-u2)/dpitch;
-  linseg_stream.addBreakpoint(t0, u3);
+  linseg_sp.addBreakpoint(t0, u3);
 
 #endif
   
-  resample_stream.setSampleSource(getSoundFile(SOUND_DIR "A4" ".wav"));
-  resample_stream.setTimingSource(&linseg_stream);
+  resample_sp.setSampleSource(getSoundFile(SOUND_DIR "A4" ".wav"));
+  resample_sp.setTimingSource(&linseg_sp);
 
-  loop_stream.setSource(&resample_stream).setLoopDuration(t0);
+  loop_sp.setSource(&resample_sp).setLoopDuration(t0);
 
-  player.setSource(&loop_stream);
+  player.setSource(&loop_sp);
 
-  std::cout << resample_stream.inspect();
+  std::cout << resample_sp.inspect();
 
   player.start();
   fprintf(stderr, "Type [return] to quit:");  getchar();

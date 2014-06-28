@@ -3,6 +3,6 @@
 
 #include "tnvm.h"
 
-mu::Stream *make_bass_stream();
+mu::SampleProcessor *make_bass_sp();
 
 #endif

@@ -1,14 +1,14 @@
 /*
- * Test FadeStream with sound samples.
+ * Test FadeSP with sound samples.
  */
 #include "mu.h"
 
-#include "add_stream.h"
-#include "crop_stream.h"
-#include "delay_stream.h"
-#include "fade_stream.h"
-#include "file_read_stream.h"
-#include "null_stream.h"
+#include "add_sp.h"
+#include "crop_sp.h"
+#include "delay_sp.h"
+#include "fade_sp.h"
+#include "file_read_sp.h"
+#include "null_sp.h"
 #include "rt_player.h"
 #include <map>
 #include <unistd.h>
@@ -17,29 +17,29 @@
 
 // ================================================================
 /*
- * StreamSet maps between a pitch number (i.e. midi pitch) and
+ * SPSet maps between a pitch number (i.e. midi pitch) and
  * a stream that produces that pitch.  A normal example is mapping
- * a pitch to a FileReadStream().
+ * a pitch to a FileReadSP().
  */
-class StreamSet {
+class SPSet {
 public:
-  StreamSet( void ) {
+  SPSet( void ) {
   }
-  ~StreamSet( void ) {
+  ~SPSet( void ) {
   }
-  virtual mu::Stream *findStream(int pitch) = 0;
+  virtual mu::SampleProcessor *findSP(int pitch) = 0;
 
 protected:
-  mu::NullStream null_stream_;
-};                              // class StreamSet
+  mu::NullSP null_sp_;
+};                              // class SPSet
 
 // ================================================================
-class FileReadStreamSet : public StreamSet {
+class FileReadSPSet : public SPSet {
 public:
-  mu::Stream *findStream(int pitch) {
+  mu::SampleProcessor *findSP(int pitch) {
     if (cache_.find(pitch) == cache_.end()) {
       std::string file_name = makeFileName(pitch);
-      mu::FileReadStream *frs = new mu::FileReadStream();
+      mu::FileReadSP *frs = new mu::FileReadSP();
       frs->fileName(file_name).doNormalize(true);
       cache_[pitch] = frs;
     }
@@ -47,7 +47,7 @@ public:
   }
 
   std::string getDirectoryName( void ) { return directory_name_; }
-  FileReadStreamSet& setDirectoryName(std::string directory_name) { 
+  FileReadSPSet& setDirectoryName(std::string directory_name) { 
     directory_name_ = directory_name; 
     return *this;
   }
@@ -59,32 +59,32 @@ protected:
     return ss.str();
   }
   std::string directory_name_;
-  std::map<int, mu::FileReadStream *> cache_;
-};                              // class FileReadStreamSet
+  std::map<int, mu::FileReadSP *> cache_;
+};                              // class FileReadSPSet
 
-mu::Stream *makeNote(StreamSet *ss, mu::Tick start, mu::Tick duration, int pitch) {
-  mu::Stream *s = ss->findStream(pitch);
+mu::SampleProcessor *makeNote(SPSet *ss, mu::Tick start, mu::Tick duration, int pitch) {
+  mu::SampleProcessor *s = ss->findSP(pitch);
 #if 1
-  mu::CropStream *cs = &(new mu::CropStream())->
+  mu::CropSP *cs = &(new mu::CropSP())->
     setStart(0).
     setEnd(duration * 1.5).
     setSource(s);
-  mu::DelayStream *ds = &(new mu::DelayStream())->
+  mu::DelaySP *ds = &(new mu::DelaySP())->
     setDelay(start).
     setSource(cs);
-  mu::FadeStream *fs = &(new mu::FadeStream())->
+  mu::FadeSP *fs = &(new mu::FadeSP())->
     setFadeTime(100).
     setSource(ds);
   return fs;
 #else
-  mu::CropStream *cs = &(new mu::CropStream())->
+  mu::CropSP *cs = &(new mu::CropSP())->
     setStart(0).
     setEnd(duration * 3.5).
     setSource(s);
-  mu::DelayStream *ds = &(new mu::DelayStream())->
+  mu::DelaySP *ds = &(new mu::DelaySP())->
     setDelay(start).
     setSource(cs);
-  mu::FadeStream *fs = &(new mu::FadeStream())->
+  mu::FadeSP *fs = &(new mu::FadeSP())->
     setFadeTime(8000).
     setSource(ds);
   return fs;
@@ -94,8 +94,8 @@ mu::Stream *makeNote(StreamSet *ss, mu::Tick start, mu::Tick duration, int pitch
 // ================================================================
 int main() {
   mu::RtPlayer player;
-  mu::AddStream as;
-  FileReadStreamSet ss;
+  mu::AddSP as;
+  FileReadSPSet ss;
 
   ss.setDirectoryName("/Users/r/Projects/Mu/SoundSets/A/");
 

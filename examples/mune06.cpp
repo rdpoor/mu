@@ -1,13 +1,14 @@
 /*
- * Test FileReadStream
+ * Test FileReadSP
  */
 #include "mu.h"
 #include "rt_player.h"
-#include "file_read_stream.h"
+#include "file_read_sp.h"
+#include <unistd.h>
 
 int main() {
   mu::RtPlayer player;      // allocate a real-time audio playback
-  mu::FileReadStream fr;
+  mu::FileReadSP fr;
   fr.fileName("/Users/r/Projects/Musics/TNVM/sources/Chords/A.wav").doNormalize(true);
 
   player.setSource(&fr);    // connect output of generator to player.

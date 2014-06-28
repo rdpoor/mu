@@ -7,15 +7,15 @@
 #include "mu.h"
 
 #include "NRev.h"
-#include "add_stream.h"
-#include "crop_stream.h"
-#include "delay_stream.h"
-#include "fade_stream.h"
-#include "file_read_stream.h"
-#include "file_write_stream.h"
-#include "linseg_stream.h"
-#include "multiply_stream.h"
-#include "null_stream.h"
+#include "add_sp.h"
+#include "crop_sp.h"
+#include "delay_sp.h"
+#include "fade_sp.h"
+#include "file_read_sp.h"
+#include "file_write_sp.h"
+#include "linseg_sp.h"
+#include "multiply_sp.h"
+#include "null_sp.h"
 #include "rt_player.h"
 #include <map>
 #include <unistd.h>
@@ -24,29 +24,29 @@
 
 // ================================================================
 /*
- * StreamSet maps between a pitch number (i.e. midi pitch) and
+ * SPSet maps between a pitch number (i.e. midi pitch) and
  * a stream that produces that pitch.  A normal example is mapping
- * a pitch to a FileReadStream().
+ * a pitch to a FileReadSP().
  */
-class StreamSet {
+class SPSet {
 public:
-  StreamSet( void ) {
+  SPSet( void ) {
   }
-  ~StreamSet( void ) {
+  ~SPSet( void ) {
   }
-  virtual mu::Stream *findStream(std::string name) = 0;
+  virtual mu::SampleProcessor *findSP(std::string name) = 0;
 
 protected:
-  mu::NullStream null_stream_;
-};                              // class StreamSet
+  mu::NullSP null_sp_;
+};                              // class SPSet
 
 // ================================================================
-class FileReadStreamSet : public StreamSet {
+class FileReadSPSet : public SPSet {
 public:
-  mu::Stream *findStream(std::string name) {
+  mu::SampleProcessor *findSP(std::string name) {
     if (cache_.find(name) == cache_.end()) {
       std::string file_name = makeFileName(name);
-      mu::FileReadStream *frs = new mu::FileReadStream();
+      mu::FileReadSP *frs = new mu::FileReadSP();
       frs->fileName(file_name).doNormalize(true);
       cache_[name] = frs;
     }
@@ -54,7 +54,7 @@ public:
   }
 
   std::string getDirectoryName( void ) { return directory_name_; }
-  FileReadStreamSet& setDirectoryName(std::string directory_name) { 
+  FileReadSPSet& setDirectoryName(std::string directory_name) { 
     directory_name_ = directory_name; 
     return *this;
   }
@@ -66,8 +66,8 @@ protected:
     return ss.str();
   }
   std::string directory_name_;
-  std::map<std::string, mu::FileReadStream *> cache_;
-};                              // class FileReadStreamSet
+  std::map<std::string, mu::FileReadSP *> cache_;
+};                              // class FileReadSPSet
 
 // ================================================================
 
@@ -111,34 +111,34 @@ public:
   double getTime( void ) { return time_; }
   Hand& setTime(double time) { time_ = time; return *this; }
 
-  StreamSet *getStreamSet( void ) { return stream_set_; }
-  Hand& setStreamSet(StreamSet *stream_set) { stream_set_ = stream_set; return *this; }
+  SPSet *getSPSet( void ) { return stream_set_; }
+  Hand& setSPSet(SPSet *stream_set) { stream_set_ = stream_set; return *this; }
 
-  mu::Stream *getStream( void ) { return &add_stream_; }
+  mu::SampleProcessor *getSP( void ) { return &add_sp_; }
 
 protected:
   // add a note to the stream.  Does not alter time_.
   Hand& make_note(double time, double duration, std::string pitch, double legato) {
     if (pitch.empty()) return *this;
 
-    mu::Stream *s = stream_set_->findStream(pitch);
-    mu::CropStream *cs = &(new mu::CropStream())->
+    mu::SampleProcessor *s = stream_set_->findSP(pitch);
+    mu::CropSP *cs = &(new mu::CropSP())->
       setStart(0).
       setEnd((mu::Tick)(duration * legato)).
       setSource(s);
-    mu::DelayStream *ds = &(new mu::DelayStream())->
+    mu::DelaySP *ds = &(new mu::DelaySP())->
       setDelay((mu::Tick)time).
       setSource(cs);
-    mu::FadeStream *fs = &(new mu::FadeStream())->
+    mu::FadeSP *fs = &(new mu::FadeSP())->
       setFadeTime(100).
       setSource(ds);
-    add_stream_.addSource(fs);
+    add_sp_.addSource(fs);
     return *this;
   }
 
   double time_;
-  mu::AddStream add_stream_;
-  StreamSet *stream_set_;
+  mu::AddSP add_sp_;
+  SPSet *stream_set_;
 };                              // class Hand
 
 // ================================================================
@@ -152,7 +152,7 @@ public:
     time_ ( 0.0 ),
     value_ ( 0.0 ),
     is_ramping_ ( true ) {
-    multiply_stream_.addSource(&linseg_stream_);
+    multiply_sp_.addSource(&linseg_sp_);
   }
     
   // generate a rest by incrementing time by duration.
@@ -174,17 +174,17 @@ public:
   double getTime( void ) { return time_; }
   Dynamics& setTime(double time) { time_ = time; return *this; }
 
-  mu::MultiplyStream *getStream( void ) { return &multiply_stream_; }
+  mu::MultiplySP *getSP( void ) { return &multiply_sp_; }
 
 protected:
   Dynamics& emit_segment( double duration, double value, bool start_ramping ) {
     if (!is_ramping_) {
       // finish previous segment at current time - epsilon
       // and previous value.
-      linseg_stream_.addBreakpoint((mu::Tick)time_ - 1, value_);
+      linseg_sp_.addBreakpoint((mu::Tick)time_ - 1, value_);
     }
     is_ramping_ = start_ramping;
-    linseg_stream_.addBreakpoint((mu::Tick)time_, value);
+    linseg_sp_.addBreakpoint((mu::Tick)time_, value);
     value_ = value;
     time_ += duration;
     return *this;
@@ -193,14 +193,14 @@ protected:
   double time_;
   double value_;
   bool is_ramping_;
-  mu::MultiplyStream multiply_stream_;
-  mu::LinsegStream linseg_stream_;
+  mu::MultiplySP multiply_sp_;
+  mu::LinsegSP linseg_sp_;
 
 };                              // class Dynamics
 
 // ================================================================
 
-class ReverbStream : public mu::Stream {
+class ReverbSP : public mu::SampleProcessor {
 private:
   void setup() {
     if (reverb_ == NULL) {
@@ -212,11 +212,11 @@ private:
 
 public:
 
-  ReverbStream( void ) {
+  ReverbSP( void ) {
     setRatio(1.0);
   }
 
-  ~ReverbStream( void ) {
+  ~ReverbSP( void ) {
     delete reverb_;
     reverb_ = NULL;
   }
@@ -250,57 +250,57 @@ public:
     }
   }
 
-  mu::Stream *getSource() { return source_; }
-  ReverbStream& setSource(mu::Stream *source) { source_ = source; return *this; }
+  mu::SampleProcessor *getSource() { return source_; }
+  ReverbSP& setSource(mu::SampleProcessor *source) { source_ = source; return *this; }
 
   stk::StkFloat getRatio( void ) { return wet_; }
-  ReverbStream& setRatio(stk::StkFloat ratio) { 
+  ReverbSP& setRatio(stk::StkFloat ratio) { 
     wet_ = ratio;
     dry_ = 1.0 - ratio;
     return *this;
   }
   
 protected:
-  mu::Stream *source_;
+  mu::SampleProcessor *source_;
   stk::StkFrames buffer_;
   stk::StkFloat dry_;
   stk::StkFloat wet_;
   stk::NRev *reverb_;
-}; // class ReverbStream
+}; // class ReverbSP
     
 
 // ================================================================
 
 int main() {
-  FileReadStreamSet stream_set;
+  FileReadSPSet stream_set;
   Hand right_hand;
   Hand left_hand;
   Dynamics dynamics;
-  ReverbStream reverb_stream;
-  mu::NullStream null_stream;   // should not need?
-  mu::AddStream add_stream;
-  mu::FileWriteStream file_write_stream;
+  ReverbSP reverb_sp;
+  mu::NullSP null_sp;   // should not need?
+  mu::AddSP add_sp;
+  mu::FileWriteSP file_write_sp;
   mu::RtPlayer player;
 
   stream_set.setDirectoryName("/Users/r/Projects/Mu/SoundSets/A/");
-  right_hand.setStreamSet(&stream_set);
-  left_hand.setStreamSet(&stream_set);
+  right_hand.setSPSet(&stream_set);
+  left_hand.setSPSet(&stream_set);
   
   // mix left and right hands into one stream
-  add_stream.addSource(right_hand.getStream());
-  add_stream.addSource(left_hand.getStream());
-  add_stream.addSource(&null_stream); // avoid click at end?
+  add_sp.addSource(right_hand.getSP());
+  add_sp.addSource(left_hand.getSP());
+  add_sp.addSource(&null_sp); // avoid click at end?
   
   // add dynamics
-  dynamics.getStream()->addSource(&add_stream);
+  dynamics.getSP()->addSource(&add_sp);
 
   // add reverb
-  reverb_stream.setSource(dynamics.getStream());
-  reverb_stream.setRatio(0.25);
+  reverb_sp.setSource(dynamics.getSP());
+  reverb_sp.setRatio(0.25);
 
   // write and play the result
-  file_write_stream.setSource(&reverb_stream).setFileName("/Users/r/Projects/Mu/Scores/fotu.wav");
-  player.setSource(&file_write_stream);
+  file_write_sp.setSource(&reverb_sp).setFileName("/Users/r/Projects/Mu/Scores/fotu.wav");
+  player.setSource(&file_write_sp);
 
   // create some handy dynamics
   double global_gain = 0.33;

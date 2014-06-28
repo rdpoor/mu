@@ -4,13 +4,14 @@ An experiment in blurring the lines between music composition and sound synthesi
 
 ## todo 
 
+* fix examples/ so 'make' compiles without error.
 * scores/tnvm/percussion.cpp (and mune21) show a technique for
 generating percussion parts with variation.  Another (perhaps more
-satisfyin) approach would be to have a fixed pattern, but randomize
+satisfying) approach would be to have a fixed pattern, but randomize
 the dynamics, e.g. with a LinsegStream or StepStream.
 * Should Stream provide a tickHasJumped() method to indicate a
 discontinuity in the tick counter?  Or as a mixin for classes that
-need it?
+need it?  (Consider instead start() and continue() instead of step())
 * Some stream elements -- e.g. MultiplyStream, SineStream -- would
 benefit from a constant input and a stream input.  (Look for examples
 that have used ConstantStream.)
@@ -390,3 +391,265 @@ discontinuous, that can be thought of as a new event.
 
 I'm not sure how this translates into a design, but a germ of an idea
 is in there.
+
+### Events, redux.
+
+Assume a stream of discrete events, perhaps the notes of a scale.  And
+(at this point), the notes don't even have times associated with them.
+Each call to nextEvent() would return the next note, or NULL_EVENT if
+there were no more notes.
+
+Assume another stream of timing information.  Each call to nextEvent()
+returns a start time and perhaps a duration.  Again, if there are no
+more events, it returns NULL_EVENT.
+
+We could convince a SineOsc to generate a scale like:
+
+                       | <= scaleToFreqStream <= scaleStream
+DACPlayer <= SinStream |
+                       | <= timingStream
+
+... although that starts to look a lot like linsegStream or stepStream.
+
+Perhaps take a step back (away from the strictures imposed by C++):
+
+LoopStream([e0, e1, e2]) => e0, e1, e2, e0, e1, e2...
+
+DropStream([e0, e1, e2, e3, e4], 2) => e2, e3, e4
+
+TakeStream([e0, e1, e2, e3, e4], 2) => e0, e1
+
+AppendStream(s1, s2) => elements of s1 followed by elements of s2 when
+s1 evaluates to NULL_STREAM
+
+FlattenStream(s1) => if an element of s1 is a stream, inserts the
+elements of the stream at that point.
+
+MergeStream(s1, s2, predicate) => elements of s1 and s2 merged
+according to predicate.
+
+MapStream(s1, operator) => a stream where each element of s1 is
+replaced by operator(s1)
+
+ZipStream(s1, s2) => a stream of streams containing [s1.e0, s2.e0],
+[s1.e1, s2.e2] ...
+
+How would all these work together to continually loop through three
+sound files with a cross-fade in-between?
+
+se1 = soundFileSE("s1.wav").setDuration(eigth);  // sound file stream element
+se2 = soundFileSE("s2.wav").setDuration(eigth);
+se3 = soundFileSE("s3.wav").setDuration(half);
+s1 = consStream(se1, consStream(se2, consStream(se3, NULL_STREAM)));
+s2 = loopStream(s1);
+s3 = crossFadeSteam(s2, 0.05);
+DACPlayer.setSource(s3);
+
+A pidgen definition of crossFadeStream() is:
+Stream *crossFadeStream(s, fade_time) {
+  if (s == NULL_STREAM) {
+    return NULL_STREAM;
+  } else if (s.next() == NULL_STREAM) {
+    return s;
+  } else {
+    e1 = s.first;
+    e2 = s.next.first;
+    r = s.next.next;
+    return consStream(cropElement(e1, 0, e1.dur-fade_time),
+             consStream(fadeOut(cropElement(e1, e1.dur-fade_time, e1.dur)),
+               consStream(fadeIn(cropElement(e2, 0, fade_time)),
+                 crossFadeStream(
+                   consStream(cropElement(e2, fade_time, e2.dur-fade_time), r),
+                   fade_time))));
+  }
+}
+
+This could be cleaned up with a listStream() operator (analogous to a
+Scheme or LISP (list ...) procedure:
+
+Stream *crossFadeStream(Stream *s, double fade_time) {
+  if (s == NULL_STREAM) {
+    return NULL_STREAM;
+  } else if (s->next() == NULL_STREAM) {
+    return s;
+  } else {
+    StreamElement *e1 = s->first();
+    StreamElement *e2 = s->next()->first();
+    Stream *rest = s->next()->next();
+    return 
+      listStream(e1->cropElement(0, e1->dur()-fade_time),
+                 e1->cropElement(e1->dur()-fade_time, e1->dur())->fadeOut(),
+                 e2->cropElement(0, fade_time)->fadeIn(),
+                 crossFadeStream(
+                   consStream(e2->cropElement(fade_time, e2->dur()-fade_time), rest),
+                   fade_time));
+  }
+}
+
+These definitions omit shifting each element to the correct time, but
+the structure is what's important: each element of the original stream
+is broken into up to three elements: fadeIn, steady state, and
+fadeOut.  It is written so that an element omits the fadeIn if it is
+first and omits the fadeOut if it is last, which is what you normally
+want.
+
+Each element operation (crop, fadeIn, etc), is really just a deferred
+wrapper around the element that will be interpreted (only) when the
+stream is rendered.
+
+I gotta say: this feels much more like the right thing.  
+
+### Event streams
+
+After bashing my head on the C++ (Turing complete) type system, I need
+to step back and think about a natural way to express events and
+streams of events rather than lose myself in C++ semantics and its
+strict typing system.
+
+Proto-example
+
+We have three sound files f0, f1, f2.  We want to play one second of
+f0, followed by two seconds of f1, followed by three seconds of f2,
+and we want that entire sequence to loop. In addition, we want
+cross-fades between each transition including going from f2 back to
+f0.
+
+We assume that f1 is shifted by one second, f2 is shifted by three
+seconds, and that the entire sequence (before looping) is six seconds
+long.  
+
+One design question: when does cropping happen?  Assume that cross
+fades are 0.2 seconds long (I know that's abnormally long), so we're
+really taking d + 0.2 seconds of each sound file (0.1 extra at the
+beginning and 0.1 at the end).  The best answer may be that cropping
+doesn't shorten the actual sound, it just dictates new starting and
+ending times, which are hints for the renderer.
+
+e0 = soundFileRead("f0").crop(0.0, 1.0).delay(0.0);
+e1 = soundFileRead("f1").crop(0.0, 2.0).delay(1.0);
+e2 = soundFileRead("f2").crop(0.0, 3.0).delay(3.0);
+s1 = mergeStream(e0, e1, e2);  // merge on start times by default 
+s2 = loopStream(s1);           // default loop dur = last end time
+s3 = xfadeStream(s2).setXFadeTime(0.2);
+
+player.setSource(s3);
+player.start();
+
+Q: When does an operation work on an element vs a stream?
+A: When it makes sense.  crop() and delay() are applicable to entire
+   streams as well as to indivual events.  In many cases, it might be
+   easiest to create an event stream with a single event and define
+   methods to work (only) on streams.
+
+Q: Then is there such a thing as a single event?
+A: Dunno.  They can probably be manupulated as singleton streams, but
+   at some point each event needs to get rendered, which is specific
+   to that event.
+
+Q: Is there a difference between:
+
+    e0 = soundFileRead("f0").crop(0.0, 1.0).delay(3.0);
+
+and
+
+    e0 = soundFileEvent.new().setFileName("f0");
+    e1 = cropEvent.new().setSource(e0).setStart(0.0).setEnd(1.0);
+    e2 = delayEvent.new().setSource(e1).setDelay(3.0)
+
+"Everything is a motif", where a motif is one or more renderable
+events.  Events have their own starting and ending times (possibly
+indefinite).  By default, events are mixed together, not sequenced.
+If you want one event to end before another starts, you use xfade or
+cropping to enforce an order.
+
+=== Hmmm
+
+s <= makeMergeStream().addSource(s0).addSource(s1).setSortPredicate(p);
+
+Returns a stream that merges all of its sources.  Items are sorted by
+their natural sort order or with the explicit sorting predictate.
+
+s <= makeProbabilityStream().setProbability(p).setSource(s0);
+
+Returns a stream that when evaluated returns s0 with a probability of
+p and NULL_STREAM with a probability of 1-p.  [Extra credit: p can be
+a stream as well?]
+
+=== Back to earth
+
+1. In the step() method, replace the player argument with a
+is_new_event argument, set to true at the start of a new event.
+
+2. Create a family of "untimed" stream elements, e.g. ones that emit
+new double values (or new strings, or new streams, etc) whenever
+called.  I'll call these EStream objects:
+
+class SequencePlayerStream : public Stream {
+  void step(buffer, tick, is_new_event) {
+    if (is_new_event) current_source_ = getNextSource();
+    if (current_source_ != NULL_STREAM) current_source_->step(buffer, tick, is_new_event);
+  }
+
+  Stream * getNextSource() {
+    Stream *s = input_.first();
+    input_ = input_.next();
+    return s;
+  }
+
+  protected:
+  Stream *current_source_;
+  EStream *input_;
+}
+
+In the code above, there's no way to rewind input_.  Perhaps that's okay,
+and we accept the fact that once you start the machine running, it always
+plays from the start.  We can keep a reference to the original stream_source_
+if needed, like this:
+
+class SequencePlayerStream : public Stream {
+  void step(buffer, tick, is_new_event) {
+    current_source_ = getSource();
+    if (current_source_ != NULL_STREAM) current_source_->step(buffer, tick, is_new_event);
+    if (is_new_event) advanceSource();
+  }
+
+  EStream *getStreamSource( void ) { return stream_source_; }
+  SequencePlayerStream *setStreamSource( EStream *stream_source) {
+    stream_source_ = input_ = stream_source;
+    return this;
+  }
+
+  Stream *getSource() {
+    (input_ == NULL_ESTREAM) ? NULL_STREAM : input_->first();
+  }
+
+  void advanceSource() {
+    if (input_ != NULL_ESTREAM) {
+      EStream *tmp = input_->next();
+      if (input_ != stream_source_) delete input_;
+      input_ = tmp;
+    }
+  }
+  protected:
+  Stream *current_source_;
+  EStream *stream_source_;
+  EStream *input_;
+
+}
+
+So...
+
+SStream (pka Stream) is a sample stream, responds to step().
+
+EStream is an event stream, responds to first() and next().  An
+EStream is immutable, so keeping a reference to a specific stream
+element means you can always get back to that state.  An EStream has
+only one consumer (one entity calling next()), so that consumer may
+call delete on the previous element without worry.
+
+Next steps: 
+
+rename Stream to SStream (or maybe SP for Sample Processor).
+change step(..., player) to step(..., is_new_event)
+create EStream (or maybe ES for Event Stream)
+

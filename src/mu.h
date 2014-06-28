@@ -44,11 +44,11 @@ namespace mu {
   typedef double MuTime;
 
   // resolve circular dependencies
-  class Stream;
+  class SampleProcessor;
   class Player;
 
-  // Type definition for a vector of Stream pointers
-  typedef std::vector<mu::Stream *> StreamVector;
+  // define a type for a general vector of SampleProcessors
+  typedef std::vector<SampleProcessor *> SPVector;
 
   // General purpose clamp: clamp val to lie within min...max (inclusive)
   template <class T> const T& clamp(const T& min, const T& val, const T& max) {

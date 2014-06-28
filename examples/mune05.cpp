@@ -1,6 +1,7 @@
 #include "mu.h"
 // #include "test_buzz.h"
 #include "rt_player.h"
+#include <unistd.h>
 
 int main() {
   printf("The TestBuzz stream object this test depended upon has been deleted.  Enjoy the silence...\n");

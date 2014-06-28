@@ -1,14 +1,13 @@
 /*
  * Create classes to test streaming of audio buffers using primitives
  * in our target API: step(), reset(), seek().  Implements mu:Transport,
- * mu:Stream, mu:IdentityStream.
+ * mu:SP, mu:IdentitySP.
  */
 
 #include "Stk.h"
 #include "RtAudio.h"
 #include "FileRead.h"
-#include "Mutex.h"
-#include <signal.h>
+#include <unistd.h>
 
 namespace mu_test {
 
@@ -63,36 +62,36 @@ namespace mu_test {
 
   // ================================================================
   // ================================================================
-  // IdentityStream
+  // IdentitySP
 
   // .h ================
-  class IdentityStream : public Stream {
+  class IdentitySP : public Stream {
   public:
 
-    IdentityStream();
-    ~IdentityStream( void );
-    IdentityStream& step(stk::StkFrames& buffer, unsigned int frame_count, unsigned int channel_count);
-    IdentityStream& acquireResources();
-    IdentityStream& releaseResources();
-    IdentityStream& seek(MuTime time);
+    IdentitySP();
+    ~IdentitySP( void );
+    IdentitySP& step(stk::StkFrames& buffer, unsigned int frame_count, unsigned int channel_count);
+    IdentitySP& acquireResources();
+    IdentitySP& releaseResources();
+    IdentitySP& seek(MuTime time);
     long int framesRemaining();
 
   protected:
     long int frame_index_;
-  };                            // class IdentityStream
+  };                            // class IdentitySP
   
   // .cpp ================
 
-  IdentityStream::IdentityStream() 
+  IdentitySP::IdentitySP() 
     : frame_index_ (0) {
-    TRACE("IdentityStream::IdentityStream()\n");
+    TRACE("IdentitySP::IdentitySP()\n");
   }
 
-  IdentityStream::~IdentityStream() {
-    TRACE("IdentityStream::~IdentityStream()\n");
+  IdentitySP::~IdentitySP() {
+    TRACE("IdentitySP::~IdentitySP()\n");
   }
 
-  IdentityStream& IdentityStream::step(stk::StkFrames& buffer, 
+  IdentitySP& IdentitySP::step(stk::StkFrames& buffer, 
                            unsigned int frame_count, 
                            unsigned int channel_count) {
     int i = ((frame_index_ * 2) + 1) %  (frame_count * channel_count);
@@ -110,23 +109,23 @@ namespace mu_test {
     return *this;
   }
 
-  long int IdentityStream::framesRemaining() {
-    TRACE("IdentityStream::framesRemaining()\n");
+  long int IdentitySP::framesRemaining() {
+    TRACE("IdentitySP::framesRemaining()\n");
     return INDEFINITE;
   }
 
-  IdentityStream& IdentityStream::acquireResources() {
-    TRACE("IdentityStream::acquireResources()\n");
+  IdentitySP& IdentitySP::acquireResources() {
+    TRACE("IdentitySP::acquireResources()\n");
     return *this;
   }
 
-  IdentityStream& IdentityStream::releaseResources() {
-    TRACE("IdentityStream::releaseResources()\n");
+  IdentitySP& IdentitySP::releaseResources() {
+    TRACE("IdentitySP::releaseResources()\n");
     return *this;
   }
 
-  IdentityStream& IdentityStream::seek(MuTime time) {
-    TRACE("IdentityStream::seek()\n");
+  IdentitySP& IdentitySP::seek(MuTime time) {
+    TRACE("IdentitySP::seek()\n");
     return *this;
   }
 
@@ -221,7 +220,6 @@ namespace mu_test {
     unsigned int frame_size_;
 
     RtAudio dac_;
-    Mutex mutex_;
     Stream *source_;
     bool is_running_;
     StkFrames stk_frames_;
@@ -337,7 +335,7 @@ namespace mu_test {
 
 int main() {
   mu_test::Transport t1;
-  mu_test::IdentityStream tn1;
+  mu_test::IdentitySP tn1;
   t1.source(&tn1);
   t1.start();
   sleep(5);

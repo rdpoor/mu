@@ -27,7 +27,7 @@
 #define MU_RT_PLAYER_H
 
 #include "mu.h"
-#include "stream.h"
+#include "sample_processor.h"
 #include "player.h"
 // #include <mutex.h>
 #include "RtAudio.h"

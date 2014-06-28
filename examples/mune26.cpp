@@ -1,14 +1,14 @@
 /*
- * Test FadeStream with pure sine tones.
+ * Test FadeSP with pure sine tones.
  */
 #include "mu.h"
 
-#include "add_stream.h"
-#include "crop_stream.h"
-#include "delay_stream.h"
-#include "fade_stream.h"
-#include "file_write_stream.h"
-#include "sine_stream.h"
+#include "add_sp.h"
+#include "crop_sp.h"
+#include "delay_sp.h"
+#include "fade_sp.h"
+#include "file_write_sp.h"
+#include "sine_sp.h"
 #include "nrt_player.h"
 #include "rt_player.h"
 #include <map>
@@ -19,17 +19,17 @@
 #define TS (TQ/4)
 #define TT (TQ/8)
 
-mu::Stream *makeNote(mu::Tick start, mu::Tick duration, stk::StkFloat pitch) {
-  mu::SineStream *ss = &(new mu::SineStream())->setPitch(pitch).setAmplitude(0.25);
+mu::SampleProcessor *makeNote(mu::Tick start, mu::Tick duration, stk::StkFloat pitch) {
+  mu::SineSP *ss = &(new mu::SineSP())->setPitch(pitch).setAmplitude(0.25);
 #if 1
-  mu::FadeStream *fs = &(new mu::FadeStream())->
+  mu::FadeSP *fs = &(new mu::FadeSP())->
     setStart(start).
     setEnd(start + duration).
     setFadeTime(TS).
     setSource(ss);
   return fs;
 #else
-  mu::CropStream *cs = &(new mu::CropStream())->
+  mu::CropSP *cs = &(new mu::CropSP())->
     setStart(start).
     setEnd(start+duration).
     setSource(ss);
@@ -42,8 +42,8 @@ int main() {
 #if 0
   mu::RtPlayer player;
   // mu::NrtPlayer player;
-  mu::AddStream as;
-  mu::FileWriteStream fws;
+  mu::AddSP as;
+  mu::FileWriteSP fws;
 
   mu::Tick t;
   t = 0;
@@ -56,10 +56,10 @@ int main() {
   fws.setFileName("mune26.wav").setSource(&as);
   player.setSource(&fws);
 #else
-  mu::FadeStream fs;
-  mu::FileWriteStream fws;
+  mu::FadeSP fs;
+  mu::FileWriteSP fws;
   mu::NrtPlayer player;
-  mu::SineStream ss;
+  mu::SineSP ss;
 
 #define FT (44100/4)
 
@@ -68,7 +68,7 @@ int main() {
   fws.setFileName("mune26.wav").setSource(&fs);
   player.setSource(&fws);
 
-  fprintf(stderr, "fade_stream getStart()=%ld, getEnd()=%ld\n", fs.getStart(), fs.getEnd());
+  fprintf(stderr, "fade_sp getStart()=%ld, getEnd()=%ld\n", fs.getStart(), fs.getEnd());
 #endif
 
   player.start();

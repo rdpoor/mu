@@ -3,6 +3,6 @@
 
 #include "tnvm.h"
 
-mu::Stream *make_click_track_stream();
+mu::SampleProcessor *make_click_track_sp();
 
 #endif

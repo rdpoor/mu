@@ -3,6 +3,6 @@
 
 #include "tnvm.h"
 
-mu::Stream *make_percussion_stream();
+mu::SampleProcessor *make_percussion_sp();
 
 #endif

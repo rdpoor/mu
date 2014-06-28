@@ -2,37 +2,37 @@ MU_ROOT = ../usr
 RELEASE = 0.0.1
 
 SOURCES := \
-	add_stream.cpp \
-	channelizer_stream.cpp \
-	constant_stream.cpp \
-	crop_stream.cpp \
-	delay_stream.cpp \
-	fade_stream.cpp \
-	file_read_stream.cpp \
-	file_write_stream.cpp \
-	identity_stream.cpp \
-	linseg_stream.cpp \
-	loop_stream.cpp \
-	map_stream.cpp \
+	add_sp.cpp \
+	channelizer_sp.cpp \
+	constant_sp.cpp \
+	crop_sp.cpp \
+	delay_sp.cpp \
+	fade_sp.cpp \
+	file_read_sp.cpp \
+	file_write_sp.cpp \
+	identity_sp.cpp \
+	linseg_sp.cpp \
+	loop_sp.cpp \
+	map_sp.cpp \
 	mu.cpp \
-	multi_source_stream.cpp \
-	multiply_stream.cpp \
+	multi_source_sp.cpp \
+	multiply_sp.cpp \
 	nrt_player.cpp \
-	null_stream.cpp \
+	null_sp.cpp \
 	pitch_utilities.cpp \
 	player.cpp \
-	probability_stream.cpp \
-	psi_stream.cpp \
+	probability_sp.cpp \
+	psi_sp.cpp \
 	psi_waveform.cpp \
-	random_select_stream.cpp \
-	resample_stream.cpp \
-	reverb_stream.cpp \
+	random_select_sp.cpp \
+	resample_sp.cpp \
+	reverb_sp.cpp \
 	rt_player.cpp \
-	sequence_stream.cpp \
-	sine_stream.cpp \
-	single_source_stream.cpp \
-	splice_stream.cpp \
-	stream.cpp
+	sample_processor.cpp \
+	sequence_sp.cpp \
+	sine_sp.cpp \
+	single_source_sp.cpp \
+	splice_sp.cpp
 
 OBJECTS := $(patsubst %.cpp,%.o,$(SOURCES))
 HEADERS := $(patsubst %.cpp,%.h,$(SOURCES))

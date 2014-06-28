@@ -1,13 +1,13 @@
 /*
- * Make some fun and varying drum pattern using mu::ProbabilityStream
+ * Make some fun and varying drum pattern using mu::ProbabilitySP
  */
-#include "add_stream.h"
-#include "delay_stream.h"
-#include "file_read_stream.h"
-#include "loop_stream.h"
+#include "add_sp.h"
+#include "delay_sp.h"
+#include "file_read_sp.h"
+#include "loop_sp.h"
 #include "mu.h"
 #include "rt_player.h"
-#include "probability_stream.h"
+#include "probability_sp.h"
 #include <unistd.h>
 
 #define SOUND_DIR "/Users/r/Projects/Musics/TNVM/sources/ThumpsAndScratches/"
@@ -26,22 +26,22 @@ int max(std::vector<int> v) {
  * each loop, assign probabilities that \c file_name will pay on the 
  * i'th sub-beat defined by \c probabilities.
  */
-mu::Stream *make_probabilty_stream(std::string file_name, 
+mu::SampleProcessor *make_probabilty_sp(std::string file_name, 
                                    std::vector<int> probabilities,
                                    int duration_in_beats = 4) {
   
   int p_max = max(probabilities);
   // can we share frs among multiple streams?
-  mu::FileReadStream *frs = &(new mu::FileReadStream())->fileName(file_name).doNormalize(true);
-  mu::AddStream *as = new mu::AddStream();
+  mu::FileReadSP *frs = &(new mu::FileReadSP())->fileName(file_name).doNormalize(true);
+  mu::AddSP *as = new mu::AddSP();
   for (long int i=0; i<probabilities.size(); i++) {
     mu::Tick delay = BEAT_DURATION_TICS * duration_in_beats * i / probabilities.size();
     double probability = (double)probabilities.at(i) / (double)p_max;
-    mu::DelayStream *ds = &(new mu::DelayStream())->setDelay(delay).setSource(frs);
-    mu::ProbabilityStream *ps = &(new mu::ProbabilityStream())->setSource(ds).setProbability(probability);
+    mu::DelaySP *ds = &(new mu::DelaySP())->setDelay(delay).setSource(frs);
+    mu::ProbabilitySP *ps = &(new mu::ProbabilitySP())->setSource(ds).setProbability(probability);
     as->addSource(ps);
   }
-  mu::LoopStream *ls = &(new mu::LoopStream())->
+  mu::LoopSP *ls = &(new mu::LoopSP())->
     setLoopDuration(duration_in_beats * BEAT_DURATION_TICS).
     setSource(as);
   return ls;
@@ -49,7 +49,7 @@ mu::Stream *make_probabilty_stream(std::string file_name,
 
 
 int main() {
-  mu::AddStream add_stream;
+  mu::AddSP add_sp;
   mu::RtPlayer player;
 
   printf("beat duration tics = %d\n", BEAT_DURATION_TICS);
@@ -59,16 +59,16 @@ int main() {
   static const int p2[] = {1, 2, 1, 2, 1, 2, 1, 3};
   static const int p3[] = {3, 1, 2, 3, 1, 2, 3, 0, 3, 1, 2, 1, 1, 2, 3, 1};
 
-  add_stream.addSource(make_probabilty_stream(SOUND_DIR "s15.wav",
+  add_sp.addSource(make_probabilty_sp(SOUND_DIR "s15.wav",
                                               std::vector<int>(p0, p0 + sizeof(p0) / sizeof(int))));
-  add_stream.addSource(make_probabilty_stream(SOUND_DIR "s02.wav",
+  add_sp.addSource(make_probabilty_sp(SOUND_DIR "s02.wav",
                                               std::vector<int>(p1, p1 + sizeof(p1) / sizeof(int))));
-  add_stream.addSource(make_probabilty_stream(SOUND_DIR "s12.wav",
+  add_sp.addSource(make_probabilty_sp(SOUND_DIR "s12.wav",
                                               std::vector<int>(p2, p2 + sizeof(p2) / sizeof(int))));
-  add_stream.addSource(make_probabilty_stream(SOUND_DIR "s11.wav",
+  add_sp.addSource(make_probabilty_sp(SOUND_DIR "s11.wav",
                                               std::vector<int>(p3, p3 + sizeof(p3) / sizeof(int))));
 
-  player.setSource(&add_stream);
+  player.setSource(&add_sp);
 
   player.start();
   fprintf(stderr, "Type [return] to quit:");

@@ -5,37 +5,37 @@
 
 #define PERCUSSION_SOUND_DIR "/Users/r/Projects/Musics/TNVM/sources/ThumpsAndScratches/"
 
-mu::Stream *make_click_track_stream() {
-  mu::FileReadStream *thump_stream = new mu::FileReadStream();
-  thump_stream->fileName(PERCUSSION_SOUND_DIR "s15.wav");
+mu::SampleProcessor *make_click_track_sp() {
+  mu::FileReadSP *thump_sp = new mu::FileReadSP();
+  thump_sp->fileName(PERCUSSION_SOUND_DIR "s15.wav");
 
-  mu::FileReadStream *tic_stream = new mu::FileReadStream();
-  tic_stream->fileName(PERCUSSION_SOUND_DIR "s11.wav");
+  mu::FileReadSP *tic_sp = new mu::FileReadSP();
+  tic_sp->fileName(PERCUSSION_SOUND_DIR "s11.wav");
 
-  mu::ConstantStream *tic_gain = new mu::ConstantStream();
+  mu::ConstantSP *tic_gain = new mu::ConstantSP();
   tic_gain->setValue(0.25);
 
-  mu::MultiplyStream *tic_attenuator = new mu::MultiplyStream();
+  mu::MultiplySP *tic_attenuator = new mu::MultiplySP();
   tic_attenuator->addSource(tic_gain);
-  tic_attenuator->addSource(tic_stream);
+  tic_attenuator->addSource(tic_sp);
 
-  mu::LoopStream *tic_loop = new mu::LoopStream();
+  mu::LoopSP *tic_loop = new mu::LoopSP();
   tic_loop->setSource(tic_attenuator);
   tic_loop->setLoopDuration(BEAT_TO_FRAME(1));
   tic_loop->setStart(0);
   tic_loop->setEnd(BEAT_TO_FRAME(4));
 
-  mu::AddStream *mix_stream = new mu::AddStream();
-  mix_stream->addSource(thump_stream);
-  mix_stream->addSource(tic_loop);
+  mu::AddSP *mix_sp = new mu::AddSP();
+  mix_sp->addSource(thump_sp);
+  mix_sp->addSource(tic_loop);
 
-  mu::LoopStream *loop_stream = new mu::LoopStream();
-  loop_stream->setLoopDuration(MEASURE_TO_FRAME(1));
-  loop_stream->setSource(mix_stream);
-  loop_stream->setStart(MEASURE_TO_FRAME(M_INTRO));
-  loop_stream->setEnd(MEASURE_TO_FRAME(M_END));
+  mu::LoopSP *loop_sp = new mu::LoopSP();
+  loop_sp->setLoopDuration(MEASURE_TO_FRAME(1));
+  loop_sp->setSource(mix_sp);
+  loop_sp->setStart(MEASURE_TO_FRAME(M_INTRO));
+  loop_sp->setEnd(MEASURE_TO_FRAME(M_END));
 
-  return loop_stream;
+  return loop_sp;
 }
 
 
