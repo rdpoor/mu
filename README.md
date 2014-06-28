@@ -4,8 +4,6 @@ An experiment in blurring the lines between music composition and sound synthesi
 
 ## todo 
 
-* rename Stream to SampleProcessor (or briefly SP)
-* change StreamProcessor::step(..., player) to step(..., is_new_event)
 * change stream processors to honor is_new_event
 * create EventStream (or brieflyES) with first() and next() methods.
 * scores/tnvm/percussion.cpp (and mune21) show a technique for
