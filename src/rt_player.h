@@ -62,7 +62,7 @@ namespace mu {
   protected:
     int device_number_;
     RtAudio dac_;
-    // Mutex mutex_;
+    bool is_first_;             // true on first buffer played
     bool is_running_;
     stk::StkFrames stk_frames_;
 

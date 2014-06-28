@@ -35,14 +35,14 @@ namespace mu {
   ProbabilitySP::~ProbabilitySP( void ) { 
   }
 
-  void ProbabilitySP::step(stk::StkFrames& buffer, Tick tick, Player &player) {
+  void ProbabilitySP::step(stk::StkFrames& buffer, Tick tick, bool is_new_event) {
     if ((prev_tick_ == kIndefinite) || (tick <= prev_tick_)) { reset(); }
     prev_tick_ = tick;
     
     if (current_stream_ == NULL ) {
       zeroBuffer(buffer);
     } else {
-      current_stream_->step(buffer, tick, player);
+      current_stream_->step(buffer, tick, is_new_event);
     }
   }
 

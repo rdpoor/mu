@@ -29,7 +29,7 @@ namespace mu {
   NullSP::NullSP( void ) { }
   NullSP::~NullSP( void ) { }
 
-  void NullSP::step(stk::StkFrames& buffer, Tick tick, Player& player) {
+  void NullSP::step(stk::StkFrames& buffer, Tick tick, bool is_new_event) {
     zeroBuffer(buffer);
   }
 

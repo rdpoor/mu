@@ -60,7 +60,7 @@ int main() {
   ASSERT(stream2->getStart() == S2S);
   ASSERT(stream2->getEnd() == S2E);
 
-  stream2->step(buffer, 0, player);
+  stream2->step(buffer, 0, true);
 
   ASSERT(buffer(S2S-1,0) == 0);
   ASSERT(buffer(S2S-1,1) == 0);
@@ -83,7 +83,7 @@ int main() {
   ASSERT(splice_sp.getStart()==mu::kIndefinite);
   ASSERT(splice_sp.getEnd()==mu::kIndefinite);
 
-  splice_sp.step(buffer, 0, player);
+  splice_sp.step(buffer, 0, true);
 
   ASSERT(buffer(0,0) == 0);
   ASSERT(buffer(0,1) == 0);
@@ -98,7 +98,7 @@ int main() {
   ASSERT(splice_sp.getStart()==mu::kIndefinite);
   ASSERT(splice_sp.getEnd()==mu::kIndefinite);
 
-  splice_sp.step(buffer, 0, player);
+  splice_sp.step(buffer, 0, true);
 
   ASSERT(buffer(0,0) == 0);
   ASSERT(buffer(0,1) == 0);
@@ -113,7 +113,7 @@ int main() {
   ASSERT(splice_sp.getStart() == S2S);
   ASSERT(splice_sp.getEnd() == S2E);
 
-  splice_sp.step(buffer, 0, player);
+  splice_sp.step(buffer, 0, true);
 
   ASSERT(buffer(S2S-1,0) == 0);
   ASSERT(buffer(S2S-1,1) == 0);
@@ -137,7 +137,7 @@ int main() {
   ASSERT(splice_sp.getStart() == S3S);
   ASSERT(splice_sp.getEnd() == S3E);
 
-  splice_sp.step(buffer, 0, player);
+  splice_sp.step(buffer, 0, true);
 
   ASSERT(buffer(S3S-1,0) == 0);
   ASSERT(buffer(S3S-1,1) == 0);
@@ -161,7 +161,7 @@ int main() {
   ASSERT(splice_sp.getStart() == S4S);
   ASSERT(splice_sp.getEnd() == S4E);
 
-  splice_sp.step(buffer, 0, player);
+  splice_sp.step(buffer, 0, true);
 
   ASSERT(buffer(S4S-1,0) == 0);
   ASSERT(buffer(S4S-1,1) == 0);
@@ -186,7 +186,7 @@ int main() {
   ASSERT(splice_sp.getStart() == mu::kIndefinite);
   ASSERT(splice_sp.getEnd() == S2E);
 
-  splice_sp.step(buffer, 0, player);
+  splice_sp.step(buffer, 0, true);
   
   ASSERT(buffer(0,0) == 0);     // stream 1 in progress...
   ASSERT(buffer(0,1) == 0);
@@ -214,7 +214,7 @@ int main() {
   ASSERT(splice_sp.getStart() == mu::kIndefinite);
   ASSERT(splice_sp.getEnd() == S3E);
   
-  splice_sp.step(buffer, 0, player);
+  splice_sp.step(buffer, 0, true);
   
   ASSERT(buffer(0,0) == 0);     // stream 1 in progress
   ASSERT(buffer(0,1) == 0);
@@ -242,7 +242,7 @@ int main() {
   ASSERT(splice_sp.getStart() == mu::kIndefinite);
   ASSERT(splice_sp.getEnd() == S4E);
 
-  splice_sp.step(buffer, 0, player);
+  splice_sp.step(buffer, 0, true);
   
   ASSERT(buffer(0,0) == 0);     // stream 1 in progress
   ASSERT(buffer(0,1) == 0);
@@ -270,7 +270,7 @@ int main() {
   ASSERT(splice_sp.getStart() == S2S);
   ASSERT(splice_sp.getEnd() == S3E);
 
-  splice_sp.step(buffer, 0, player);
+  splice_sp.step(buffer, 0, true);
 
   ASSERT(buffer(S2S-1,0) == 0);
   ASSERT(buffer(S2S-1,1) == 0);
@@ -304,7 +304,7 @@ int main() {
   ASSERT(splice_sp.getStart() == S2S);
   ASSERT(splice_sp.getEnd() == S4E);
 
-  splice_sp.step(buffer, 0, player);
+  splice_sp.step(buffer, 0, true);
 
   ASSERT(buffer(S2S+0,0) == 0); // stream 2 starts
   ASSERT(buffer(S2S+0,1) == 0);
@@ -336,7 +336,7 @@ int main() {
   ASSERT(splice_sp.getStart() ==S3S);
   ASSERT(splice_sp.getEnd() == S4E);
 
-  splice_sp.step(buffer, 0, player);
+  splice_sp.step(buffer, 0, true);
 
   ASSERT(buffer(S3S+0,0) == 0); // stream 3 starts
   ASSERT(buffer(S3S+0,1) == 0);

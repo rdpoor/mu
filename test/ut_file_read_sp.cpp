@@ -49,21 +49,21 @@ int main() {
 
   file_read_sp.fileName(TEST_FILE_NAME).doNormalize(true);
 
-  file_read_sp.step(buffer, 0, player);
+  file_read_sp.step(buffer, 0, true);
   ASSERT(near(buffer(0,0), 1.0));
   ASSERT(near(buffer((FRAME_COUNT-1),0), 1.0));
 
-  file_read_sp.step(buffer, -100, player);
+  file_read_sp.step(buffer, -100, true);
   ASSERT(near(buffer(0,0), 1.0));
   ASSERT(near(buffer(100,0), 1.0));
   ASSERT(near(buffer((FRAME_COUNT-1),0), 1.0));
 
-  file_read_sp.step(buffer, 44100-100, player);
+  file_read_sp.step(buffer, 44100-100, true);
   ASSERT(near(buffer(0,0), 1.0));
   ASSERT(buffer(100,0) == 0.0);
   ASSERT(buffer((FRAME_COUNT-1),0) == 0.0);
 
-  file_read_sp.step(buffer, 44100, player);
+  file_read_sp.step(buffer, 44100, true);
   ASSERT(buffer(0,0) == 0.0);
   ASSERT(buffer((FRAME_COUNT-1),0) == 0.0);
 

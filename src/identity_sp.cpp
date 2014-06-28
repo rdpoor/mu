@@ -34,7 +34,7 @@ namespace mu {
     TRACE("IdentitySP::~IdentitySP()\n");
   }
   
-  void IdentitySP::step(stk::StkFrames& buffer, Tick tick, Player &player) {
+  void IdentitySP::step(stk::StkFrames& buffer, Tick tick, bool is_new_event) {
     Tick frame_count = buffer.frames();
     Tick channel_count = buffer.channels();
     

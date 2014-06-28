@@ -63,7 +63,7 @@ namespace mu {
 
   }
 
-  void LinsegSP::step(stk::StkFrames& buffer, Tick tick, Player &player) {
+  void LinsegSP::step(stk::StkFrames& buffer, Tick tick, bool is_new_event) {
     if (breakpoints_.size() == 0) {
       zeroBuffer(buffer);
 

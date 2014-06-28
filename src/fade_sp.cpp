@@ -51,7 +51,7 @@ namespace mu {
     ss << source_->inspect(level+1);
   }
 
-  void FadeSP::step(stk::StkFrames& buffer, Tick tick, Player& player) {
+  void FadeSP::step(stk::StkFrames& buffer, Tick tick, bool is_new_event) {
     if (source_ == NULL) {
       COVERAGE_CHECK("FadeSteam::step() A\n");
       zeroBuffer(buffer);
@@ -160,7 +160,7 @@ namespace mu {
       SEQUENCE_CHECK("B");
       COVERAGE_CHECK("FadeSteam::step() E\n");
       buffer_.resize(dx, buffer.channels());
-      source_->step(buffer_, x0, player);
+      source_->step(buffer_, x0, is_new_event);
 
       // fprintf(stderr,"x0=%ld, x1=%ld, dx=%ld\n", x0, x1, dx);
 
@@ -183,14 +183,14 @@ namespace mu {
       // copy buffer verbatim
       SEQUENCE_CHECK("C");
       COVERAGE_CHECK("FadeSteam::step() F\n");
-      source_->step(buffer, tick, player);
+      source_->step(buffer, tick, is_new_event);
       return;
     } else if (dx > 0) {
       // copy some frames verbatim
       SEQUENCE_CHECK("D");
       COVERAGE_CHECK("FadeSteam::step() G\n");
       buffer_.resize(dx, buffer.channels());
-      source_->step(buffer_, x0, player);
+      source_->step(buffer_, x0, is_new_event);
       copyBuffer(buffer_, 0, buffer, x0-buf_s, dx);
       if (x1 == buf_e) return;
     }
@@ -204,7 +204,7 @@ namespace mu {
       SEQUENCE_CHECK("E");
       COVERAGE_CHECK("FadeSteam::step() H\n");
       buffer_.resize(dx, buffer.channels());
-      source_->step(buffer_, x0, player);
+      source_->step(buffer_, x0, is_new_event);
 
       long int x, i;
       for (i=0, x=x0; i<dx; i++, x++) {

@@ -17,7 +17,7 @@ namespace mu {
     ss << source_->inspect(level+1);
   }
     
-  void ReverbSP::step(stk::StkFrames& buffer, Tick tick, Player &player) {
+  void ReverbSP::step(stk::StkFrames& buffer, Tick tick, bool is_new_event) {
     if (source_ == NULL) {
       zeroBuffer (buffer);
     } else {
@@ -26,7 +26,7 @@ namespace mu {
       int channel_count = buffer.channels();
       buffer_.resize(frame_count, channel_count);
 
-      source_->step(buffer_, tick, player);
+      source_->step(buffer_, tick, is_new_event);
       for (int frame=0; frame<frame_count; frame++) {
         stk::StkFloat x = buffer_(frame, 0); // input from channel 0 only
         reverb_->tick(x);

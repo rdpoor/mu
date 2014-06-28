@@ -29,20 +29,20 @@ int main() {
   ASSERT(loop_sp.getStart() == mu::kIndefinite);
   ASSERT(loop_sp.getEnd() == mu::kIndefinite);
 
-  loop_sp.step(buffer, 0, player);
+  loop_sp.step(buffer, 0, true);
   ASSERT(buffer(0,0) == 0);
 
   loop_sp.setSource(&identity_sp).setLoopDuration(LOOP_DURATION_EQ);
   ASSERT(loop_sp.getStart() == mu::kIndefinite);
   ASSERT(loop_sp.getEnd() == mu::kIndefinite);
 
-  loop_sp.step(buffer, 0, player);
+  loop_sp.step(buffer, 0, true);
   ASSERT(buffer(0,0) == 0);
   ASSERT(buffer(0,1) == 0);
   ASSERT(buffer(FRAME_COUNT-1,0) == FRAME_COUNT-1);
   ASSERT(buffer(FRAME_COUNT-1,1) == FRAME_COUNT-1);
 
-  loop_sp.step(buffer, FRAME_COUNT, player);
+  loop_sp.step(buffer, FRAME_COUNT, true);
   ASSERT(buffer(0,0) == 0);
   ASSERT(buffer(0,1) == 0);
   ASSERT(buffer(FRAME_COUNT-1,0) == FRAME_COUNT-1);
@@ -52,7 +52,7 @@ int main() {
   ASSERT(loop_sp.getStart() == mu::kIndefinite);
   ASSERT(loop_sp.getEnd() == mu::kIndefinite);
 
-  loop_sp.step(buffer, 0, player);
+  loop_sp.step(buffer, 0, true);
   ASSERT(buffer(0,0) == 0);
   ASSERT(buffer(0,1) == 0);
   ASSERT(buffer(LOOP_DURATION_LT-1,0) == LOOP_DURATION_LT-1);
@@ -60,7 +60,7 @@ int main() {
   ASSERT(buffer(LOOP_DURATION_LT,0) == 0);
   ASSERT(buffer(LOOP_DURATION_LT,1) == 0);
 
-  loop_sp.step(buffer, FRAME_COUNT, player);
+  loop_sp.step(buffer, FRAME_COUNT, true);
   ASSERT(buffer(0,0) == FRAME_COUNT-LOOP_DURATION_LT);
   ASSERT(buffer(0,1) == FRAME_COUNT-LOOP_DURATION_LT);
   
@@ -68,13 +68,13 @@ int main() {
   ASSERT(loop_sp.getStart() == mu::kIndefinite);
   ASSERT(loop_sp.getEnd() == mu::kIndefinite);
 
-  loop_sp.step(buffer, 0, player);
+  loop_sp.step(buffer, 0, true);
   ASSERT(buffer(0,0) == 0);
   ASSERT(buffer(0,1) == 0);
   ASSERT(buffer(FRAME_COUNT-1,0) == FRAME_COUNT-1);
   ASSERT(buffer(FRAME_COUNT-1,1) == FRAME_COUNT-1);
 
-  loop_sp.step(buffer, FRAME_COUNT, player);
+  loop_sp.step(buffer, FRAME_COUNT, true);
   ASSERT(buffer(0,0) == FRAME_COUNT);
   ASSERT(buffer(0,1) == FRAME_COUNT);
   ASSERT(buffer(LOOP_DURATION_GT-FRAME_COUNT-1,0) == LOOP_DURATION_GT-1);
@@ -101,39 +101,39 @@ int main() {
   ASSERT(loop_sp.getStart() == mu::kIndefinite);
   ASSERT(loop_sp.getEnd() == mu::kIndefinite);
 
-  loop_sp.step(buffer, 0, player);
+  loop_sp.step(buffer, 0, true);
   ASSERT(buffer(0,0) == 0);
   ASSERT(buffer(FRAME_COUNT-1,0) == FRAME_COUNT-1);
 
-  loop_sp.step(buffer, -FRAME_COUNT, player);
+  loop_sp.step(buffer, -FRAME_COUNT, true);
   ASSERT(buffer(0,0) == 0);
   ASSERT(buffer(FRAME_COUNT-1,0) == FRAME_COUNT-1);
 
-  loop_sp.step(buffer, FRAME_COUNT, player);
+  loop_sp.step(buffer, FRAME_COUNT, true);
   ASSERT(buffer(0,0) == 0);
   ASSERT(buffer(FRAME_COUNT-1,0) == FRAME_COUNT-1);
 
   loop_sp.setSource(&identity_sp).setLoopDuration(FRAME_COUNT).
     setStart(100).setEnd(mu::kIndefinite);
 
-  loop_sp.step(buffer, 0, player);
+  loop_sp.step(buffer, 0, true);
   ASSERT(buffer(0,0) == 0);
   ASSERT(buffer(99,0) == 0);
   ASSERT(buffer(100,0) == 100);
   ASSERT(buffer(FRAME_COUNT-1,0) == FRAME_COUNT-1);
 
-  loop_sp.step(buffer, -FRAME_COUNT, player);
+  loop_sp.step(buffer, -FRAME_COUNT, true);
   ASSERT(buffer(0,0) == 0);
   ASSERT(buffer(FRAME_COUNT-1,0) == 0);
 
-  loop_sp.step(buffer, FRAME_COUNT, player);
+  loop_sp.step(buffer, FRAME_COUNT, true);
   ASSERT(buffer(0,0) == 0);
   ASSERT(buffer(FRAME_COUNT-1,0) == FRAME_COUNT-1);
 
   loop_sp.setSource(&identity_sp).setLoopDuration(FRAME_COUNT).
     setStart(100).setEnd(200);
 
-  loop_sp.step(buffer, 0, player);
+  loop_sp.step(buffer, 0, true);
   ASSERT(buffer(0,0) == 0);
   ASSERT(buffer(99,0) == 0);
   ASSERT(buffer(100,0) == 100);
@@ -141,11 +141,11 @@ int main() {
   ASSERT(buffer(200,0) == 0);
   ASSERT(buffer(FRAME_COUNT-1,0) == 0);
 
-  loop_sp.step(buffer, -FRAME_COUNT, player);
+  loop_sp.step(buffer, -FRAME_COUNT, true);
   ASSERT(buffer(0,0) == 0);
   ASSERT(buffer(FRAME_COUNT-1,0) == 0);
 
-  loop_sp.step(buffer, FRAME_COUNT, player);
+  loop_sp.step(buffer, FRAME_COUNT, true);
   ASSERT(buffer(0,0) == 0);
   ASSERT(buffer(FRAME_COUNT-1,0) == 0);
   

@@ -25,7 +25,7 @@ int main() {
 
   fprintf(stderr,"=== null input\n");
   crop_sp.setSource(NULL);
-  crop_sp.step(buffer, 0, player);
+  crop_sp.step(buffer, 0, true);
 
   ASSERT(buffer(0,0) == 0);
   ASSERT(buffer(0,1) == 0);
@@ -37,7 +37,7 @@ int main() {
 
   fprintf(stderr,"=== default start and end\n");
   crop_sp.setSource(&identity_sp);
-  crop_sp.step(buffer, 0, player);
+  crop_sp.step(buffer, 0, true);
 
   ASSERT(buffer(0,0) == 0);
   ASSERT(buffer(0,1) == 0);
@@ -49,7 +49,7 @@ int main() {
 
   fprintf(stderr,"=== definite start and end\n");
   crop_sp.setSource(&identity_sp).setStart(10).setEnd(90);
-  crop_sp.step(buffer, 0, player);
+  crop_sp.step(buffer, 0, true);
 
   ASSERT(buffer(9,0) == 0);
   ASSERT(buffer(9,1) == 0);
@@ -67,7 +67,7 @@ int main() {
 
   fprintf(stderr,"=== indefinite start, definite end\n");
   crop_sp.setSource(&identity_sp).setStart(mu::kIndefinite).setEnd(90);
-  crop_sp.step(buffer, 0, player);
+  crop_sp.step(buffer, 0, true);
 
   ASSERT(buffer(0,0) == 0);
   ASSERT(buffer(0,1) == 0);
@@ -87,7 +87,7 @@ int main() {
 
   fprintf(stderr,"=== definite start, indefinite end\n");
   crop_sp.setSource(&identity_sp).setStart(10).setEnd(mu::kIndefinite);
-  crop_sp.step(buffer, 0, player);
+  crop_sp.step(buffer, 0, true);
 
   ASSERT(buffer(0,0) == 0);
   ASSERT(buffer(0,1) == 0);
@@ -107,7 +107,7 @@ int main() {
 
   fprintf(stderr,"=== indefinite start, indefinite end\n");
   crop_sp.setSource(&identity_sp).setStart(mu::kIndefinite).setEnd(mu::kIndefinite);
-  crop_sp.step(buffer, 0, player);
+  crop_sp.step(buffer, 0, true);
 
   ASSERT(buffer(0,0) == 0);
   ASSERT(buffer(0,1) == 0);

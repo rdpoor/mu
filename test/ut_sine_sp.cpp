@@ -24,7 +24,7 @@ int main() {
   sine_sp.setPhase(0.0);
   sine_sp.setAmplitude(1.0);
 
-  sine_sp.step(buffer, 0, player);
+  sine_sp.step(buffer, 0, true);
 
   for (long int i=0; i<buffer.frames(); i++) {
     double t = (double)i / buffer.dataRate();

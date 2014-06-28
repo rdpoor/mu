@@ -59,7 +59,9 @@ namespace mu {
     stk_frames_.resize(frame_count, channel_count_);
 
     // ask the source to generate samples
-    source_->step(stk_frames_, tick_, *this);
+    source_->step(stk_frames_, tick_, is_first_);
+
+    is_first_ = false;
 
     // update tick counter
     tick_ += frame_count;
@@ -100,6 +102,7 @@ namespace mu {
       }
       dac_parameters.nChannels = channel_count_;
 
+      is_first_ = true;
       dac_.openStream( &dac_parameters,
                        NULL,
                        ((sizeof(stk::StkFloat) == 8) ? RTAUDIO_FLOAT64 : RTAUDIO_FLOAT32),

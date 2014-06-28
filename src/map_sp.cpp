@@ -33,16 +33,16 @@ namespace mu {
   MapSP::~MapSP() {
   }
 
-  void MapSP::step(stk::StkFrames& buffer, Tick tick, Player& player) {
+  void MapSP::step(stk::StkFrames& buffer, Tick tick, bool is_new_event) {
     // fill buffer if there's a source
     if (source_ != NULL) {
-      source_->step(buffer, tick, player);
+      source_->step(buffer, tick, is_new_event);
     }
 
     // call callback on each frame to create or analyze frame data
     if (callback_ != NULL) {
       for (Tick i=0; i<buffer.frames(); i++) { 
-        callback_(buffer, tick+i, player, i); 
+        callback_(buffer, tick+i, is_new_event, i); 
       }
     }
   }

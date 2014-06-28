@@ -43,12 +43,12 @@ namespace mu {
   }
 
 
-  void FileWriteSP::step(stk::StkFrames& buffer, Tick tick, Player& player) {
+  void FileWriteSP::step(stk::StkFrames& buffer, Tick tick, bool is_new_event) {
     
     if (source_ == NULL) {
       zeroBuffer(buffer);
     } else {
-      source_->step(buffer, tick, player);
+      source_->step(buffer, tick, is_new_event);
     }
 
     Tick buf_s = tick;

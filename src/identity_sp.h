@@ -42,7 +42,7 @@ namespace mu {
     ~IdentitySP( void );
 
     std::string getClassName() { return "IdentitySP"; }
-    void step(stk::StkFrames& buffer, Tick tick, Player& player);
+    void step(stk::StkFrames& buffer, Tick tick, bool is_new_event);
 
   };                            // class IdentitySP
 

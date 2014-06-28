@@ -39,7 +39,7 @@ namespace mu {
     inspectIndent(ss, level); ss << "getFileName() = " << getFileName() << std::endl;
   }
 
-  void FileReadSP::step(stk::StkFrames& buffer, Tick tick, Player& player) {
+  void FileReadSP::step(stk::StkFrames& buffer, Tick tick, bool is_new_event) {
     if (!file_read_.isOpen()) {
       file_read_.open(file_name_);
     }

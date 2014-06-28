@@ -22,8 +22,8 @@ public:
   
   ArpeggiateSP() : arpeggio_delay_ (kDefaultArpeggioDelay) { }
   ~ArpeggiateSP( void ) { }
-  void step(stk::StkFrames& buffer, mu::Tick tick, mu::Player &player) {
-    add_sp_.step(buffer, tick, player);
+  void step(stk::StkFrames& buffer, mu::Tick tick, bool is_new_event) {
+    add_sp_.step(buffer, tick, true);
   }
   mu::Tick getStart(){ return add_sp_.getStart(); }
   mu::Tick getEnd(){ return add_sp_.getEnd(); }

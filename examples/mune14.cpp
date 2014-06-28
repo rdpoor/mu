@@ -20,7 +20,7 @@ public:
   
   ResetSP() : prev_tick_ (mu::kIndefinite) { }
   ~ResetSP( void ) { }
-  void step(stk::StkFrames& buffer, mu::Tick tick, mu::Player &player) {
+  void step(stk::StkFrames& buffer, mu::Tick tick, bool is_new_event) {
     if (sources_.size() == 0) {
       fprintf(stderr,"A");
       zeroBuffer(buffer);
@@ -28,7 +28,7 @@ public:
       fprintf(stderr,"B");
       if (tick < prev_tick_) { reset(); }
       prev_tick_ = tick;
-      current_sp_->step(buffer, tick, player);
+      current_sp_->step(buffer, tick, true);
     }
   }
   mu::Tick getStart(){ return current_sp_->getStart(); }

@@ -46,7 +46,7 @@ namespace mu {
     std::string getClassName() { return "ChannelizerSP"; }
     virtual void inspectAux(std::stringstream& ss, int level);
 
-    void step(stk::StkFrames& buffer, Tick tick, Player &player);
+    void step(stk::StkFrames& buffer, Tick tick, bool is_new_event);
 
     unsigned int getSourceChannelCount() const { return source_channel_count_; }
     ChannelizerSP& setSourceChannelCount(Tick source_channel_count) { 

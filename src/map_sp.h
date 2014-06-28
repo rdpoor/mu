@@ -43,9 +43,9 @@
 namespace mu {
 
   typedef void (*MapSPCallback)( stk::StkFrames& buffer, 
-                                     Tick tick, 
-                                     Player& player,
-                                     Tick frame_index );
+                                 Tick tick, 
+                                 bool is_new_event,
+                                 Tick frame_index );
   
   class MapSP : public SingleSourceSP<MapSP> {
   public:
@@ -57,7 +57,7 @@ namespace mu {
 
     std::string getClassName() { return "MapSP"; }
 
-    void step(stk::StkFrames& buffer, Tick tick, Player &player);
+    void step(stk::StkFrames& buffer, Tick tick, bool is_new_event);
 
     MapSPCallback getCallback() const { return callback_; }
     MapSP& setCallback(MapSPCallback callback) { callback_ = callback; return *this; }

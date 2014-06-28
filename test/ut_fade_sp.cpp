@@ -31,7 +31,7 @@ int main() {
   fade_sp.setSource(NULL);
   fade_sp.setStart(mu::kIndefinite).setEnd(mu::kIndefinite);
 
-  fade_sp.step(buffer, 0, player);
+  fade_sp.step(buffer, 0, true);
 
   ASSERT(buffer(0,0) == 0);
   ASSERT(buffer(0,1) == 0);
@@ -48,7 +48,7 @@ int main() {
   fade_sp.setSource(&constant_sp);
   fade_sp.setStart(mu::kIndefinite).setEnd(mu::kIndefinite);
 
-  fade_sp.step(buffer, 0, player);
+  fade_sp.step(buffer, 0, true);
 
   ASSERT(buffer(0,0) == 1.0);
   ASSERT(buffer(0,1) == 1.0);
@@ -63,7 +63,7 @@ int main() {
   fade_sp.setSource(&constant_sp);
   fade_sp.setStart(100).setEnd(200).setFadeTime(10);
 
-  fade_sp.step(buffer, 0, player);
+  fade_sp.step(buffer, 0, true);
 
   ASSERT(near(buffer(95,0), 0.0));
   ASSERT(near(buffer(95,1), 0.0));
@@ -122,7 +122,7 @@ int main() {
   fade_sp.setSource(&constant_sp);
   fade_sp.setStart(100).setEnd(mu::kIndefinite).setFadeTime(10);
 
-  fade_sp.step(buffer, 0, player);
+  fade_sp.step(buffer, 0, true);
 
   ASSERT(near(buffer(95,0), 0.0));
   ASSERT(near(buffer(95,1), 0.0));
@@ -181,7 +181,7 @@ int main() {
   fade_sp.setSource(&constant_sp);
   fade_sp.setStart(mu::kIndefinite).setEnd(200).setFadeTime(10);
 
-  fade_sp.step(buffer, 0, player);
+  fade_sp.step(buffer, 0, true);
 
   ASSERT(near(buffer(95,0), 1.0));
   ASSERT(near(buffer(95,1), 1.0));
@@ -242,7 +242,7 @@ int main() {
   fade_sp.setSource(&crop_sp);
   fade_sp.setStart(mu::kIndefinite).setEnd(mu::kIndefinite).setFadeTime(10);
 
-  fade_sp.step(buffer, 0, player);
+  fade_sp.step(buffer, 0, true);
 
   ASSERT(near(buffer(95,0), 0.0));
   ASSERT(near(buffer(95,1), 0.0));
@@ -311,7 +311,7 @@ int main() {
   fade_sp.setSource(&crop_sp);
   fade_sp.setStart(100).setEnd(200).setFadeTime(10);
 
-  fade_sp.step(buffer, 0, player);
+  fade_sp.step(buffer, 0, true);
 
   ASSERT(near(buffer(95,0), 0.0));
   ASSERT(near(buffer(95,1), 0.0));
@@ -386,7 +386,7 @@ int main() {
   fade_sp.setSource(&crop_sp);
   fade_sp.setStart(105).setEnd(195).setFadeTime(10);
 
-  fade_sp.step(buffer, 0, player);
+  fade_sp.step(buffer, 0, true);
 
   ASSERT(near(buffer(95,0), 0.0));
   ASSERT(near(buffer(95,1), 0.0));
@@ -461,7 +461,7 @@ int main() {
   fade_sp.setSource(&crop_sp);
   fade_sp.setStart(110).setEnd(190).setFadeTime(10);
 
-  fade_sp.step(buffer, 0, player);
+  fade_sp.step(buffer, 0, true);
 
   ASSERT(near(buffer(95,0), 0.0));
   ASSERT(near(buffer(95,1), 0.0));
@@ -552,7 +552,7 @@ int main() {
   fade_sp.setSource(&crop_sp);
   fade_sp.setStart(150).setEnd(150).setFadeTime(10);
 
-  fade_sp.step(buffer, 0, player);
+  fade_sp.step(buffer, 0, true);
 
   ASSERT(near(buffer(140,0), 0.0));
   ASSERT(near(buffer(140,1), 0.0));
@@ -600,7 +600,7 @@ int main() {
 
   fprintf(stderr, "=== Coverage A\n");
   fade_sp.setSource(NULL).setStart(mu::kIndefinite).setEnd(mu::kIndefinite).setFadeTime(100);
-  fade_sp.step(buffer, 0, player);
+  fade_sp.step(buffer, 0, true);
 
   ASSERT(near(buffer(0,0), 0.0));
   ASSERT(near(buffer(0,1), 0.0));
@@ -610,7 +610,7 @@ int main() {
   fprintf(stderr, "=== Coverage B\n");
   // intentionally set end before start
   fade_sp.setSource(&constant_sp).setStart(200).setEnd(100).setFadeTime(100);
-  fade_sp.step(buffer, 0, player);
+  fade_sp.step(buffer, 0, true);
 
   ASSERT(near(buffer(0,0), 0.0));
   ASSERT(near(buffer(0,1), 0.0));
@@ -625,7 +625,7 @@ int main() {
 
   fprintf(stderr, "=== Coverage C\n");
   fade_sp.setSource(&constant_sp).setStart(150).setEnd(150).setFadeTime(10);
-  fade_sp.step(buffer, 0, player);
+  fade_sp.step(buffer, 0, true);
 
   ASSERT(near(buffer(0,0), 0.0));
   ASSERT(near(buffer(0,1), 0.0));
@@ -640,7 +640,7 @@ int main() {
 
   fprintf(stderr, "=== Coverage D, E, G, H\n");
   fade_sp.setSource(&constant_sp).setStart(120).setEnd(180).setFadeTime(10);
-  fade_sp.step(buffer, 0, player);
+  fade_sp.step(buffer, 0, true);
 
   ASSERT(near(buffer(0,0), 0.0));
   ASSERT(near(buffer(0,1), 0.0));
@@ -655,7 +655,7 @@ int main() {
 
   fprintf(stderr, "=== Coverage F\n");
   fade_sp.setSource(&constant_sp).setStart(0).setEnd(2000).setFadeTime(10);
-  fade_sp.step(buffer, 512, player);
+  fade_sp.step(buffer, 512, true);
 
   ASSERT(near(buffer(0,0), 1.0));
   ASSERT(near(buffer(0,1), 1.0));
@@ -664,7 +664,7 @@ int main() {
 
   fprintf(stderr, "=== Coverage I\n");
   fade_sp.setSource(&constant_sp).setStart(0).setEnd(512).setFadeTime(10);
-  fade_sp.step(buffer, 517, player);
+  fade_sp.step(buffer, 517, true);
 
   ASSERT(near(buffer(0,0), 0.0));
   ASSERT(near(buffer(0,1), 0.0));

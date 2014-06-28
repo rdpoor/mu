@@ -92,7 +92,7 @@ namespace mu {
     std::string getClassName() { return "PsiSP"; }
     virtual void inspectAux(std::stringstream& ss, int level);
 
-    void step(stk::StkFrames& buffer, Tick tick, Player &player);
+    void step(stk::StkFrames& buffer, Tick tick, bool is_new_event);
 
     // assumes that setPsiFileName() has been called...
     Tick getFrameCount() { return psi_waveform_->getFrameCount(); }

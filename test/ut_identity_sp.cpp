@@ -21,7 +21,7 @@ int main() {
   buffer.setDataRate(FRAME_RATE);
   buffer.resize(FRAME_COUNT, CHANNEL_COUNT);
 
-  identity_sp.step(buffer, 0, player);
+  identity_sp.step(buffer, 0, true);
 
   ASSERT(buffer(0,0) == 0);
   ASSERT(buffer(0,1) == 0);
@@ -31,14 +31,14 @@ int main() {
   ASSERT(identity_sp.getStart() == mu::kIndefinite);
   ASSERT(identity_sp.getEnd() == mu::kIndefinite);
 
-  identity_sp.step(buffer, OFFSET_P, player);
+  identity_sp.step(buffer, OFFSET_P, true);
 
   ASSERT(buffer(0,0) == OFFSET_P);
   ASSERT(buffer(0,1) == OFFSET_P);
   ASSERT(buffer((FRAME_COUNT-1),0) == (FRAME_COUNT-1)+OFFSET_P);
   ASSERT(buffer((FRAME_COUNT-1),1) == (FRAME_COUNT-1)+OFFSET_P);
 
-  identity_sp.step(buffer, OFFSET_N, player);
+  identity_sp.step(buffer, OFFSET_N, true);
 
   ASSERT(buffer(0,0) == OFFSET_N);
   ASSERT(buffer(0,1) == OFFSET_N);

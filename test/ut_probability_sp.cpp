@@ -27,14 +27,14 @@ int main() {
   ASSERT(probability_sp.getStart() == mu::kIndefinite);
   ASSERT(probability_sp.getEnd() == mu::kIndefinite);
 
-  probability_sp.step(buffer, 0, player);
+  probability_sp.step(buffer, 0, true);
   ASSERT(buffer(0,0) == 0);
 
   probability_sp.setSource(&identity_sp).setProbability(0.0);
   ASSERT(probability_sp.getStart() == mu::kIndefinite);
   ASSERT(probability_sp.getEnd() == mu::kIndefinite);
 
-  probability_sp.step(buffer, 0, player);
+  probability_sp.step(buffer, 0, true);
   ASSERT(buffer(0,0) == 0);
   ASSERT(buffer(0,1) == 0);
   ASSERT(buffer(FRAME_COUNT-1,0) == 0);
@@ -44,7 +44,7 @@ int main() {
   ASSERT(probability_sp.getStart() == mu::kIndefinite);
   ASSERT(probability_sp.getEnd() == mu::kIndefinite);
 
-  probability_sp.step(buffer, 0, player);
+  probability_sp.step(buffer, 0, true);
   ASSERT(buffer(0,0) == 0);
   ASSERT(buffer(0,1) == 0);
   ASSERT(buffer(FRAME_COUNT-1,0) == FRAME_COUNT-1);
@@ -54,7 +54,7 @@ int main() {
 #define N_TESTS 10000
   int c = 0;
   for (int i=0; i<N_TESTS; i++) {
-    probability_sp.step(buffer, 0, player);
+    probability_sp.step(buffer, 0, true);
     if (buffer(1,0) != 0) c++;
   }
   ASSERT((c > N_TESTS*0.1*0.95) && (c < N_TESTS*0.1*1.05));
@@ -63,7 +63,7 @@ int main() {
 #define N_TESTS 10000
   c = 0;
   for (int i=0; i<N_TESTS; i++) {
-    probability_sp.step(buffer, 0, player);
+    probability_sp.step(buffer, 0, true);
     if (buffer(1,0) != 0) c++;
   }
   ASSERT((c > N_TESTS*0.9*0.95) && (c < N_TESTS*0.9*1.05));
@@ -76,7 +76,7 @@ int main() {
   probability_sp.setSource(&crop_sp).setProbability(1.0);
   ASSERT(probability_sp.getStart() == mu::kIndefinite);
   ASSERT(probability_sp.getEnd() == mu::kIndefinite);
-  probability_sp.step(buffer, 0, player);
+  probability_sp.step(buffer, 0, true);
   ASSERT(probability_sp.getStart() == mu::kIndefinite);
   ASSERT(probability_sp.getEnd() == mu::kIndefinite);
 

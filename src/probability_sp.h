@@ -43,7 +43,7 @@ namespace mu {
 
     std::string getClassName() { return "ProbabilitySP"; }
   
-    void step(stk::StkFrames& buffer, Tick tick, Player &player);
+    void step(stk::StkFrames& buffer, Tick tick, bool is_new_event);
 
     Tick getStart();
     Tick getEnd();

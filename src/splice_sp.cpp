@@ -68,7 +68,7 @@ namespace mu {
   // infinite stream superceded by a short stream > 512 frames later
   // short stream, blank space > 512 frames, another short stream
   //
-  void SpliceSP::step(stk::StkFrames& buffer, Tick tick, Player &player) {
+  void SpliceSP::step(stk::StkFrames& buffer, Tick tick, bool is_new_event) {
     // reset if needed
     if ((prev_tick_ == kIndefinite) || (tick <= prev_tick_)) { 
       setupCursor(tick, tick + buffer.frames()); 
@@ -103,11 +103,11 @@ namespace mu {
 
       if (frames_to_write == buffer.frames()) {
         // current stream spans entire buffer -- copy directly
-        s->step(buffer, tick, player);
+        s->step(buffer, tick, is_new_event);
       } else if (frames_to_write > 0) {
         // fill a transfer buffer and copy sub-segment
         buffer_.resize(frames_to_write, buffer.channels());
-        s->step(buffer_, tmp_start, player);
+        s->step(buffer_, tmp_start, is_new_event);
         copyBuffer(buffer_, 0, buffer, tmp_start-tick, frames_to_write);
       }
       dst_start += frames_to_write;

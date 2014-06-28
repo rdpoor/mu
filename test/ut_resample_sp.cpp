@@ -27,7 +27,7 @@ int main() {
   fprintf(stderr,"=== null inputs\n");
   resample_sp.setSampleSource(NULL);
   resample_sp.setTimingSource(NULL);
-  resample_sp.step(buffer, 0, player);
+  resample_sp.step(buffer, 0, true);
 
   ASSERT(buffer(0,0) == 0);
   ASSERT(buffer(0,1) == 0);
@@ -40,7 +40,7 @@ int main() {
   fprintf(stderr,"=== null sample input\n");
   resample_sp.setSampleSource(NULL);
   resample_sp.setTimingSource(&linseg_sp);
-  resample_sp.step(buffer, 0, player);
+  resample_sp.step(buffer, 0, true);
 
   ASSERT(buffer(0,0) == 0);
   ASSERT(buffer(0,1) == 0);
@@ -53,7 +53,7 @@ int main() {
   fprintf(stderr,"=== null timing input\n");
   resample_sp.setSampleSource(&identity_sp);
   resample_sp.setTimingSource(NULL);
-  resample_sp.step(buffer, 0, player);
+  resample_sp.step(buffer, 0, true);
 
   ASSERT(buffer(0,0) == 0);
   ASSERT(buffer(0,1) == 0);
@@ -67,7 +67,7 @@ int main() {
   
   resample_sp.setSampleSource(&identity_sp);
   resample_sp.setTimingSource(&identity_sp);
-  resample_sp.step(buffer, 0, player);
+  resample_sp.step(buffer, 0, true);
 
   ASSERT(buffer(0,0) == 0.0);
   ASSERT(buffer(0,1) == 0.0);
@@ -87,7 +87,7 @@ int main() {
 
   resample_sp.setSampleSource(&identity_sp);
   resample_sp.setTimingSource(&linseg_sp);
-  resample_sp.step(buffer, 0, player);
+  resample_sp.step(buffer, 0, true);
 
   ASSERT(buffer(0,0) == 0.0);
   ASSERT(buffer(0,1) == 0.0);
@@ -108,7 +108,7 @@ int main() {
 
   resample_sp.setSampleSource(&identity_sp);
   resample_sp.setTimingSource(&linseg_sp);
-  resample_sp.step(buffer, 0, player);
+  resample_sp.step(buffer, 0, true);
 
   ASSERT(buffer(0,0) == 0.0);
   ASSERT(buffer(0,1) == 0.0);
@@ -126,14 +126,14 @@ int main() {
   linseg_sp.addBreakpoint(0, 511.0);
   linseg_sp.addBreakpoint(511, 0.0);
 
-//   linseg_sp.step(buffer, 0, player);
+//   linseg_sp.step(buffer, 0, true);
 //   for (int i=0; i<buffer.frames(); i++) {
 //     fprintf(stderr,"linseg[%i] = %f\n", i, buffer(i,0));
 //   }
 
   resample_sp.setSampleSource(&identity_sp);
   resample_sp.setTimingSource(&linseg_sp);
-  resample_sp.step(buffer, 0, player);
+  resample_sp.step(buffer, 0, true);
 
   ASSERT(buffer(0,0) == (buffer.frames() - 1));
   ASSERT(buffer(0,1) == (buffer.frames() - 1));

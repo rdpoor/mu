@@ -20,14 +20,14 @@ int main() {
   buffer.resize(FRAME_COUNT, CHANNEL_COUNT);
 
   constant_sp.setValue(42.0); // scott addams
-  constant_sp.step(buffer, 0, player);
+  constant_sp.step(buffer, 0, true);
   
   ASSERT(buffer(0,0) == 42.0);
   ASSERT(buffer(0,1) == 42.0);
   ASSERT(buffer((FRAME_COUNT-1),0) == 42.0);
   ASSERT(buffer((FRAME_COUNT-1),1) == 42.0);
 
-  constant_sp.step(buffer, 12345678, player);
+  constant_sp.step(buffer, 12345678, true);
 
   ASSERT(buffer(0,0) == 42.0);
   ASSERT(buffer(0,1) == 42.0);

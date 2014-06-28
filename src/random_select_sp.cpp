@@ -34,13 +34,13 @@ namespace mu {
   RandomSelectSP::~RandomSelectSP() { 
   }
 
-  void RandomSelectSP::step(stk::StkFrames& buffer, Tick tick, Player &player) {
+  void RandomSelectSP::step(stk::StkFrames& buffer, Tick tick, bool is_new_event) {
     if (sources_.size() == 0) {
       zeroBuffer(buffer);
     } else {
       if ((tick < prev_tick_) || (current_stream_ == NULL)) { reset(); }
       prev_tick_ = tick;
-      current_stream_->step(buffer, tick, player);
+      current_stream_->step(buffer, tick, is_new_event);
     }
   }
 

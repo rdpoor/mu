@@ -42,7 +42,7 @@ namespace mu {
     inspectIndent(ss, level); ss << "getPhase() = " << getPhase() << std::endl;
   }
     
-  void SineSP::step(stk::StkFrames& buffer, Tick tick, Player &player) {
+  void SineSP::step(stk::StkFrames& buffer, Tick tick, bool is_new_event) {
 
     // fprintf(stderr,"SineSP::step(tick=%ld)\n",tick);
 

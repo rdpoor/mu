@@ -43,7 +43,7 @@ namespace mu {
     ss << source_->inspect(level+1);
   }
 
-  void CropSP::step(stk::StkFrames& buffer, Tick tick, Player& player) {
+  void CropSP::step(stk::StkFrames& buffer, Tick tick, bool is_new_event) {
 
     // fprintf(stderr,"CropSP::step(tick=%ld)\n",tick);
 
@@ -63,7 +63,7 @@ namespace mu {
 
       } else if ((source_start == buffer_start) && (source_end == buffer_end)) {
         // no cropping required: let source write buffer directly
-        source_->step(buffer, tick, player);
+        source_->step(buffer, tick, is_new_event);
 
       } else {
         // gotta work harder...
@@ -79,7 +79,7 @@ namespace mu {
         buffer_.resize(buffer.frames(), buffer.channels());
         buffer_.resize(frame_count, buffer.channels());
 #endif
-        source_->step(buffer_, source_start, player);
+        source_->step(buffer_, source_start, is_new_event);
 
         // copy buffer_[0] into buffer[frame_offset] for frame_count
         // frames.  To make sure unwritten parts of the buffer are

@@ -26,7 +26,7 @@ int main() {
   buffer.resize(FRAME_COUNT, CHANNEL_COUNT);
 
   delay_sp.setSource(NULL).setDelay(DELAY_P_100);
-  delay_sp.step(buffer, 0, player);
+  delay_sp.step(buffer, 0, true);
 
   ASSERT(buffer(0,0) == 0);
 
@@ -34,7 +34,7 @@ int main() {
   ASSERT(delay_sp.getEnd() == mu::kIndefinite);
 
   delay_sp.setSource(&identity_sp).setDelay(DELAY_P_100);
-  delay_sp.step(buffer, 0, player);
+  delay_sp.step(buffer, 0, true);
 
   ASSERT(buffer(0,0) == -DELAY_P_100);
   ASSERT(buffer(0,1) == -DELAY_P_100);
@@ -45,7 +45,7 @@ int main() {
   ASSERT(delay_sp.getEnd() == mu::kIndefinite);
 
   delay_sp.setSource(&identity_sp).setDelay(DELAY_P_100);
-  delay_sp.step(buffer, DELAY_P_100, player);
+  delay_sp.step(buffer, DELAY_P_100, true);
 
   ASSERT(buffer(0,0) == 0);
   ASSERT(buffer(0,1) == 0);
@@ -53,7 +53,7 @@ int main() {
   ASSERT(buffer(511,1) == 511);
 
   delay_sp.setSource(&identity_sp).setDelay(DELAY_M_100);
-  delay_sp.step(buffer, 0, player);
+  delay_sp.step(buffer, 0, true);
 
   ASSERT(buffer(0,0) == -DELAY_M_100);
   ASSERT(buffer(0,1) == -DELAY_M_100);
@@ -61,7 +61,7 @@ int main() {
   ASSERT(buffer(511,1) == (511-DELAY_M_100));
 
   delay_sp.setSource(&identity_sp).setDelay(DELAY_M_100);
-  delay_sp.step(buffer, DELAY_M_100, player);
+  delay_sp.step(buffer, DELAY_M_100, true);
 
   ASSERT(buffer(0,0) == 0);
   ASSERT(buffer(0,1) == 0);

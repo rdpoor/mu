@@ -36,7 +36,7 @@ namespace mu {
   class SampleProcessor {
   public:
 
-    virtual void step(stk::StkFrames& buffer, Tick tick, Player &player) = 0;
+    virtual void step(stk::StkFrames& buffer, Tick tick, bool is_new_event) = 0;
     
     // define the extent of this stream: when it starts and ends
     virtual Tick getStart( void ) { return kIndefinite; }

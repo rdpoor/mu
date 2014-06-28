@@ -47,7 +47,7 @@ namespace mu {
     std::string getClassName() { return "SineSP"; }
     virtual void inspectAux(std::stringstream& ss, int level);
 
-    void step(stk::StkFrames& buffer, Tick tick, Player& player);
+    void step(stk::StkFrames& buffer, Tick tick, bool is_new_event);
 
     stk::StkFloat getAmplitude() const { return amplitude_; }
     SineSP& setAmplitude(stk::StkFloat amplitude) { amplitude_ = amplitude; return *this; }

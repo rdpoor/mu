@@ -36,7 +36,7 @@ public:
     pit_shift_ = NULL;
   }
 
-  void step(stk::StkFrames& buffer, mu::Tick tick, mu::Player &player) {
+  void step(stk::StkFrames& buffer, mu::Tick tick, bool is_new_event) {
     if (source_ == NULL) {
       zeroBuffer (buffer);
     } else {
@@ -45,7 +45,7 @@ public:
       int channel_count = buffer.channels();
       buffer_.resize(frame_count, channel_count);
 
-      source_->step(buffer_, tick, player);
+      source_->step(buffer_, tick, true);
       for (int frame=0; frame<frame_count; frame++) {
         stk::StkFloat x = buffer_(frame, 0);
         stk::StkFloat y = pit_shift_->tick(x);

@@ -43,7 +43,7 @@ namespace mu {
     ss << source_->inspect(level+1);
   }
 
-  void LoopSP::step(stk::StkFrames& buffer, Tick tick, Player& player) {
+  void LoopSP::step(stk::StkFrames& buffer, Tick tick, bool is_new_event) {
     // fprintf(stderr,"LoopSP::%p.step(%p, %ld, %p)\n", this, &buffer, tick, &player);
     if (source_ == NULL) { 
       zeroBuffer(buffer);
@@ -72,14 +72,14 @@ namespace mu {
       // (current_tick % loop_duration_) is the time associated with buffer_[0]
       if (frames_to_copy == buffer.frames()) {
         // optimize a common case: no copy needed
-        source_->step(buffer, (current_tick % loop_duration_), player);
+        source_->step(buffer, (current_tick % loop_duration_), is_new_event);
         // fprintf(stderr,"c1");
 
       } else {
         // resize buffer_ to receive frames_to_copy frames from source
         buffer_.resize(frames_to_copy, buffer.channels());
         // fill with source data
-        source_->step(buffer_, (current_tick % loop_duration_), player);
+        source_->step(buffer_, (current_tick % loop_duration_), is_new_event);
         // copy from buffer_[0] into buffer[frames_copied] for frames_to_copy frames
         copyBuffer(buffer_, 0, buffer, frames_copied + (start_tick - tick), frames_to_copy);
 

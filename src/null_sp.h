@@ -42,7 +42,7 @@ namespace mu {
 
     std::string getClassName() { return "NullSP"; }
 
-    void step(stk::StkFrames& buffer, Tick tick, Player& player);
+    void step(stk::StkFrames& buffer, Tick tick, bool is_new_event);
     
   protected:
   };                            // class NullSP

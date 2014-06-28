@@ -50,7 +50,7 @@ namespace mu {
     ss << omega_source_->inspect(level+1);
   }
 
-  void PsiSP::step(stk::StkFrames& buffer, Tick tick, Player& player) {
+  void PsiSP::step(stk::StkFrames& buffer, Tick tick, bool is_new_event) {
     zeroBuffer(buffer);
     if ((tau_source_ == NULL) || 
         (omega_source_ == NULL)) {
@@ -58,9 +58,9 @@ namespace mu {
     }
 
     tau_buffer_.resize(buffer.frames(), 1);
-    tau_source_->step(tau_buffer_, tick, player);
+    tau_source_->step(tau_buffer_, tick, is_new_event);
     omega_buffer_.resize(buffer.frames(), 1);
-    omega_source_->step(omega_buffer_, tick, player);
+    omega_source_->step(omega_buffer_, tick, is_new_event);
 
     if (tick != expected_tick_) {
       // time has skipped

@@ -41,7 +41,7 @@ namespace mu {
     std::string getClassName() { return "ReverbSP"; }
     virtual void inspectAux(std::stringstream& ss, int level);
 
-    void step(stk::StkFrames& buffer, Tick tick, Player &player);
+    void step(stk::StkFrames& buffer, Tick tick, bool is_new_event);
 
     Tick getEnd();
 

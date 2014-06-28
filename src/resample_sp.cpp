@@ -45,7 +45,7 @@ namespace mu {
     ss << timing_source_->inspect(level+1);
   }
 
-  void ResampleSP::step(stk::StkFrames& buffer, Tick tick, Player& player) {
+  void ResampleSP::step(stk::StkFrames& buffer, Tick tick, bool is_new_event) {
 
     zeroBuffer(buffer);
     if ((sample_source_ == NULL) || (timing_source_ == NULL)) {
@@ -53,7 +53,7 @@ namespace mu {
     }
 
     timing_buffer_.resize(buffer.frames(), buffer.channels());
-    timing_source_->step(timing_buffer_, tick, player);
+    timing_source_->step(timing_buffer_, tick, is_new_event);
 
     double min = (double)LONG_MAX;
     double max = (double)LONG_MIN;
@@ -74,7 +74,7 @@ namespace mu {
 
     // Fetch source samples
     sample_buffer_.resize(n_frames, buffer.channels());
-    sample_source_->step(sample_buffer_, min_tick, player);
+    sample_source_->step(sample_buffer_, min_tick, is_new_event);
 
     for (int i=0; i<timing_buffer_.frames(); i++) {
       stk::StkFloat f_index = timing_buffer_(i,0); // channel 0 only

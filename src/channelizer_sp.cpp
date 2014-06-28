@@ -39,14 +39,14 @@ namespace mu {
     ss << source_->inspect(level+1);
   }
 
-  void ChannelizerSP::step(stk::StkFrames& buffer, Tick tick, Player& player) {
+  void ChannelizerSP::step(stk::StkFrames& buffer, Tick tick, bool is_new_event) {
     if (source_ == NULL) {
       zeroBuffer(buffer);
     } else if (buffer.channels() == source_channel_count_) {
-      source_->step(buffer, tick, player);
+      source_->step(buffer, tick, is_new_event);
     } else {
       tmp_buffer_.resize(buffer.frames(), source_channel_count_);
-      source_->step(tmp_buffer_, tick, player);
+      source_->step(tmp_buffer_, tick, is_new_event);
 
       if (source_channel_count_ == 1) {
         for (int channel = buffer.channels(); channel >= 0; channel--) {

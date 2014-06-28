@@ -39,11 +39,11 @@ namespace mu {
     ss << source_->inspect(level+1);
   }
 
-  void DelaySP::step(stk::StkFrames& buffer, Tick tick, Player& player) {
+  void DelaySP::step(stk::StkFrames& buffer, Tick tick, bool is_new_event) {
     if (source_ == NULL) {
       zeroBuffer(buffer);
     } else {
-      source_->step(buffer, tick - delay_, player);
+      source_->step(buffer, tick - delay_, is_new_event);
     }
   }
 

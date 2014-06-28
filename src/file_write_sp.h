@@ -45,7 +45,7 @@ namespace mu {
     std::string getClassName() { return "FileWriteSP"; }
     void inspectAux(std::stringstream& ss, int level);
 
-    void step(stk::StkFrames& buffer, Tick tick, Player &player);
+    void step(stk::StkFrames& buffer, Tick tick, bool is_new_event);
 
     std::string getFileName( void ) { return file_name_; }
     FileWriteSP& setFileName(std::string file_name) { 

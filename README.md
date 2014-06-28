@@ -4,7 +4,10 @@ An experiment in blurring the lines between music composition and sound synthesi
 
 ## todo 
 
-* fix examples/ so 'make' compiles without error.
+* rename Stream to SampleProcessor (or briefly SP)
+* change StreamProcessor::step(..., player) to step(..., is_new_event)
+* change stream processors to honor is_new_event
+* create EventStream (or brieflyES) with first() and next() methods.
 * scores/tnvm/percussion.cpp (and mune21) show a technique for
 generating percussion parts with variation.  Another (perhaps more
 satisfying) approach would be to have a fixed pattern, but randomize
@@ -15,8 +18,6 @@ need it?  (Consider instead start() and continue() instead of step())
 * Some stream elements -- e.g. MultiplyStream, SineStream -- would
 benefit from a constant input and a stream input.  (Look for examples
 that have used ConstantStream.)
-* Should I have different kinds of streams?  one for buffers of audio,
-one for discrete events?
 * Slide guitar
 * Add has_errors and get_errors methods to Stream objects.
 * Add doxygen comments
@@ -39,7 +40,6 @@ an existing test package.
 * When do we release resources?  Do we need a Transport.pause() method
   distinct from Transport.stop()?
 * Add command line parsing such as argp.h
-* Rename Stream => SP (StreamProcessor) for brevity and clarity.  Or not.
 
 ## changelog 
 

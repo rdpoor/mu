@@ -42,7 +42,7 @@ namespace mu {
     }
     ~SingleSourceSP() {
     }
-    virtual void step(stk::StkFrames& buffer, Tick tick, Player &player) = 0;
+    virtual void step(stk::StkFrames& buffer, Tick tick, bool is_new_event) = 0;
     virtual Tick getStart( void ) { return (source_ == NULL) ? kIndefinite : source_->getStart(); }
     virtual Tick getEnd( void ) { return (source_ == NULL) ? kIndefinite : source_->getEnd(); }
     SampleProcessor *getSource() { return source_; }

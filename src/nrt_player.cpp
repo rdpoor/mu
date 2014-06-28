@@ -36,10 +36,12 @@ namespace mu {
   void *NrtPlayer::processingLoop() {
     current_processing_thread_ = pthread_self();
     is_running_ = true;
+    bool is_first = true;
     while (pthread_equal(current_processing_thread_, pthread_self())) {
       if (source_ == NULL) break;
       stk_frames_.resize(frame_size_, channel_count_);
-      source_->step(stk_frames_, tick_, *this);
+      source_->step(stk_frames_, tick_, is_first);
+      is_first = false;
       // TODO: protect updating of tick_ within a mutex (but right
       // now, nobody in the fg thread looks at tick_).
       tick_ += frame_size_;

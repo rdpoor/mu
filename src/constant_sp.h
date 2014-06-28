@@ -44,7 +44,7 @@ namespace mu {
     std::string getClassName() { return "ConstantSP"; }
     virtual void inspectAux(std::stringstream& ss, int level);
 
-    void step(stk::StkFrames& buffer, Tick tick, Player& player);
+    void step(stk::StkFrames& buffer, Tick tick, bool is_new_event);
 
     stk::StkFloat getValue() const { return value_; }
     ConstantSP& setValue(stk::StkFloat value) { value_ = value; return *this; }

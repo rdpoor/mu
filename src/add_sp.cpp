@@ -42,7 +42,7 @@ namespace mu {
     }
   }
     
-  void AddSP::step(stk::StkFrames& buffer, Tick tick, Player& player) {
+  void AddSP::step(stk::StkFrames& buffer, Tick tick, bool is_new_event) {
     int active_streams = 0;
     Tick buffer_start = tick;
     Tick buffer_end = tick + buffer.frames();
@@ -58,12 +58,12 @@ namespace mu {
         // source has one or more frames to contribute to output.
         if (active_streams == 0) {
           // the first source can be copied directly to output.
-          source->step(buffer, tick, player);
+          source->step(buffer, tick, is_new_event);
         } else {
           // subsequent sources must be fetched into a holding buffer
           // and summed into the output.
           buffer_.resize(buffer.frames(), buffer.channels());
-          source->step(buffer_, tick, player);
+          source->step(buffer_, tick, is_new_event);
 #if 0
           stk::StkFloat *dst = &(buffer[0]);
           stk::StkFloat *src = &(buffer_[0]);

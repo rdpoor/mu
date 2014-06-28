@@ -25,7 +25,7 @@ int main() {
   ASSERT(linseg_sp.getStart() == mu::kIndefinite);
   ASSERT(linseg_sp.getEnd() == mu::kIndefinite);
 
-  linseg_sp.step(buffer, 0, player);
+  linseg_sp.step(buffer, 0, true);
   ASSERT(buffer(0,0) == 0);
 
   fprintf(stderr, "=== one breakpoint, no hold\n");
@@ -36,7 +36,7 @@ int main() {
   ASSERT(linseg_sp.getStart() == 10);
   ASSERT(linseg_sp.getEnd() == 10);
 
-  linseg_sp.step(buffer, 0, player);
+  linseg_sp.step(buffer, 0, true);
   ASSERT(buffer(9,0) == 0);
   ASSERT(buffer(10,0) == 10);
   ASSERT(buffer(11,0) == 0);
@@ -49,7 +49,7 @@ int main() {
   ASSERT(linseg_sp.getStart() == mu::kIndefinite);
   ASSERT(linseg_sp.getEnd() == mu::kIndefinite);
 
-  linseg_sp.step(buffer, 0, player);
+  linseg_sp.step(buffer, 0, true);
   ASSERT(buffer(9,0) == 10);
   ASSERT(buffer(10,0) == 10);
   ASSERT(buffer(11,0) == 10);
@@ -62,7 +62,7 @@ int main() {
   ASSERT(linseg_sp.getStart() == 10);
   ASSERT(linseg_sp.getEnd() == 20);
 
-  linseg_sp.step(buffer, 0, player);
+  linseg_sp.step(buffer, 0, true);
   ASSERT(buffer(9,0) == 0.0);
   ASSERT(buffer(10,0) == 10.0);
   ASSERT(buffer(11,0) == 10.1);
@@ -84,7 +84,7 @@ int main() {
   ASSERT(linseg_sp.getStart() == mu::kIndefinite);
   ASSERT(linseg_sp.getEnd() == mu::kIndefinite);
 
-  linseg_sp.step(buffer, 0, player);
+  linseg_sp.step(buffer, 0, true);
   ASSERT(buffer(9,0) == 10.0);
   ASSERT(buffer(10,0) == 10.0);
   ASSERT(buffer(11,0) == 10.1);
@@ -107,7 +107,7 @@ int main() {
   ASSERT(linseg_sp.getStart() == -10);
   ASSERT(linseg_sp.getEnd() == 20);
 
-  linseg_sp.step(buffer, 0, player);
+  linseg_sp.step(buffer, 0, true);
 
   ASSERT(buffer(0,0) == 9.0);
   ASSERT(buffer(1,0) == 9.1);
@@ -137,7 +137,7 @@ int main() {
   ASSERT(linseg_sp.getStart() == -10);
   ASSERT(linseg_sp.getEnd() == 20);
 
-  linseg_sp.step(buffer, -FRAME_COUNT, player);
+  linseg_sp.step(buffer, -FRAME_COUNT, true);
   ASSERT(buffer(FRAME_COUNT-1,0) == 8.9);
   ASSERT(buffer(FRAME_COUNT-2,0) == 8.8);
   ASSERT(buffer(FRAME_COUNT-3,0) == 8.7);
@@ -157,7 +157,7 @@ int main() {
   ASSERT(linseg_sp.getStart() == mu::kIndefinite);
   ASSERT(linseg_sp.getEnd() == mu::kIndefinite);
 
-  linseg_sp.step(buffer, 0, player);
+  linseg_sp.step(buffer, 0, true);
 
   ASSERT(buffer(0,0) == 9.0);
   ASSERT(buffer(1,0) == 9.1);
@@ -187,7 +187,7 @@ int main() {
   ASSERT(linseg_sp.getStart() == mu::kIndefinite);
   ASSERT(linseg_sp.getEnd() == mu::kIndefinite);
 
-  linseg_sp.step(buffer, -FRAME_COUNT, player);
+  linseg_sp.step(buffer, -FRAME_COUNT, true);
   ASSERT(buffer(FRAME_COUNT-1,0) == 8.9);
   ASSERT(buffer(FRAME_COUNT-2,0) == 8.8);
   ASSERT(buffer(FRAME_COUNT-3,0) == 8.7);

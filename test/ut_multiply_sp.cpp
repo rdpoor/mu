@@ -48,7 +48,7 @@ int main() {
 
   fprintf(stderr, "=== no inputs\n");
   multiply_sp.removeAllSources();
-  multiply_sp.step(buffer, 0, player);
+  multiply_sp.step(buffer, 0, true);
 
   ASSERT(buffer(0,0) == 0);
   ASSERT(buffer(0,1) == 0);
@@ -62,7 +62,7 @@ int main() {
   fprintf(stderr, "=== stream1 only\n");
   multiply_sp.removeAllSources();
   multiply_sp.addSource(stream1);
-  multiply_sp.step(buffer, 0, player);
+  multiply_sp.step(buffer, 0, true);
 
   ASSERT(buffer(0,0) == 0);
   ASSERT(buffer(0,1) == 0);
@@ -76,7 +76,7 @@ int main() {
   fprintf(stderr, "=== stream2 only\n");
   multiply_sp.removeAllSources();
   multiply_sp.addSource(stream2);
-  multiply_sp.step(buffer, 0, player);
+  multiply_sp.step(buffer, 0, true);
 
   ASSERT(buffer(0,0) == 0);
   ASSERT(buffer(0,1) == 0);
@@ -94,7 +94,7 @@ int main() {
   fprintf(stderr, "=== stream3 only\n");
   multiply_sp.removeAllSources();
   multiply_sp.addSource(stream3);
-  multiply_sp.step(buffer, 0, player);
+  multiply_sp.step(buffer, 0, true);
 
   ASSERT(buffer(0,0) == 0);
   ASSERT(buffer(0,1) == 0);
@@ -116,7 +116,7 @@ int main() {
   fprintf(stderr, "=== stream4 only\n");
   multiply_sp.removeAllSources();
   multiply_sp.addSource(stream4);
-  multiply_sp.step(buffer, 0, player);
+  multiply_sp.step(buffer, 0, true);
 
   ASSERT(buffer(0,0) == 0);
   ASSERT(buffer(0,1) == 0);
@@ -139,7 +139,7 @@ int main() {
   multiply_sp.removeAllSources();
   multiply_sp.addSource(stream1);
   multiply_sp.addSource(stream2);
-  multiply_sp.step(buffer, 0, player);
+  multiply_sp.step(buffer, 0, true);
 
   ASSERT(buffer(0,0) == 0);
   ASSERT(buffer(0,1) == 0);
@@ -175,7 +175,7 @@ int main() {
   multiply_sp.removeAllSources();
   multiply_sp.addSource(stream1);
   multiply_sp.addSource(stream3);
-  multiply_sp.step(buffer, 0, player);
+  multiply_sp.step(buffer, 0, true);
 
   ASSERT(buffer(0,0) == 0);
   ASSERT(buffer(0,1) == 0);
@@ -211,7 +211,7 @@ int main() {
   multiply_sp.removeAllSources();
   multiply_sp.addSource(stream1);
   multiply_sp.addSource(stream4);
-  multiply_sp.step(buffer, 0, player);
+  multiply_sp.step(buffer, 0, true);
 
   ASSERT(buffer(0,0) == 0);
   ASSERT(buffer(0,1) == 0);
@@ -247,7 +247,7 @@ int main() {
   multiply_sp.removeAllSources();
   multiply_sp.addSource(stream2);
   multiply_sp.addSource(stream3);
-  multiply_sp.step(buffer, 0, player);
+  multiply_sp.step(buffer, 0, true);
 
   ASSERT(buffer(0,0) == 0);
   ASSERT(buffer(0,1) == 0);
@@ -283,7 +283,7 @@ int main() {
   multiply_sp.removeAllSources();
   multiply_sp.addSource(stream2);
   multiply_sp.addSource(stream4);
-  multiply_sp.step(buffer, 0, player);
+  multiply_sp.step(buffer, 0, true);
 
   ASSERT(buffer(0,0) == 0);
   ASSERT(buffer(0,1) == 0);
@@ -319,7 +319,7 @@ int main() {
   multiply_sp.removeAllSources();
   multiply_sp.addSource(stream3);
   multiply_sp.addSource(stream4);
-  multiply_sp.step(buffer, 0, player);
+  multiply_sp.step(buffer, 0, true);
 
   ASSERT(buffer(0,0) == 0);
   ASSERT(buffer(0,1) == 0);

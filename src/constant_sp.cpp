@@ -37,7 +37,7 @@ namespace mu {
     inspectIndent(ss, level); ss << "getValue() = " << getValue() << std::endl;
   }
     
-  void ConstantSP::step(stk::StkFrames& buffer, Tick tick, Player &player) {
+  void ConstantSP::step(stk::StkFrames& buffer, Tick tick, bool is_new_event) {
     for (Tick i=buffer.size()-1; i>=0; i--) { buffer[i] = value_; }
   }
 
