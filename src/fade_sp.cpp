@@ -73,13 +73,13 @@ namespace mu {
     Tick se = source_->getEnd();
 
     // DRY alert: see getStart() and getEnd()
-    if ((start_ == TickUtils::indefinite()) && (ss == TickUtils::indefinite())) {
+    if ((TickUtils::isIndefinite(start_)) && (TickUtils::isIndefinite(ss))) {
       t1 = LONG_MIN;
       t2 = LONG_MIN;
-    } else if (start_ == TickUtils::indefinite()) {
+    } else if (TickUtils::isIndefinite(start_)) {
       t1 = ss;
       t2 = ss + fade_time_;
-    } else if (ss == TickUtils::indefinite()) {
+    } else if (TickUtils::isIndefinite(ss)) {
       t1 = start_ - (fade_time_ / 2);
       t2 = t1 + fade_time_;
     } else {
@@ -87,13 +87,13 @@ namespace mu {
       t2 = t1 + fade_time_;
     }
 
-    if ((end_ == TickUtils::indefinite()) && (se == TickUtils::indefinite())) {
+    if ((TickUtils::isIndefinite(end_)) && (TickUtils::isIndefinite(se))) {
       t4 = LONG_MAX;
       t3 = LONG_MAX;
-    } else if (end_ == TickUtils::indefinite()) {
+    } else if (TickUtils::isIndefinite(end_)) {
       t4 = se;
       t3 = se - fade_time_;
-    } else if (se == TickUtils::indefinite()) {
+    } else if (TickUtils::isIndefinite(se)) {
       t4 = end_ + (fade_time_ / 2);
       t3 = t4 - fade_time_;
     } else {
@@ -106,7 +106,7 @@ namespace mu {
 
     // We need to handle the case where the fade out starts before
     // the fade in completes.
-    if ((t1 != TickUtils::indefinite()) && (t4 != TickUtils::indefinite())) {
+    if ((!TickUtils::isIndefinite(t1)) && (!TickUtils::isIndefinite(t4))) {
       if (t1 >= t4) {
         // can this happen?  Never fade in...
         COVERAGE_CHECK("FadeSteam::step() B\n");
@@ -244,11 +244,11 @@ namespace mu {
   Tick FadeSP::getStart() {
     Tick ss = (source_ == NULL) ? TickUtils::indefinite() : source_->getStart();
     
-    if ((start_ == TickUtils::indefinite()) && (ss == TickUtils::indefinite())) {
+    if ((TickUtils::isIndefinite(start_)) && (TickUtils::isIndefinite(ss))) {
       return TickUtils::indefinite();
-    } else if (start_ == TickUtils::indefinite()) {
+    } else if (TickUtils::isIndefinite(start_)) {
       return ss;
-    } else if (ss == TickUtils::indefinite()) {
+    } else if (TickUtils::isIndefinite(ss)) {
       return start_ - (fade_time_ / 2);
     } else {
       return std::max(ss, start_ - (fade_time_ / 2));
@@ -258,11 +258,11 @@ namespace mu {
   Tick FadeSP::getEnd() {
     Tick se = (source_ == NULL) ? TickUtils::indefinite() : source_->getEnd();
 
-    if ((end_ == TickUtils::indefinite()) && (se == TickUtils::indefinite())) {
+    if ((TickUtils::isIndefinite(end_)) && (TickUtils::isIndefinite(se))) {
       return TickUtils::indefinite();
-    } else if (end_ == TickUtils::indefinite()) {
+    } else if (TickUtils::isIndefinite(end_)) {
       return se;
-    } else if (se == TickUtils::indefinite()) {
+    } else if (TickUtils::isIndefinite(se)) {
       return end_ + (fade_time_ / 2);
     } else {
       return std::min(se, end_ + (fade_time_ / 2));

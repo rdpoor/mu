@@ -32,14 +32,14 @@ namespace mu {
     inspectIndent(ss, level); 
     ss << "#<" << getClassName() << " " << this << ">" << std::endl;
     inspectIndent(ss, level+1); 
-    if (getStart() == TickUtils::indefinite()) {
+    if (TickUtils::isIndefinite(getStart())) {
       ss << "getStart() = " << "TickUtils::indefinite()" << std::endl;
     } else {
       ss << "getStart() = " << getStart() << std::endl;
     }      
     inspectIndent(ss, level+1); 
     // ss << "getStart() = " << ((getEnd()==TickUtils::indefinite())?"TickUtils::indefinite()":getEnd()) << std::endl;
-    if (getEnd() == TickUtils::indefinite()) {
+    if (TickUtils::isIndefinite(getEnd())) {
       ss << "getEnd() = " << "TickUtils::indefinite()" << std::endl;
     } else {
       ss << "getEnd() = " << getEnd() << std::endl;

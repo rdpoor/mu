@@ -81,9 +81,9 @@ void SeqSP::sortSources() {
 // time of each source.  A start time of TickUtils::indefinite() sorts earlier
 // than all other times.
 bool SeqSP::sortPredicate(mu::SampleProcessor *s0, mu::SampleProcessor *s1) {
-  if (s0->getStart() == mu::TickUtils::indefinite()) {
+  if (mu::TickUtils::isIndefinite(s0->getStart())) {
     return true;
-  } else if (s1->getStart() == mu::TickUtils::indefinite()) {
+  } else if (mu::TickUtils::isIndefinite(s1->getStart())) {
     return false;
   } else {
     return (s0->getStart() < s1->getStart());

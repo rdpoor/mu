@@ -242,7 +242,7 @@ public:
   }
 
   mu::Tick getEnd() {
-    if ((source_ == NULL) || (source_->getEnd() == mu::TickUtils::indefinite())) {
+    if ((source_ == NULL) || (mu::TickUtils::isIndefinite(source_->getEnd()))) {
       return mu::TickUtils::indefinite();
     } else {
       // badly written to extend end time by reverb tail

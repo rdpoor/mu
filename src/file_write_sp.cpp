@@ -54,8 +54,8 @@ namespace mu {
     Tick buf_s = tick;
     Tick buf_e = tick + buffer.frames();
    
-    if (((getStart() == TickUtils::indefinite()) || (getStart() < buf_e)) &&
-        ((getEnd() == TickUtils::indefinite()) || (getEnd() >= buf_s))) {
+    if ((TickUtils::isIndefinite(getStart()) || (getStart() < buf_e)) &&
+        (TickUtils::isIndefinite(getEnd()) || (getEnd() >= buf_s))) {
       if (!file_write_.isOpen()) {
         file_write_.open(file_name_, buffer.channels(), file_type_, file_format_);
       }

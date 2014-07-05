@@ -42,7 +42,9 @@ namespace mu {
     virtual Tick getStart( void ) { return TickUtils::indefinite(); }
     virtual Tick getEnd( void ) { return TickUtils::indefinite(); }
     Tick getDuration( void ) {     
-      return ((getStart()==TickUtils::indefinite()) || (getEnd()==TickUtils::indefinite())) ? TickUtils::indefinite() : (getEnd() - getStart());
+      return ((TickUtils::isIndefinite(getStart())) || (TickUtils::isIndefinite(getEnd()))) ? 
+        TickUtils::indefinite() : 
+        (getEnd() - getStart());
     }
 
     virtual std::string getClassName() { return "SampleProcessor"; }
@@ -55,8 +57,8 @@ namespace mu {
     // Return true if tick falls within start (inclusive) and end
     // (exclusive) of this stream.
     bool doesContain( Tick tick ) {
-      bool after_start = (getStart() == TickUtils::indefinite()) || (tick >= getStart());
-      bool before_end = (getEnd() == TickUtils::indefinite()) || (tick < getEnd());
+      bool after_start = (TickUtils::isIndefinite(getStart())) || (tick >= getStart());
+      bool before_end = (TickUtils::isIndefinite(getEnd())) || (tick < getEnd());
       return after_start && before_end;
     }
     

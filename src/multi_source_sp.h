@@ -47,7 +47,7 @@ namespace mu {
         for (long int i=0; i<sources_.size(); i++) {
           SampleProcessor *source = sources_.at(i);
           Tick start = source->getStart();
-          if (start == TickUtils::indefinite()) {
+          if (TickUtils::isIndefinite(start)) {
             return TickUtils::indefinite();
           } else {
             earliest_start = std::min(earliest_start, start);
@@ -65,7 +65,7 @@ namespace mu {
         for (long int i=0; i<sources_.size(); i++) {
           SampleProcessor *source = sources_.at(i);
           Tick end = source->getEnd();
-          if (end == TickUtils::indefinite()) {
+          if (TickUtils::isIndefinite(end)) {
             return TickUtils::indefinite();
           } else {
             latest_end = std::max(latest_end, end);

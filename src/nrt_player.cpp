@@ -45,7 +45,7 @@ namespace mu {
       // TODO: protect updating of tick_ within a mutex (but right
       // now, nobody in the fg thread looks at tick_).
       tick_ += frame_size_;
-      if ((source_->getEnd() != TickUtils::indefinite()) && (tick_ >= source_->getEnd())) {
+      if ((!TickUtils::isIndefinite(source_->getEnd())) && (tick_ >= source_->getEnd())) {
         stop();
       }
     }

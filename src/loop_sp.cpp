@@ -52,8 +52,8 @@ namespace mu {
 
     Tick start_tick = tick;
     Tick end_tick = tick + buffer.frames();
-    if (start_ != TickUtils::indefinite()) start_tick = std::max(start_tick, start_);
-    if (end_ != TickUtils::indefinite()) end_tick = std::min(end_tick, end_);
+    if (!TickUtils::isIndefinite(start_)) start_tick = std::max(start_tick, start_);
+    if (!TickUtils::isIndefinite(end_)) end_tick = std::min(end_tick, end_);
     Tick n_frames = end_tick - start_tick;
 
     if (n_frames < buffer.frames()) zeroBuffer(buffer);

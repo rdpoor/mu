@@ -48,7 +48,7 @@ namespace mu {
   }
 
   Tick DelaySP::getStart() {
-    if ((source_ == NULL) || (source_->getStart() == TickUtils::indefinite())) {
+    if ((source_ == NULL) || (TickUtils::isIndefinite(source_->getStart()))) {
       return TickUtils::indefinite();
     } else {
       return (source_->getStart() + delay_);
@@ -56,7 +56,7 @@ namespace mu {
   }
 
   Tick DelaySP::getEnd() {
-    if ((source_ == NULL) || (source_->getEnd() == TickUtils::indefinite())) {
+    if ((source_ == NULL) || (TickUtils::isIndefinite(source_->getEnd()))) {
       return TickUtils::indefinite();
     } else {
       return (source_->getEnd() + delay_);
