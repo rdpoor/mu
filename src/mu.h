@@ -33,16 +33,6 @@
 namespace mu {
 
 #define TRACE(s)
-  // #define TRACE(s) fprintf(stderr, (s))
-
-  typedef long int Tick;
-  static const Tick kIndefinite = LONG_MAX;
-  // Perhaps someday Tick will be a full-fledged class that allows an
-  // indefinite value.  For now, that would require a lot of retrofits...
-  // static const TickIndefinite kIndefinite = TickIndefinite::kIndefinite;
-
-  typedef double MuTime;
-
   // resolve circular dependencies
   class SampleProcessor;
   class Player;
@@ -50,11 +40,7 @@ namespace mu {
   // define a type for a general vector of SampleProcessors
   typedef std::vector<SampleProcessor *> SPVector;
 
-  // General purpose clamp: clamp val to lie within min...max (inclusive)
-  template <class T> const T& clamp(const T& min, const T& val, const T& max) {
-    return (val < min) ? min : ((val > max) ? max : val);
-  }
-
+  // TODO: should be in a units.h or utilities.h file
   double dbToValue(double db);
 
 };

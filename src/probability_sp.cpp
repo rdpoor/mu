@@ -45,11 +45,11 @@ namespace mu {
   }
 
   Tick ProbabilitySP::getStart() {
-    return kIndefinite;
+    return TickUtils::indefinite();
   }
 
   Tick ProbabilitySP::getEnd() {
-    return kIndefinite;
+    return TickUtils::indefinite();
   }
 
   // Arrive here when the stream starts or backs up: flip a weighted

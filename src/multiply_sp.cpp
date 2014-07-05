@@ -57,8 +57,8 @@ namespace mu {
         Tick source_start = source->getStart();
         Tick source_end = source->getEnd();
         // TODO: write general SP::is_overlapping() method
-        if (((source_start == kIndefinite) || (source_start < buffer_end)) &&
-            ((source_end == kIndefinite) || (source_end > buffer_start))) {
+        if (((source_start == TickUtils::indefinite()) || (source_start < buffer_end)) &&
+            ((source_end == TickUtils::indefinite()) || (source_end > buffer_start))) {
           buffer_.resize(buffer.frames(), buffer.channels());
           source->step(buffer_, tick, is_new_event);
           stk::StkFloat *dst = &(buffer[0]);

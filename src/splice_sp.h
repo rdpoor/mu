@@ -33,6 +33,7 @@
 #define MU_SPLICE_STREAM_H
 
 #include "mu.h"
+#include "player.h"
 #include "multi_source_sp.h"
 
 namespace mu {

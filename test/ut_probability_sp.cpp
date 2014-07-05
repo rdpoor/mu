@@ -24,15 +24,15 @@ int main() {
   buffer.resize(FRAME_COUNT, CHANNEL_COUNT);
 
   probability_sp.setSource(NULL).setProbability(1.0);
-  ASSERT(probability_sp.getStart() == mu::kIndefinite);
-  ASSERT(probability_sp.getEnd() == mu::kIndefinite);
+  ASSERT(probability_sp.getStart() == mu::TickUtils::indefinite());
+  ASSERT(probability_sp.getEnd() == mu::TickUtils::indefinite());
 
   probability_sp.step(buffer, 0, true);
   ASSERT(buffer(0,0) == 0);
 
   probability_sp.setSource(&identity_sp).setProbability(0.0);
-  ASSERT(probability_sp.getStart() == mu::kIndefinite);
-  ASSERT(probability_sp.getEnd() == mu::kIndefinite);
+  ASSERT(probability_sp.getStart() == mu::TickUtils::indefinite());
+  ASSERT(probability_sp.getEnd() == mu::TickUtils::indefinite());
 
   probability_sp.step(buffer, 0, true);
   ASSERT(buffer(0,0) == 0);
@@ -41,8 +41,8 @@ int main() {
   ASSERT(buffer(FRAME_COUNT-1,1) == 0);
 
   probability_sp.setSource(&identity_sp).setProbability(1.0);
-  ASSERT(probability_sp.getStart() == mu::kIndefinite);
-  ASSERT(probability_sp.getEnd() == mu::kIndefinite);
+  ASSERT(probability_sp.getStart() == mu::TickUtils::indefinite());
+  ASSERT(probability_sp.getEnd() == mu::TickUtils::indefinite());
 
   probability_sp.step(buffer, 0, true);
   ASSERT(buffer(0,0) == 0);
@@ -74,11 +74,11 @@ int main() {
   ASSERT(crop_sp.getStart() == 30);
   ASSERT(crop_sp.getEnd() == 40);
   probability_sp.setSource(&crop_sp).setProbability(1.0);
-  ASSERT(probability_sp.getStart() == mu::kIndefinite);
-  ASSERT(probability_sp.getEnd() == mu::kIndefinite);
+  ASSERT(probability_sp.getStart() == mu::TickUtils::indefinite());
+  ASSERT(probability_sp.getEnd() == mu::TickUtils::indefinite());
   probability_sp.step(buffer, 0, true);
-  ASSERT(probability_sp.getStart() == mu::kIndefinite);
-  ASSERT(probability_sp.getEnd() == mu::kIndefinite);
+  ASSERT(probability_sp.getStart() == mu::TickUtils::indefinite());
+  ASSERT(probability_sp.getEnd() == mu::TickUtils::indefinite());
 
 
 }

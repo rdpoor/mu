@@ -32,8 +32,8 @@ int main() {
   ASSERT(buffer((FRAME_COUNT-1),0) == 0);
   ASSERT(buffer((FRAME_COUNT-1),1) == 0);
 
-  ASSERT(crop_sp.getStart() == mu::kIndefinite);
-  ASSERT(crop_sp.getEnd() == mu::kIndefinite);
+  ASSERT(crop_sp.getStart() == mu::TickUtils::indefinite());
+  ASSERT(crop_sp.getEnd() == mu::TickUtils::indefinite());
 
   fprintf(stderr,"=== default start and end\n");
   crop_sp.setSource(&identity_sp);
@@ -44,8 +44,8 @@ int main() {
   ASSERT(buffer((FRAME_COUNT-1),0) == (FRAME_COUNT-1));
   ASSERT(buffer((FRAME_COUNT-1),1) == (FRAME_COUNT-1));
 
-  ASSERT(crop_sp.getStart() == mu::kIndefinite);
-  ASSERT(crop_sp.getEnd() == mu::kIndefinite);
+  ASSERT(crop_sp.getStart() == mu::TickUtils::indefinite());
+  ASSERT(crop_sp.getEnd() == mu::TickUtils::indefinite());
 
   fprintf(stderr,"=== definite start and end\n");
   crop_sp.setSource(&identity_sp).setStart(10).setEnd(90);
@@ -66,7 +66,7 @@ int main() {
   ASSERT(crop_sp.getEnd() == 90);
 
   fprintf(stderr,"=== indefinite start, definite end\n");
-  crop_sp.setSource(&identity_sp).setStart(mu::kIndefinite).setEnd(90);
+  crop_sp.setSource(&identity_sp).setStart(mu::TickUtils::indefinite()).setEnd(90);
   crop_sp.step(buffer, 0, true);
 
   ASSERT(buffer(0,0) == 0);
@@ -82,11 +82,11 @@ int main() {
   ASSERT(buffer((FRAME_COUNT-1),0) == 0);
   ASSERT(buffer((FRAME_COUNT-1),1) == 0);
 
-  ASSERT(crop_sp.getStart() == mu::kIndefinite);
+  ASSERT(crop_sp.getStart() == mu::TickUtils::indefinite());
   ASSERT(crop_sp.getEnd() == 90);
 
   fprintf(stderr,"=== definite start, indefinite end\n");
-  crop_sp.setSource(&identity_sp).setStart(10).setEnd(mu::kIndefinite);
+  crop_sp.setSource(&identity_sp).setStart(10).setEnd(mu::TickUtils::indefinite());
   crop_sp.step(buffer, 0, true);
 
   ASSERT(buffer(0,0) == 0);
@@ -103,10 +103,10 @@ int main() {
   ASSERT(buffer((FRAME_COUNT-1),1) == (FRAME_COUNT-1));
 
   ASSERT(crop_sp.getStart() == 10);
-  ASSERT(crop_sp.getEnd() == mu::kIndefinite);
+  ASSERT(crop_sp.getEnd() == mu::TickUtils::indefinite());
 
   fprintf(stderr,"=== indefinite start, indefinite end\n");
-  crop_sp.setSource(&identity_sp).setStart(mu::kIndefinite).setEnd(mu::kIndefinite);
+  crop_sp.setSource(&identity_sp).setStart(mu::TickUtils::indefinite()).setEnd(mu::TickUtils::indefinite());
   crop_sp.step(buffer, 0, true);
 
   ASSERT(buffer(0,0) == 0);
@@ -122,8 +122,8 @@ int main() {
   ASSERT(buffer((FRAME_COUNT-1),0) == (FRAME_COUNT-1));
   ASSERT(buffer((FRAME_COUNT-1),1) == (FRAME_COUNT-1));
 
-  ASSERT(crop_sp.getStart() == mu::kIndefinite);
-  ASSERT(crop_sp.getEnd() == mu::kIndefinite);
+  ASSERT(crop_sp.getStart() == mu::TickUtils::indefinite());
+  ASSERT(crop_sp.getEnd() == mu::TickUtils::indefinite());
 
   fprintf(stderr,"=== done\n");
   return 0;

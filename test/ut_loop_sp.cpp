@@ -26,15 +26,15 @@ int main() {
   buffer.resize(FRAME_COUNT, CHANNEL_COUNT);
 
   loop_sp.setSource(NULL).setLoopDuration(LOOP_DURATION_EQ);
-  ASSERT(loop_sp.getStart() == mu::kIndefinite);
-  ASSERT(loop_sp.getEnd() == mu::kIndefinite);
+  ASSERT(loop_sp.getStart() == mu::TickUtils::indefinite());
+  ASSERT(loop_sp.getEnd() == mu::TickUtils::indefinite());
 
   loop_sp.step(buffer, 0, true);
   ASSERT(buffer(0,0) == 0);
 
   loop_sp.setSource(&identity_sp).setLoopDuration(LOOP_DURATION_EQ);
-  ASSERT(loop_sp.getStart() == mu::kIndefinite);
-  ASSERT(loop_sp.getEnd() == mu::kIndefinite);
+  ASSERT(loop_sp.getStart() == mu::TickUtils::indefinite());
+  ASSERT(loop_sp.getEnd() == mu::TickUtils::indefinite());
 
   loop_sp.step(buffer, 0, true);
   ASSERT(buffer(0,0) == 0);
@@ -49,8 +49,8 @@ int main() {
   ASSERT(buffer(FRAME_COUNT-1,1) == FRAME_COUNT-1);
 
   loop_sp.setSource(&identity_sp).setLoopDuration(LOOP_DURATION_LT);
-  ASSERT(loop_sp.getStart() == mu::kIndefinite);
-  ASSERT(loop_sp.getEnd() == mu::kIndefinite);
+  ASSERT(loop_sp.getStart() == mu::TickUtils::indefinite());
+  ASSERT(loop_sp.getEnd() == mu::TickUtils::indefinite());
 
   loop_sp.step(buffer, 0, true);
   ASSERT(buffer(0,0) == 0);
@@ -65,8 +65,8 @@ int main() {
   ASSERT(buffer(0,1) == FRAME_COUNT-LOOP_DURATION_LT);
   
   loop_sp.setSource(&identity_sp).setLoopDuration(LOOP_DURATION_GT);
-  ASSERT(loop_sp.getStart() == mu::kIndefinite);
-  ASSERT(loop_sp.getEnd() == mu::kIndefinite);
+  ASSERT(loop_sp.getStart() == mu::TickUtils::indefinite());
+  ASSERT(loop_sp.getEnd() == mu::TickUtils::indefinite());
 
   loop_sp.step(buffer, 0, true);
   ASSERT(buffer(0,0) == 0);
@@ -88,18 +88,18 @@ int main() {
   ASSERT(crop_sp.getStart() == 30);
   ASSERT(crop_sp.getEnd() == 40);
   loop_sp.setSource(&crop_sp);
-  ASSERT(loop_sp.getStart() == mu::kIndefinite);
-  ASSERT(loop_sp.getEnd() == mu::kIndefinite);
+  ASSERT(loop_sp.getStart() == mu::TickUtils::indefinite());
+  ASSERT(loop_sp.getEnd() == mu::TickUtils::indefinite());
 
   // adding setStart() and setEnd() to LoopSP()
   printf("=== testing setStart() and setEnd()\n");
   loop_sp.setSource(&identity_sp).setLoopDuration(FRAME_COUNT).
-    setStart(mu::kIndefinite).setEnd(mu::kIndefinite);
+    setStart(mu::TickUtils::indefinite()).setEnd(mu::TickUtils::indefinite());
   // resulting waveform is a "sawtooth", 0 at every multiple of
   // FRAME_COUNT
 
-  ASSERT(loop_sp.getStart() == mu::kIndefinite);
-  ASSERT(loop_sp.getEnd() == mu::kIndefinite);
+  ASSERT(loop_sp.getStart() == mu::TickUtils::indefinite());
+  ASSERT(loop_sp.getEnd() == mu::TickUtils::indefinite());
 
   loop_sp.step(buffer, 0, true);
   ASSERT(buffer(0,0) == 0);
@@ -114,7 +114,7 @@ int main() {
   ASSERT(buffer(FRAME_COUNT-1,0) == FRAME_COUNT-1);
 
   loop_sp.setSource(&identity_sp).setLoopDuration(FRAME_COUNT).
-    setStart(100).setEnd(mu::kIndefinite);
+    setStart(100).setEnd(mu::TickUtils::indefinite());
 
   loop_sp.step(buffer, 0, true);
   ASSERT(buffer(0,0) == 0);

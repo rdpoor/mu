@@ -80,7 +80,7 @@ namespace mu {
 
   Tick LinsegSP::getStart() {
     if ((breakpoints_.size() == 0) || (hold_value_ == true)) {
-      return kIndefinite;
+      return TickUtils::indefinite();
     } else {
       return breakpoints_.begin()->first;
     }
@@ -88,7 +88,7 @@ namespace mu {
 
   Tick LinsegSP::getEnd() {
     if ((breakpoints_.size() == 0) || (hold_value_ == true)) {
-      return mu::kIndefinite;
+      return mu::TickUtils::indefinite();
     } else {
       return breakpoints_.rbegin()->first;
     }

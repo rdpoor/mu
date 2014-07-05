@@ -29,7 +29,7 @@ int main() {
   // ================================================================
   fprintf(stderr, "=== null source\n");
   fade_sp.setSource(NULL);
-  fade_sp.setStart(mu::kIndefinite).setEnd(mu::kIndefinite);
+  fade_sp.setStart(mu::TickUtils::indefinite()).setEnd(mu::TickUtils::indefinite());
 
   fade_sp.step(buffer, 0, true);
 
@@ -38,15 +38,15 @@ int main() {
   ASSERT(buffer((FRAME_COUNT-1),0) == 0);
   ASSERT(buffer((FRAME_COUNT-1),1) == 0);
 
-  ASSERT(fade_sp.getStart()==mu::kIndefinite);
-  ASSERT(fade_sp.getEnd()==mu::kIndefinite);
+  ASSERT(fade_sp.getStart()==mu::TickUtils::indefinite());
+  ASSERT(fade_sp.getEnd()==mu::TickUtils::indefinite());
 
   // ================================================================
   // When source has indefinite extent, fade in and fade out times are
   // determinined by fade_sp->setStart() and setEnd().
-  fprintf(stderr, "=== constant source, start=kIndefinite, end=kIndefinite\n");
+  fprintf(stderr, "=== constant source, start=TickUtils::indefinite(), end=TickUtils::indefinite()\n");
   fade_sp.setSource(&constant_sp);
-  fade_sp.setStart(mu::kIndefinite).setEnd(mu::kIndefinite);
+  fade_sp.setStart(mu::TickUtils::indefinite()).setEnd(mu::TickUtils::indefinite());
 
   fade_sp.step(buffer, 0, true);
 
@@ -55,8 +55,8 @@ int main() {
   ASSERT(buffer((FRAME_COUNT-1),0) == 1.0);
   ASSERT(buffer((FRAME_COUNT-1),1) == 1.0);
 
-  ASSERT(fade_sp.getStart()==mu::kIndefinite);
-  ASSERT(fade_sp.getEnd()==mu::kIndefinite);
+  ASSERT(fade_sp.getStart()==mu::TickUtils::indefinite());
+  ASSERT(fade_sp.getEnd()==mu::TickUtils::indefinite());
 
   // ================================================================
   fprintf(stderr, "=== constant source, start=100, end=200\n");
@@ -118,9 +118,9 @@ int main() {
   ASSERT(fade_sp.getEnd()==205);
 
   // ================================================================
-  fprintf(stderr, "=== constant source, start=100, end=kIndefinite\n");
+  fprintf(stderr, "=== constant source, start=100, end=TickUtils::indefinite()\n");
   fade_sp.setSource(&constant_sp);
-  fade_sp.setStart(100).setEnd(mu::kIndefinite).setFadeTime(10);
+  fade_sp.setStart(100).setEnd(mu::TickUtils::indefinite()).setFadeTime(10);
 
   fade_sp.step(buffer, 0, true);
 
@@ -174,12 +174,12 @@ int main() {
   ASSERT(buffer((FRAME_COUNT-1),1) == 1.0);
 
   ASSERT(fade_sp.getStart()==95);
-  ASSERT(fade_sp.getEnd()==mu::kIndefinite);
+  ASSERT(fade_sp.getEnd()==mu::TickUtils::indefinite());
 
   // ================================================================
-  fprintf(stderr, "=== constant source, start=kIndefinite, end=200\n");
+  fprintf(stderr, "=== constant source, start=TickUtils::indefinite(), end=200\n");
   fade_sp.setSource(&constant_sp);
-  fade_sp.setStart(mu::kIndefinite).setEnd(200).setFadeTime(10);
+  fade_sp.setStart(mu::TickUtils::indefinite()).setEnd(200).setFadeTime(10);
 
   fade_sp.step(buffer, 0, true);
 
@@ -232,15 +232,15 @@ int main() {
   ASSERT(near(buffer((FRAME_COUNT-1),0), 0.0));
   ASSERT(near(buffer((FRAME_COUNT-1),1), 0.0));
 
-  ASSERT(fade_sp.getStart()==mu::kIndefinite);
+  ASSERT(fade_sp.getStart()==mu::TickUtils::indefinite());
   ASSERT(fade_sp.getEnd()==205);
 
   // ================================================================
   // NB: when source has definite extent, fade in starts at
   // source->getStart() and ends at source->getEnd().
-  fprintf(stderr, "=== cropped source, start=kIndefinite, end=kIndefinite\n");
+  fprintf(stderr, "=== cropped source, start=TickUtils::indefinite(), end=TickUtils::indefinite()\n");
   fade_sp.setSource(&crop_sp);
-  fade_sp.setStart(mu::kIndefinite).setEnd(mu::kIndefinite).setFadeTime(10);
+  fade_sp.setStart(mu::TickUtils::indefinite()).setEnd(mu::TickUtils::indefinite()).setFadeTime(10);
 
   fade_sp.step(buffer, 0, true);
 
@@ -599,7 +599,7 @@ int main() {
   // coverage tests
 
   fprintf(stderr, "=== Coverage A\n");
-  fade_sp.setSource(NULL).setStart(mu::kIndefinite).setEnd(mu::kIndefinite).setFadeTime(100);
+  fade_sp.setSource(NULL).setStart(mu::TickUtils::indefinite()).setEnd(mu::TickUtils::indefinite()).setFadeTime(100);
   fade_sp.step(buffer, 0, true);
 
   ASSERT(near(buffer(0,0), 0.0));

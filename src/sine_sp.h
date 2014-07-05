@@ -30,6 +30,7 @@
 #define MU_SINE_STREAM_H
 
 #include "mu.h"
+#include "player.h"
 #include "sample_processor.h"
 
 namespace mu {

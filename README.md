@@ -4,15 +4,11 @@ An experiment in blurring the lines between music composition and sound synthesi
 
 ## todo 
 
-* change stream processors to honor is_new_event
-* create EventStream (or brieflyES) with first() and next() methods.
+* create EventStream (or briefly ES) with first() and next() methods.
 * scores/tnvm/percussion.cpp (and mune21) show a technique for
 generating percussion parts with variation.  Another (perhaps more
 satisfying) approach would be to have a fixed pattern, but randomize
 the dynamics, e.g. with a LinsegStream or StepStream.
-* Should Stream provide a tickHasJumped() method to indicate a
-discontinuity in the tick counter?  Or as a mixin for classes that
-need it?  (Consider instead start() and continue() instead of step())
 * Some stream elements -- e.g. MultiplyStream, SineStream -- would
 benefit from a constant input and a stream input.  (Look for examples
 that have used ConstantStream.)
@@ -645,9 +641,39 @@ element means you can always get back to that state.  An EStream has
 only one consumer (one entity calling next()), so that consumer may
 call delete on the previous element without worry.
 
+As an aside, we can emulate the immutable nature with an itarative
+(non-recursive) definition by creating a copy method that captures the
+current state.  Calling next() on a stream could (then) actually
+modify its internal state.
+
 Next steps: 
 
-rename Stream to SStream (or maybe SP for Sample Processor).
-change step(..., player) to step(..., is_new_event)
+rename Stream to SStream (or maybe SP for Sample Processor). [done]
+change step(..., player) to step(..., is_new_event) [done]
 create EStream (or maybe ES for Event Stream)
 
+=== Some streams to write
+
+Generalized Events:
+
+* ConstantES(v)
+* AppendES(s0, s1, ...) 
+* InterleaveES(s0, s1, ...)
+* CycleES(s)
+DropES(s, n)
+MapES(s, fn)
+FilterES(s, fn)
+* TakeES(s, n)
+ZipES(s0, s1, ...)
+
+Stolen from Ruby:
+
+s.all?(fn)
+s.any?(fn)
+s.count()
+
+With time associated:
+
+MergeES(s0, s1, ...)
+DelayES(s, t)
+StretchES(s, t)

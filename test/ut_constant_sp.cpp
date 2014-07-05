@@ -34,8 +34,8 @@ int main() {
   ASSERT(buffer((FRAME_COUNT-1),0) == 42.0);
   ASSERT(buffer((FRAME_COUNT-1),1) == 42.0);
 
-  ASSERT(constant_sp.getStart() == mu::kIndefinite);
-  ASSERT(constant_sp.getEnd() == mu::kIndefinite);
+  ASSERT(constant_sp.getStart() == mu::TickUtils::indefinite());
+  ASSERT(constant_sp.getEnd() == mu::TickUtils::indefinite());
 
   return 0;
 

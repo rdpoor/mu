@@ -86,7 +86,7 @@ namespace mu {
     while ((dst_start < dst_end) && (cursor_ < sources_.size())) {
       SampleProcessor *s = sources_.at(cursor_);
       bool is_last_source = (cursor_ == sources_.size() - 1);
-      Tick src_start = s->getStart() == kIndefinite ? dst_start : s->getStart();
+      Tick src_start = s->getStart() == TickUtils::indefinite() ? dst_start : s->getStart();
       Tick src_end = is_last_source ? 
         s->getEnd() : sources_.at(cursor_+1)->getStart();
 
@@ -118,7 +118,7 @@ namespace mu {
 
   Tick SpliceSP::getStart() {
     if (sources_.size() == 0) {
-      return kIndefinite;
+      return TickUtils::indefinite();
     } else {
       return sources_.at(0)->getStart();
     }
@@ -126,7 +126,7 @@ namespace mu {
 
   Tick SpliceSP::getEnd() {
     if (sources_.size() == 0) {
-      return kIndefinite;
+      return TickUtils::indefinite();
     } else {
       return sources_.at(sources_.size()-1)->getEnd();
     }
@@ -162,14 +162,14 @@ namespace mu {
   // between start and end.  
   //
   // Implementation note: source streams are sorted by ascending start time
-  // (although a start time of kIndefinite happens before all other
+  // (although a start time of TickUtils::indefinite() happens before all other
   // times). 
   void SpliceSP::setupCursor(Tick start, Tick end) {
     // TODO: fix this
     for (cursor_ = 0; cursor_<sources_.size(); cursor_++) {
       SampleProcessor *s = sources_.at(cursor_);
       bool is_last_source = (cursor_ == sources_.size() - 1);
-      Tick src_start = s->getStart() == kIndefinite ? start : s->getStart();
+      Tick src_start = s->getStart() == TickUtils::indefinite() ? start : s->getStart();
       Tick src_end = is_last_source ? 
         s->getEnd() : 
         sources_.at(cursor_+1)->getStart();
@@ -183,12 +183,12 @@ namespace mu {
   }
 
   // A sorting predicate that sorts elements according to the start
-  // time of each source.  A start time of kIndefinite sorts earlier
+  // time of each source.  A start time of TickUtils::indefinite() sorts earlier
   // than all other times.
   bool SpliceSP::sortPredicate(mu::SampleProcessor *s0, mu::SampleProcessor *s1) {
-    if (s0->getStart() == mu::kIndefinite) {
+    if (s0->getStart() == mu::TickUtils::indefinite()) {
       return true;
-    } else if (s1->getStart() == mu::kIndefinite) {
+    } else if (s1->getStart() == mu::TickUtils::indefinite()) {
       return false;
     } else {
       return (s0->getStart() < s1->getStart());

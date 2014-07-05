@@ -32,8 +32,8 @@
 namespace mu {
 
   FadeSP::FadeSP() : 
-    start_ ( kIndefinite ), 
-    end_ ( kIndefinite ),
+    start_ ( TickUtils::indefinite() ), 
+    end_ ( TickUtils::indefinite() ),
     fade_time_ ( kDefaultFadeTime ) {
     // pre-allocate transfer buffer
     buffer_.resize(stk::RT_BUFFER_SIZE, 2);
@@ -73,13 +73,13 @@ namespace mu {
     Tick se = source_->getEnd();
 
     // DRY alert: see getStart() and getEnd()
-    if ((start_ == kIndefinite) && (ss == kIndefinite)) {
+    if ((start_ == TickUtils::indefinite()) && (ss == TickUtils::indefinite())) {
       t1 = LONG_MIN;
       t2 = LONG_MIN;
-    } else if (start_ == kIndefinite) {
+    } else if (start_ == TickUtils::indefinite()) {
       t1 = ss;
       t2 = ss + fade_time_;
-    } else if (ss == kIndefinite) {
+    } else if (ss == TickUtils::indefinite()) {
       t1 = start_ - (fade_time_ / 2);
       t2 = t1 + fade_time_;
     } else {
@@ -87,13 +87,13 @@ namespace mu {
       t2 = t1 + fade_time_;
     }
 
-    if ((end_ == kIndefinite) && (se == kIndefinite)) {
+    if ((end_ == TickUtils::indefinite()) && (se == TickUtils::indefinite())) {
       t4 = LONG_MAX;
       t3 = LONG_MAX;
-    } else if (end_ == kIndefinite) {
+    } else if (end_ == TickUtils::indefinite()) {
       t4 = se;
       t3 = se - fade_time_;
-    } else if (se == kIndefinite) {
+    } else if (se == TickUtils::indefinite()) {
       t4 = end_ + (fade_time_ / 2);
       t3 = t4 - fade_time_;
     } else {
@@ -106,7 +106,7 @@ namespace mu {
 
     // We need to handle the case where the fade out starts before
     // the fade in completes.
-    if ((t1 != kIndefinite) && (t4 != kIndefinite)) {
+    if ((t1 != TickUtils::indefinite()) && (t4 != TickUtils::indefinite())) {
       if (t1 >= t4) {
         // can this happen?  Never fade in...
         COVERAGE_CHECK("FadeSteam::step() B\n");
@@ -242,13 +242,13 @@ namespace mu {
   }
   
   Tick FadeSP::getStart() {
-    Tick ss = (source_ == NULL) ? kIndefinite : source_->getStart();
+    Tick ss = (source_ == NULL) ? TickUtils::indefinite() : source_->getStart();
     
-    if ((start_ == kIndefinite) && (ss == kIndefinite)) {
-      return kIndefinite;
-    } else if (start_ == kIndefinite) {
+    if ((start_ == TickUtils::indefinite()) && (ss == TickUtils::indefinite())) {
+      return TickUtils::indefinite();
+    } else if (start_ == TickUtils::indefinite()) {
       return ss;
-    } else if (ss == kIndefinite) {
+    } else if (ss == TickUtils::indefinite()) {
       return start_ - (fade_time_ / 2);
     } else {
       return std::max(ss, start_ - (fade_time_ / 2));
@@ -256,13 +256,13 @@ namespace mu {
   }
 
   Tick FadeSP::getEnd() {
-    Tick se = (source_ == NULL) ? kIndefinite : source_->getEnd();
+    Tick se = (source_ == NULL) ? TickUtils::indefinite() : source_->getEnd();
 
-    if ((end_ == kIndefinite) && (se == kIndefinite)) {
-      return kIndefinite;
-    } else if (end_ == kIndefinite) {
+    if ((end_ == TickUtils::indefinite()) && (se == TickUtils::indefinite())) {
+      return TickUtils::indefinite();
+    } else if (end_ == TickUtils::indefinite()) {
       return se;
-    } else if (se == kIndefinite) {
+    } else if (se == TickUtils::indefinite()) {
       return end_ + (fade_time_ / 2);
     } else {
       return std::min(se, end_ + (fade_time_ / 2));

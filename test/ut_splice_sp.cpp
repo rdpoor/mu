@@ -80,8 +80,8 @@ int main() {
   fprintf(stderr, "=== no inputs\n");
   splice_sp.removeAllSources();
 
-  ASSERT(splice_sp.getStart()==mu::kIndefinite);
-  ASSERT(splice_sp.getEnd()==mu::kIndefinite);
+  ASSERT(splice_sp.getStart()==mu::TickUtils::indefinite());
+  ASSERT(splice_sp.getEnd()==mu::TickUtils::indefinite());
 
   splice_sp.step(buffer, 0, true);
 
@@ -95,8 +95,8 @@ int main() {
   splice_sp.removeAllSources();
   splice_sp.addSource(stream1);
 
-  ASSERT(splice_sp.getStart()==mu::kIndefinite);
-  ASSERT(splice_sp.getEnd()==mu::kIndefinite);
+  ASSERT(splice_sp.getStart()==mu::TickUtils::indefinite());
+  ASSERT(splice_sp.getEnd()==mu::TickUtils::indefinite());
 
   splice_sp.step(buffer, 0, true);
 
@@ -183,7 +183,7 @@ int main() {
   splice_sp.addSource(stream1);
   splice_sp.addSource(stream2);
 
-  ASSERT(splice_sp.getStart() == mu::kIndefinite);
+  ASSERT(splice_sp.getStart() == mu::TickUtils::indefinite());
   ASSERT(splice_sp.getEnd() == S2E);
 
   splice_sp.step(buffer, 0, true);
@@ -211,7 +211,7 @@ int main() {
   splice_sp.addSource(stream1);
   splice_sp.addSource(stream3);
   
-  ASSERT(splice_sp.getStart() == mu::kIndefinite);
+  ASSERT(splice_sp.getStart() == mu::TickUtils::indefinite());
   ASSERT(splice_sp.getEnd() == S3E);
   
   splice_sp.step(buffer, 0, true);
@@ -239,7 +239,7 @@ int main() {
   splice_sp.addSource(stream1);
   splice_sp.addSource(stream4);
 
-  ASSERT(splice_sp.getStart() == mu::kIndefinite);
+  ASSERT(splice_sp.getStart() == mu::TickUtils::indefinite());
   ASSERT(splice_sp.getEnd() == S4E);
 
   splice_sp.step(buffer, 0, true);

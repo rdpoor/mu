@@ -31,6 +31,7 @@
 #define MU_LINSEG_STREAM
 
 #include "mu.h"
+#include "tick_utils.h"
 #include "sample_processor.h"
 #include <map>
 

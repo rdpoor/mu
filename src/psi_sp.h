@@ -75,6 +75,7 @@
 #define MU_PSI_STREAM_H
 
 #include "mu.h"
+#include "tick_utils.h"
 #include "sample_processor.h"
 #include "psi_waveform.h"
 

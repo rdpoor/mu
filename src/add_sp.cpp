@@ -53,8 +53,8 @@ namespace mu {
       SampleProcessor *source = sources_.at(i);
       Tick source_start = source->getStart();
       Tick source_end = source->getEnd();
-      if (((source_start == kIndefinite) || (source_start < buffer_end)) &&
-          ((source_end == kIndefinite) || (source_end > buffer_start))) {
+      if (((source_start == TickUtils::indefinite()) || (source_start < buffer_end)) &&
+          ((source_end == TickUtils::indefinite()) || (source_end > buffer_start))) {
         // source has one or more frames to contribute to output.
         if (active_streams == 0) {
           // the first source can be copied directly to output.

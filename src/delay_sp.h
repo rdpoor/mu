@@ -30,6 +30,7 @@
 #define MU_DELAY_STREAM_H
 
 #include "mu.h"
+#include "tick_utils.h"
 #include "single_source_sp.h"
 
 namespace mu {

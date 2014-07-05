@@ -22,8 +22,8 @@ int main() {
   fprintf(stderr, "=== no breakpoints\n");
   ASSERT(linseg_sp.getBreakpointCount() == 0);
 
-  ASSERT(linseg_sp.getStart() == mu::kIndefinite);
-  ASSERT(linseg_sp.getEnd() == mu::kIndefinite);
+  ASSERT(linseg_sp.getStart() == mu::TickUtils::indefinite());
+  ASSERT(linseg_sp.getEnd() == mu::TickUtils::indefinite());
 
   linseg_sp.step(buffer, 0, true);
   ASSERT(buffer(0,0) == 0);
@@ -46,8 +46,8 @@ int main() {
   
   ASSERT(linseg_sp.getBreakpointCount() == 1);
 
-  ASSERT(linseg_sp.getStart() == mu::kIndefinite);
-  ASSERT(linseg_sp.getEnd() == mu::kIndefinite);
+  ASSERT(linseg_sp.getStart() == mu::TickUtils::indefinite());
+  ASSERT(linseg_sp.getEnd() == mu::TickUtils::indefinite());
 
   linseg_sp.step(buffer, 0, true);
   ASSERT(buffer(9,0) == 10);
@@ -81,8 +81,8 @@ int main() {
   linseg_sp.setHoldValue(true);
   ASSERT(linseg_sp.getBreakpointCount() == 2);
 
-  ASSERT(linseg_sp.getStart() == mu::kIndefinite);
-  ASSERT(linseg_sp.getEnd() == mu::kIndefinite);
+  ASSERT(linseg_sp.getStart() == mu::TickUtils::indefinite());
+  ASSERT(linseg_sp.getEnd() == mu::TickUtils::indefinite());
 
   linseg_sp.step(buffer, 0, true);
   ASSERT(buffer(9,0) == 10.0);
@@ -154,8 +154,8 @@ int main() {
   linseg_sp.setHoldValue(true);
   ASSERT(linseg_sp.getBreakpointCount() == 3);
 
-  ASSERT(linseg_sp.getStart() == mu::kIndefinite);
-  ASSERT(linseg_sp.getEnd() == mu::kIndefinite);
+  ASSERT(linseg_sp.getStart() == mu::TickUtils::indefinite());
+  ASSERT(linseg_sp.getEnd() == mu::TickUtils::indefinite());
 
   linseg_sp.step(buffer, 0, true);
 
@@ -184,8 +184,8 @@ int main() {
 
   fprintf(stderr, "=== three breakpoints, spanning buffer, hold value\n");
   
-  ASSERT(linseg_sp.getStart() == mu::kIndefinite);
-  ASSERT(linseg_sp.getEnd() == mu::kIndefinite);
+  ASSERT(linseg_sp.getStart() == mu::TickUtils::indefinite());
+  ASSERT(linseg_sp.getEnd() == mu::TickUtils::indefinite());
 
   linseg_sp.step(buffer, -FRAME_COUNT, true);
   ASSERT(buffer(FRAME_COUNT-1,0) == 8.9);
@@ -204,8 +204,8 @@ int main() {
   linseg_sp.removeAllBreakpoints();
   ASSERT(linseg_sp.getBreakpointCount() == 0);
 
-  ASSERT(linseg_sp.getStart() == mu::kIndefinite);
-  ASSERT(linseg_sp.getEnd() == mu::kIndefinite);
+  ASSERT(linseg_sp.getStart() == mu::TickUtils::indefinite());
+  ASSERT(linseg_sp.getEnd() == mu::TickUtils::indefinite());
 
   // ================================================================
   fprintf(stderr,"=== done\n");

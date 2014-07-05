@@ -27,6 +27,7 @@
 #define MU_PSI_WAVEFORM_H
 
 #include "mu.h"
+#include "tick_utils.h"
 #include <unordered_map>
 
 namespace mu {

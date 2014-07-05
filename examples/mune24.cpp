@@ -58,9 +58,9 @@ public:
       // This cast is guaranteed to be legit because we added the
       // fade stream in addSource() (above).
       mu::FadeSP *curr = (mu::FadeSP *)sources_.at(i);
-      curr->setEnd(mu::kIndefinite);
+      curr->setEnd(mu::TickUtils::indefinite());
       if (prev == NULL) {
-        curr->setStart(mu::kIndefinite);
+        curr->setStart(mu::TickUtils::indefinite());
       } else {
         // Set crossfade to the start time of this source.
         mu::Tick t = curr->getSource()->getStart();
@@ -78,12 +78,12 @@ void SeqSP::sortSources() {
 }
 
 // A sorting predicate that sorts elements according to the start
-// time of each source.  A start time of kIndefinite sorts earlier
+// time of each source.  A start time of TickUtils::indefinite() sorts earlier
 // than all other times.
 bool SeqSP::sortPredicate(mu::SampleProcessor *s0, mu::SampleProcessor *s1) {
-  if (s0->getStart() == mu::kIndefinite) {
+  if (s0->getStart() == mu::TickUtils::indefinite()) {
     return true;
-  } else if (s1->getStart() == mu::kIndefinite) {
+  } else if (s1->getStart() == mu::TickUtils::indefinite()) {
     return false;
   } else {
     return (s0->getStart() < s1->getStart());

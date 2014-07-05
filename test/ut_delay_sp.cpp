@@ -30,8 +30,8 @@ int main() {
 
   ASSERT(buffer(0,0) == 0);
 
-  ASSERT(delay_sp.getStart() == mu::kIndefinite);
-  ASSERT(delay_sp.getEnd() == mu::kIndefinite);
+  ASSERT(delay_sp.getStart() == mu::TickUtils::indefinite());
+  ASSERT(delay_sp.getEnd() == mu::TickUtils::indefinite());
 
   delay_sp.setSource(&identity_sp).setDelay(DELAY_P_100);
   delay_sp.step(buffer, 0, true);
@@ -41,8 +41,8 @@ int main() {
   ASSERT(buffer(511,0) == (511-DELAY_P_100));
   ASSERT(buffer(511,1) == (511-DELAY_P_100));
 
-  ASSERT(delay_sp.getStart() == mu::kIndefinite);
-  ASSERT(delay_sp.getEnd() == mu::kIndefinite);
+  ASSERT(delay_sp.getStart() == mu::TickUtils::indefinite());
+  ASSERT(delay_sp.getEnd() == mu::TickUtils::indefinite());
 
   delay_sp.setSource(&identity_sp).setDelay(DELAY_P_100);
   delay_sp.step(buffer, DELAY_P_100, true);

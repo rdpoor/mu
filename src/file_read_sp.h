@@ -27,6 +27,7 @@
 #define MU_FILE_READ_STREAM_H
 
 #include "mu.h"
+#include "tick_utils.h"
 #include "sample_processor.h"
 #include <FileRead.h>
 

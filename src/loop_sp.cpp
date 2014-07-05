@@ -28,8 +28,8 @@ namespace mu {
 
   LoopSP::LoopSP() :
     loop_duration_ ( kDefaultLoopDuration ),
-    start_ ( kIndefinite ),
-    end_ ( kIndefinite ) {
+    start_ ( TickUtils::indefinite() ),
+    end_ ( TickUtils::indefinite() ) {
     buffer_.resize(stk::RT_BUFFER_SIZE, 2);
   }
 
@@ -52,8 +52,8 @@ namespace mu {
 
     Tick start_tick = tick;
     Tick end_tick = tick + buffer.frames();
-    if (start_ != kIndefinite) start_tick = std::max(start_tick, start_);
-    if (end_ != kIndefinite) end_tick = std::min(end_tick, end_);
+    if (start_ != TickUtils::indefinite()) start_tick = std::max(start_tick, start_);
+    if (end_ != TickUtils::indefinite()) end_tick = std::min(end_tick, end_);
     Tick n_frames = end_tick - start_tick;
 
     if (n_frames < buffer.frames()) zeroBuffer(buffer);

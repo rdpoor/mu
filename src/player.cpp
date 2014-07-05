@@ -65,10 +65,4 @@ namespace mu {
     tick_ = tick; return *this;
   }
 
-  MuTime Player::getTime() const { return getTick() / getFrameRate(); }
-  Player& Player::setTime(MuTime time) {
-    TRACE("Player::setTime()\n");
-    setTick(time * getFrameRate()); return *this;
-  }
-
 }

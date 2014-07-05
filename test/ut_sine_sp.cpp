@@ -34,8 +34,8 @@ int main() {
     }
   }
 
-  ASSERT(sine_sp.getStart() == mu::kIndefinite);
-  ASSERT(sine_sp.getEnd() == mu::kIndefinite);
+  ASSERT(sine_sp.getStart() == mu::TickUtils::indefinite());
+  ASSERT(sine_sp.getEnd() == mu::TickUtils::indefinite());
 
   sine_sp.setFrequency(440.0);
   ASSERT(near(sine_sp.getFrequency(), 440.0) == true);

@@ -242,8 +242,8 @@ public:
   }
 
   mu::Tick getEnd() {
-    if ((source_ == NULL) || (source_->getEnd() == mu::kIndefinite)) {
-      return mu::kIndefinite;
+    if ((source_ == NULL) || (source_->getEnd() == mu::TickUtils::indefinite())) {
+      return mu::TickUtils::indefinite();
     } else {
       // badly written to extend end time by reverb tail
       return source_->getEnd() + 44100 * 2.5;

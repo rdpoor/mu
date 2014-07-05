@@ -31,6 +31,7 @@
 #define MU_LOOP_STREAM_H
 
 #include "mu.h"
+#include "tick_utils.h"
 #include "single_source_sp.h"
 
 namespace mu {
@@ -48,13 +49,13 @@ namespace mu {
 
     void step(stk::StkFrames& buffer, Tick tick, bool is_new_event);
 
-    Tick getStart( void ) { return kIndefinite; }
+    Tick getStart( void ) { return TickUtils::indefinite(); }
     LoopSP &setStart(Tick start) {
       start_ = start;
       return *this;
     }
 
-    Tick getEnd( void ) { return kIndefinite; }
+    Tick getEnd( void ) { return TickUtils::indefinite(); }
     LoopSP &setEnd(Tick end) {
       end_ = end;
       return *this;

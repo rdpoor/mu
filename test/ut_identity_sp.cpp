@@ -28,8 +28,8 @@ int main() {
   ASSERT(buffer((FRAME_COUNT-1),0) == (FRAME_COUNT-1));
   ASSERT(buffer((FRAME_COUNT-1),1) == (FRAME_COUNT-1));
 
-  ASSERT(identity_sp.getStart() == mu::kIndefinite);
-  ASSERT(identity_sp.getEnd() == mu::kIndefinite);
+  ASSERT(identity_sp.getStart() == mu::TickUtils::indefinite());
+  ASSERT(identity_sp.getEnd() == mu::TickUtils::indefinite());
 
   identity_sp.step(buffer, OFFSET_P, true);
 

@@ -27,6 +27,7 @@
 #define MU_FILE_WRITE_STREAM_H
 
 #include "mu.h"
+#include "tick_utils.h"
 #include "single_source_sp.h"
 #include <Stk.h>
 #include <FileWrite.h>

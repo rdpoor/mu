@@ -30,6 +30,7 @@
 #define MU_ADD_STREAM_H
 
 #include "mu.h"
+#include "tick_utils.h"
 #include "multi_source_sp.h"
 
 namespace mu {

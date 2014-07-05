@@ -31,6 +31,7 @@
 #define MU_SINGLE_SOURCE_STREAM
 
 #include "mu.h"
+#include "player.h"
 #include "sample_processor.h"
 
 namespace mu {
@@ -43,8 +44,8 @@ namespace mu {
     ~SingleSourceSP() {
     }
     virtual void step(stk::StkFrames& buffer, Tick tick, bool is_new_event) = 0;
-    virtual Tick getStart( void ) { return (source_ == NULL) ? kIndefinite : source_->getStart(); }
-    virtual Tick getEnd( void ) { return (source_ == NULL) ? kIndefinite : source_->getEnd(); }
+    virtual Tick getStart( void ) { return (source_ == NULL) ? TickUtils::indefinite() : source_->getStart(); }
+    virtual Tick getEnd( void ) { return (source_ == NULL) ? TickUtils::indefinite() : source_->getEnd(); }
     SampleProcessor *getSource() { return source_; }
     T& setSource(SampleProcessor *source) { source_ = source; return *static_cast<T *>(this); }
   protected:

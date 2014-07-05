@@ -27,6 +27,7 @@
 #define MU_PLAYER_H
 
 #include "mu.h"
+#include "tick_utils.h"
 #include <math.h>
 
 namespace mu {
@@ -52,9 +53,6 @@ namespace mu {
 
     Tick getTick() const;
     Player& setTick(Tick tick);
-
-    MuTime getTime() const;
-    Player& setTime(MuTime time);
 
     // Start the player if not already running.  Does not rewind
     // before starting.

@@ -38,8 +38,8 @@ namespace mu {
   }
 
   Tick ReverbSP::getEnd() {
-    if ((source_ == NULL) || (source_->getEnd() == kIndefinite)) {
-      return kIndefinite;
+    if ((source_ == NULL) || (source_->getEnd() == TickUtils::indefinite())) {
+      return TickUtils::indefinite();
     } else {
       // badly written to extend end time by reverb tail
       return source_->getEnd() + 44100 * 2.5;

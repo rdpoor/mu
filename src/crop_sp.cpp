@@ -28,8 +28,8 @@
 namespace mu {
 
   CropSP::CropSP()
-    : start_ (kIndefinite), 
-      end_ (kIndefinite) {
+    : start_ (TickUtils::indefinite()), 
+      end_ (TickUtils::indefinite()) {
     buffer_.resize(stk::RT_BUFFER_SIZE, 2);
   }
 
@@ -54,8 +54,8 @@ namespace mu {
       Tick buffer_end = tick + buffer.frames();
       Tick source_start = getStart();
       Tick source_end = getEnd();
-      source_start = (source_start == kIndefinite) ? buffer_start : std::max(source_start, buffer_start);
-      source_end = (source_end == kIndefinite) ? buffer_end : std::min(source_end, buffer_end);
+      source_start = (source_start == TickUtils::indefinite()) ? buffer_start : std::max(source_start, buffer_start);
+      source_end = (source_end == TickUtils::indefinite()) ? buffer_end : std::min(source_end, buffer_end);
 
       if ((source_start >= buffer_end) || (source_end < buffer_start)) {
         // source does not intersect with buffer.  Just zero the buffer.
@@ -96,9 +96,9 @@ namespace mu {
   Tick CropSP::getStart() {
     if (source_ == NULL) {
       return start_;
-    } else if (source_->getStart() == kIndefinite) {
+    } else if (source_->getStart() == TickUtils::indefinite()) {
       return start_;
-    } else if (start_ == kIndefinite) {
+    } else if (start_ == TickUtils::indefinite()) {
       return source_->getStart();
     } else {
       return std::max(source_->getStart(), start_);
@@ -111,9 +111,9 @@ namespace mu {
   Tick CropSP::getEnd() {
     if (source_ == NULL) {
       return end_;
-    } else if (source_->getEnd() == kIndefinite) {
+    } else if (source_->getEnd() == TickUtils::indefinite()) {
       return end_;
-    } else if (end_ == kIndefinite) {
+    } else if (end_ == TickUtils::indefinite()) {
       return source_->getEnd();
     } else {
       return std::min(source_->getEnd(), end_);

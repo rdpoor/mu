@@ -18,7 +18,7 @@
 class ResetSP : public mu::MultiSourceSP<ResetSP> {
 public:
   
-  ResetSP() : prev_tick_ (mu::kIndefinite) { }
+  ResetSP() : prev_tick_ (mu::TickUtils::indefinite()) { }
   ~ResetSP( void ) { }
   void step(stk::StkFrames& buffer, mu::Tick tick, bool is_new_event) {
     if (sources_.size() == 0) {

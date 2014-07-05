@@ -48,16 +48,16 @@ namespace mu {
   }
 
   Tick DelaySP::getStart() {
-    if ((source_ == NULL) || (source_->getStart() == kIndefinite)) {
-      return kIndefinite;
+    if ((source_ == NULL) || (source_->getStart() == TickUtils::indefinite())) {
+      return TickUtils::indefinite();
     } else {
       return (source_->getStart() + delay_);
     }
   }
 
   Tick DelaySP::getEnd() {
-    if ((source_ == NULL) || (source_->getEnd() == kIndefinite)) {
-      return kIndefinite;
+    if ((source_ == NULL) || (source_->getEnd() == TickUtils::indefinite())) {
+      return TickUtils::indefinite();
     } else {
       return (source_->getEnd() + delay_);
     }

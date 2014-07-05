@@ -43,9 +43,9 @@ int main() {
   std::cout << s1.inspect();
   // ASSERT(s1.inspect() == "No inspector");
 
-  ASSERT(s1.getStart() == mu::kIndefinite);
-  ASSERT(s1.getEnd() == mu::kIndefinite);
-  ASSERT(s1.getDuration() == mu::kIndefinite);
+  ASSERT(s1.getStart() == mu::TickUtils::indefinite());
+  ASSERT(s1.getEnd() == mu::TickUtils::indefinite());
+  ASSERT(s1.getDuration() == mu::TickUtils::indefinite());
   ASSERT(s1.doesContain(0) == true);
   ASSERT(s1.doesContain(42) == true);
   ASSERT(s1.doesContain(44) == true);
@@ -66,28 +66,28 @@ int main() {
   ASSERT(s3.doesContain(55) == true);
   ASSERT(s3.doesContain(56) == false);
   
-  s3.setStart(52).setEnd(mu::kIndefinite);
+  s3.setStart(52).setEnd(mu::TickUtils::indefinite());
   ASSERT(s3.getStart() == 52);
-  ASSERT(s3.getEnd() == mu::kIndefinite);
-  ASSERT(s3.getDuration() == mu::kIndefinite);
+  ASSERT(s3.getEnd() == mu::TickUtils::indefinite());
+  ASSERT(s3.getDuration() == mu::TickUtils::indefinite());
   ASSERT(s3.doesContain(51) == false);
   ASSERT(s3.doesContain(52) == true);
   ASSERT(s3.doesContain(55) == true);
   ASSERT(s3.doesContain(56) == true);
 
-  s3.setStart(mu::kIndefinite).setEnd(56);
-  ASSERT(s3.getStart() == mu::kIndefinite);
+  s3.setStart(mu::TickUtils::indefinite()).setEnd(56);
+  ASSERT(s3.getStart() == mu::TickUtils::indefinite());
   ASSERT(s3.getEnd() == 56);
-  ASSERT(s3.getDuration() == mu::kIndefinite);
+  ASSERT(s3.getDuration() == mu::TickUtils::indefinite());
   ASSERT(s3.doesContain(51) == true);
   ASSERT(s3.doesContain(52) == true);
   ASSERT(s3.doesContain(55) == true);
   ASSERT(s3.doesContain(56) == false);
   
-  s3.setStart(mu::kIndefinite).setEnd(mu::kIndefinite);
-  ASSERT(s3.getStart() == mu::kIndefinite);
-  ASSERT(s3.getEnd() == mu::kIndefinite);
-  ASSERT(s3.getDuration() == mu::kIndefinite);
+  s3.setStart(mu::TickUtils::indefinite()).setEnd(mu::TickUtils::indefinite());
+  ASSERT(s3.getStart() == mu::TickUtils::indefinite());
+  ASSERT(s3.getEnd() == mu::TickUtils::indefinite());
+  ASSERT(s3.getDuration() == mu::TickUtils::indefinite());
   ASSERT(s3.doesContain(51) == true);
   ASSERT(s3.doesContain(52) == true);
   ASSERT(s3.doesContain(55) == true);

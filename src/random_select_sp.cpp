@@ -43,11 +43,11 @@ namespace mu {
   }
 
   Tick RandomSelectSP::getStart() { 
-    return (current_stream_ == NULL) ? kIndefinite : current_stream_->getStart(); 
+    return (current_stream_ == NULL) ? TickUtils::indefinite() : current_stream_->getStart(); 
   }
   
   Tick RandomSelectSP::getEnd() { 
-    return (current_stream_ == NULL) ? kIndefinite : current_stream_->getEnd(); 
+    return (current_stream_ == NULL) ? TickUtils::indefinite() : current_stream_->getEnd(); 
   }
     
   RandomSelectSP& RandomSelectSP::reset() {

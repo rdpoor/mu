@@ -34,8 +34,8 @@ int main() {
   ASSERT(buffer((FRAME_COUNT-1),0) == 0);
   ASSERT(buffer((FRAME_COUNT-1),1) == 0);
 
-  ASSERT(resample_sp.getStart() == mu::kIndefinite);
-  ASSERT(resample_sp.getEnd() == mu::kIndefinite);
+  ASSERT(resample_sp.getStart() == mu::TickUtils::indefinite());
+  ASSERT(resample_sp.getEnd() == mu::TickUtils::indefinite());
 
   fprintf(stderr,"=== null sample input\n");
   resample_sp.setSampleSource(NULL);
@@ -47,8 +47,8 @@ int main() {
   ASSERT(buffer((FRAME_COUNT-1),0) == 0);
   ASSERT(buffer((FRAME_COUNT-1),1) == 0);
 
-  ASSERT(resample_sp.getStart() == mu::kIndefinite);
-  ASSERT(resample_sp.getEnd() == mu::kIndefinite);
+  ASSERT(resample_sp.getStart() == mu::TickUtils::indefinite());
+  ASSERT(resample_sp.getEnd() == mu::TickUtils::indefinite());
 
   fprintf(stderr,"=== null timing input\n");
   resample_sp.setSampleSource(&identity_sp);
@@ -60,8 +60,8 @@ int main() {
   ASSERT(buffer((FRAME_COUNT-1),0) == 0);
   ASSERT(buffer((FRAME_COUNT-1),1) == 0);
 
-  ASSERT(resample_sp.getStart() == mu::kIndefinite);
-  ASSERT(resample_sp.getEnd() == mu::kIndefinite);
+  ASSERT(resample_sp.getStart() == mu::TickUtils::indefinite());
+  ASSERT(resample_sp.getEnd() == mu::TickUtils::indefinite());
 
   fprintf(stderr,"=== unity timing\n");
   
@@ -76,8 +76,8 @@ int main() {
   ASSERT(buffer(buffer.frames()-1,0) == (buffer.frames()-1) * 1.0);
   ASSERT(buffer(buffer.frames()-1,1) == (buffer.frames()-1) * 1.0);
 
-  ASSERT(resample_sp.getStart() == mu::kIndefinite);
-  ASSERT(resample_sp.getEnd() == mu::kIndefinite);
+  ASSERT(resample_sp.getStart() == mu::TickUtils::indefinite());
+  ASSERT(resample_sp.getEnd() == mu::TickUtils::indefinite());
 
   fprintf(stderr,"=== 2x timing\n");
   
@@ -96,8 +96,8 @@ int main() {
   ASSERT(buffer(buffer.frames()-1,0) == (buffer.frames()-1) * 2.0);
   ASSERT(buffer(buffer.frames()-1,1) == (buffer.frames()-1) * 2.0);
 
-  ASSERT(resample_sp.getStart() == mu::kIndefinite);
-  ASSERT(resample_sp.getEnd() == mu::kIndefinite);
+  ASSERT(resample_sp.getStart() == mu::TickUtils::indefinite());
+  ASSERT(resample_sp.getEnd() == mu::TickUtils::indefinite());
 
 
   fprintf(stderr,"=== 0.5x timing\n");
@@ -116,8 +116,8 @@ int main() {
   ASSERT(buffer(buffer.frames()-1,0) == (buffer.frames()-1) * 0.5);
   ASSERT(buffer(buffer.frames()-1,1) == (buffer.frames()-1) * 0.5);
 
-  ASSERT(resample_sp.getStart() == mu::kIndefinite);
-  ASSERT(resample_sp.getEnd() == mu::kIndefinite);
+  ASSERT(resample_sp.getStart() == mu::TickUtils::indefinite());
+  ASSERT(resample_sp.getEnd() == mu::TickUtils::indefinite());
 
 
   fprintf(stderr,"=== -1.0x timing\n");
@@ -142,8 +142,8 @@ int main() {
   ASSERT(buffer(buffer.frames()-1,0) == 0.0);
   ASSERT(buffer(buffer.frames()-1,1) == 0.0);
 
-  ASSERT(resample_sp.getStart() == mu::kIndefinite);
-  ASSERT(resample_sp.getEnd() == mu::kIndefinite);
+  ASSERT(resample_sp.getStart() == mu::TickUtils::indefinite());
+  ASSERT(resample_sp.getEnd() == mu::TickUtils::indefinite());
 
   fprintf(stderr,"=== done\n");
   return 0;

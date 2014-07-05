@@ -27,7 +27,7 @@
 #define MU_STREAM_H
 
 #include "mu.h"
-#include "player.h"
+#include "tick_utils.h"
 #include <iostream>
 
 namespace mu {
@@ -39,10 +39,10 @@ namespace mu {
     virtual void step(stk::StkFrames& buffer, Tick tick, bool is_new_event) = 0;
     
     // define the extent of this stream: when it starts and ends
-    virtual Tick getStart( void ) { return kIndefinite; }
-    virtual Tick getEnd( void ) { return kIndefinite; }
+    virtual Tick getStart( void ) { return TickUtils::indefinite(); }
+    virtual Tick getEnd( void ) { return TickUtils::indefinite(); }
     Tick getDuration( void ) {     
-      return ((getStart()==kIndefinite) || (getEnd()==kIndefinite)) ? kIndefinite : (getEnd() - getStart());
+      return ((getStart()==TickUtils::indefinite()) || (getEnd()==TickUtils::indefinite())) ? TickUtils::indefinite() : (getEnd() - getStart());
     }
 
     virtual std::string getClassName() { return "SampleProcessor"; }
@@ -55,8 +55,8 @@ namespace mu {
     // Return true if tick falls within start (inclusive) and end
     // (exclusive) of this stream.
     bool doesContain( Tick tick ) {
-      bool after_start = (getStart() == kIndefinite) || (tick >= getStart());
-      bool before_end = (getEnd() == kIndefinite) || (tick < getEnd());
+      bool after_start = (getStart() == TickUtils::indefinite()) || (tick >= getStart());
+      bool before_end = (getEnd() == TickUtils::indefinite()) || (tick < getEnd());
       return after_start && before_end;
     }
     

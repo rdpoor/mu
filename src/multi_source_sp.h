@@ -31,6 +31,7 @@
 #define MU_MULTI_SOURCE_STREAM
 
 #include "mu.h"
+#include "tick_utils.h"
 #include "sample_processor.h"
 
 namespace mu {
@@ -40,14 +41,14 @@ namespace mu {
     
     Tick getStart( void ) {
       if (sources_.size() == 0) {
-        return kIndefinite;
+        return TickUtils::indefinite();
       } else {
         Tick earliest_start = LONG_MAX;
         for (long int i=0; i<sources_.size(); i++) {
           SampleProcessor *source = sources_.at(i);
           Tick start = source->getStart();
-          if (start == kIndefinite) {
-            return kIndefinite;
+          if (start == TickUtils::indefinite()) {
+            return TickUtils::indefinite();
           } else {
             earliest_start = std::min(earliest_start, start);
           }
@@ -58,14 +59,14 @@ namespace mu {
     
     Tick getEnd( void ) {
       if (sources_.size() == 0) {
-        return kIndefinite;
+        return TickUtils::indefinite();
       } else {
         Tick latest_end = LONG_MIN;
         for (long int i=0; i<sources_.size(); i++) {
           SampleProcessor *source = sources_.at(i);
           Tick end = source->getEnd();
-          if (end == kIndefinite) {
-            return kIndefinite;
+          if (end == TickUtils::indefinite()) {
+            return TickUtils::indefinite();
           } else {
             latest_end = std::max(latest_end, end);
           }

@@ -55,8 +55,8 @@ int main() {
   ASSERT(buffer((FRAME_COUNT-1),0) == 0);
   ASSERT(buffer((FRAME_COUNT-1),1) == 0);
 
-  ASSERT(multiply_sp.getStart()==mu::kIndefinite);
-  ASSERT(multiply_sp.getEnd()==mu::kIndefinite);
+  ASSERT(multiply_sp.getStart()==mu::TickUtils::indefinite());
+  ASSERT(multiply_sp.getEnd()==mu::TickUtils::indefinite());
 
   // ================================================================
   fprintf(stderr, "=== stream1 only\n");
@@ -69,8 +69,8 @@ int main() {
   ASSERT(buffer((FRAME_COUNT-1),0) == (FRAME_COUNT-1));
   ASSERT(buffer((FRAME_COUNT-1),1) == (FRAME_COUNT-1));
 
-  ASSERT(multiply_sp.getStart()==mu::kIndefinite);
-  ASSERT(multiply_sp.getEnd()==mu::kIndefinite);
+  ASSERT(multiply_sp.getStart()==mu::TickUtils::indefinite());
+  ASSERT(multiply_sp.getEnd()==mu::TickUtils::indefinite());
 
   // ================================================================
   fprintf(stderr, "=== stream2 only\n");
@@ -167,8 +167,8 @@ int main() {
   ASSERT(buffer((FRAME_COUNT-1),0) == 0);
   ASSERT(buffer((FRAME_COUNT-1),1) == 0);
 
-  ASSERT(multiply_sp.getStart() == mu::kIndefinite);
-  ASSERT(multiply_sp.getEnd() == mu::kIndefinite);
+  ASSERT(multiply_sp.getStart() == mu::TickUtils::indefinite());
+  ASSERT(multiply_sp.getEnd() == mu::TickUtils::indefinite());
 
   // ================================================================
   fprintf(stderr, "=== stream1 + stream3\n");
@@ -203,8 +203,8 @@ int main() {
   ASSERT(buffer((FRAME_COUNT-1),0) == 0);
   ASSERT(buffer((FRAME_COUNT-1),1) == 0);
 
-  ASSERT(multiply_sp.getStart() == mu::kIndefinite);
-  ASSERT(multiply_sp.getEnd() == mu::kIndefinite);
+  ASSERT(multiply_sp.getStart() == mu::TickUtils::indefinite());
+  ASSERT(multiply_sp.getEnd() == mu::TickUtils::indefinite());
 
   // ================================================================
   fprintf(stderr, "=== stream1 + stream4\n");
@@ -239,8 +239,8 @@ int main() {
   ASSERT(buffer((FRAME_COUNT-1),0) == 0);
   ASSERT(buffer((FRAME_COUNT-1),1) == 0);
 
-  ASSERT(multiply_sp.getStart() == mu::kIndefinite);
-  ASSERT(multiply_sp.getEnd() == mu::kIndefinite);
+  ASSERT(multiply_sp.getStart() == mu::TickUtils::indefinite());
+  ASSERT(multiply_sp.getEnd() == mu::TickUtils::indefinite());
 
   // ================================================================
   fprintf(stderr, "=== stream2 + stream3\n");

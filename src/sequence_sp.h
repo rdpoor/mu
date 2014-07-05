@@ -33,6 +33,7 @@
 #define MU_SEQUENCE_STREAM_H
 
 #include "mu.h"
+#include "player.h"
 #include "add_sp.h"
 
 namespace mu {

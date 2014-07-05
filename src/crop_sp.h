@@ -1,7 +1,7 @@
 /*
  * CropSP limits a stream to a definite starting and ending time,
  * returning zero samples ouside of those times.  start and/or end
- * may be set to kIndefinite, in which case CropSP inherits the
+ * may be set to TickUtils::indefinite(), in which case CropSP inherits the
  * corresponding start or end time from the source.
  */
 /*
@@ -33,6 +33,7 @@
 #define MU_CROP_STREAM_H
 
 #include "mu.h"
+#include "tick_utils.h"
 #include "single_source_sp.h"
 
 namespace mu {
