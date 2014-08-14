@@ -27,12 +27,10 @@
 namespace mu {
 
   MultiplySP::MultiplySP() {
-    TRACE("MultiplySP::MultiplySP()\n");
     buffer_.resize(stk::RT_BUFFER_SIZE, 2);
   }
 
   MultiplySP::~MultiplySP() {
-    TRACE("MultiplySP::~MultiplySP()\n");
   }
 
   void MultiplySP::inspectAux(std::stringstream& ss, int level) {

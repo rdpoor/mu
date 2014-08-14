@@ -34,7 +34,6 @@ namespace mu {
   }
 
   CropSP::~CropSP() {
-    TRACE("CropSP::~CropSP()\n");
   }
 
   // TODO: put this in SingleSourceSP

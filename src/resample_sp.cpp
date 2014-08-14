@@ -35,7 +35,6 @@ namespace mu {
   }
 
   ResampleSP::~ResampleSP() {
-    TRACE("ResampleSP::~ResampleSP()\n");
   }
 
   void ResampleSP::inspectAux(std::stringstream& ss, int level) {

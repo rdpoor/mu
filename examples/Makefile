@@ -4,7 +4,7 @@ SOURCES := $(wildcard *.cpp)
 TARGETS := $(patsubst %.cpp,%,$(SOURCES))
 
 CC       = g++
-ifdef $(MU_DEBUG)
+ifdef MU_DEBUG
 CFLAGS   = -O0 -g -Wall
 else
 CFLAGS   = -O3 -Wall

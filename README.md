@@ -34,6 +34,7 @@ an existing test package.
 * When do we release resources?  Do we need a Transport.pause() method
   distinct from Transport.stop()?
 * Add command line parsing such as argp.h
+* Create mechanisms for panning and localization.
 
 ## changelog 
 
@@ -677,3 +678,60 @@ With time associated:
 MergeES(s0, s1, ...)
 DelayES(s, t)
 StretchES(s, t)
+
+=== hello again
+
+It's been a while.  Let's see how much we can do without creating an entirely
+new class of EventStream.  Perhaps we can accomplish (nearly?) everything with
+just StreamProcessors.
+
+s1 = new FileReadSP().setFileName("f1");
+s2 = new CropSP().setSource(s1).setStart(1.0).setEnd(2.0);
+player.setSource(s2);
+player.start();
+
+At time = 0.0, this plays samples from 1.0 seconds into file f1.  It stops at
+time = 1.0.  Note that CropSP now creates an implicit delay: the start time is
+shifted to time 0.0.  Syntactically (and semantically), this is similar to
+what we already have.  
+
+s1 = new FileReadSP().setFileName("f1");
+s2 = new CropSP().setSource(s1).setStart(1.0).setEnd(2.0);
+s3 = new FileReadSP().setFileName("f2");
+s4 = new CropSP().setSource(s1).setStart(1.0).setEnd(2.0);
+s5 = new AppendSP().addSource(s1).addSource(s2);
+player.setSource(s5);
+player.start();
+
+This introduces AppendSP, whose contract is to start playing one stream when
+the previous one ends, with an implicit delay of the previous stream's end 
+time.  This effectively creates a butt splice between each stream.
+
+s1 = new FileReadSP().setFileName("f1");
+s2 = new CropSP().setSource(s1).setStart(1.0).setEnd(2.0);
+s3 = new FileReadSP().setFileName("f2");
+s4 = new CropSP().setSource(s1).setStart(1.0).setEnd(2.0);
+s5 = new AppendSP().addSource(s1).addSource(s2).setXFadeTime(0.2);
+player.setSource(s5);
+player.start();
+
+Here, AppendSP has a new method, setXFadeTime(), that creates a cross-fade
+between successive streams.
+
+I think where all this is going is that we build up a symbolic representation
+of all the transformations (sound source, delay, crop, cross-fade), and don't
+actually manpulate any audio data until it is time to render the samples.
+
+Next question: is this "score" a static data structure?  If so, how does it
+handle loops?  Or is it an object that responds to some well defined methods?
+
+And at the end of the day, what does this buy us?  A time-ordered stream of
+events, where each event has a render() method.
+
+=== Meh.
+
+Rather than create an entirely new subsystem, I just want to see how
+much progress I can make with the existing structure.  Created a good
+sounding strummed multi-string instrument with hammer-on, hammer-off.
+See mune33.cpp.
+

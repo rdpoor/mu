@@ -33,7 +33,6 @@ namespace mu {
   }
 
   FileWriteSP::~FileWriteSP() {
-    TRACE("FileWriteSP::~FileWriteSP()\n");
   }
   
   void FileWriteSP::inspectAux(std::stringstream& ss, int level) {

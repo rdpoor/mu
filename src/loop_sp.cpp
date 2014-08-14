@@ -34,7 +34,6 @@ namespace mu {
   }
 
   LoopSP::~LoopSP() {
-    TRACE("LoopSP::~LoopSP()\n");
   }
 
   void LoopSP::inspectAux(std::stringstream& ss, int level) {

@@ -40,7 +40,6 @@ namespace mu {
   }
 
   FadeSP::~FadeSP() {
-    TRACE("FadeSP::~FadeSP()\n");
   }
 
   void FadeSP::inspectAux(std::stringstream& ss, int level) {

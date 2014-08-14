@@ -27,12 +27,10 @@
 namespace mu {
 
   AddSP::AddSP() {
-    TRACE("AddSP::AddSP()\n");
     buffer_.resize(stk::RT_BUFFER_SIZE, 2);
   }
 
   AddSP::~AddSP() {
-    TRACE("AddSP::~AddSP()\n");
   }
 
   void AddSP::inspectAux(std::stringstream& ss, int level) {

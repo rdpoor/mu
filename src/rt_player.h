@@ -55,7 +55,6 @@ namespace mu {
 
     int getDeviceNumber() const { return device_number_; }
     RtPlayer& setDeviceNumber(int device_number) {
-      TRACE("RtPlayer::deviceNumber()\n");
       device_number_ = device_number; return *this;
     }
     

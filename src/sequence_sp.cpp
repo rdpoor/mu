@@ -28,11 +28,9 @@
 namespace mu {
 
   SequenceSP::SequenceSP() {
-    TRACE("SequenceSP::SequenceSP()\n");
   }
 
   SequenceSP::~SequenceSP() {
-    TRACE("SequenceSP::~SequenceSP()\n");
   }
 
   SequenceSP& SequenceSP::addSource(SampleProcessor *source, Tick delay) {

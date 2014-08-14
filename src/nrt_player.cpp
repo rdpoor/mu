@@ -56,19 +56,16 @@ namespace mu {
   NrtPlayer::NrtPlayer()
     : is_running_enabled_ (false),
       is_running_ (false) {
-    TRACE("NrtPlayer::NrtPlayer()\n");
     stk_frames_.resize(stk::RT_BUFFER_SIZE, 2); // pre-allocate stk_frames_ 
     init();
   }
 
   NrtPlayer::~NrtPlayer() {
-    TRACE("NrtPlayer::~NrtPlayer()\n");
   }
 
   // Start the nrt_player if not already running.  Does not rewind
   // before starting.
   NrtPlayer& NrtPlayer::start() {
-    TRACE("NrtPlayer::start()\n");
     if (!is_running_enabled_) {
       main_processing_thread_ = pthread_self();      
       int rc = pthread_create(&processing_thread_, NULL, process, (void *)this);
@@ -85,7 +82,6 @@ namespace mu {
   // true, immediately stops the nrt_player, otherwise gives time for
   // already queued samples to finish.
   NrtPlayer& NrtPlayer::stop(bool immediately) {
-    TRACE("NrtPlayer::stop()\n");
     if (is_running_enabled_) {
       is_running_enabled_ = false;
       if (immediately) {

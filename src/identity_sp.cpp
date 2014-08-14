@@ -27,11 +27,9 @@
 namespace mu {
 
   IdentitySP::IdentitySP() {
-    TRACE("IdentitySP::IdentitySP()\n");
   }
   
   IdentitySP::~IdentitySP() {
-    TRACE("IdentitySP::~IdentitySP()\n");
   }
   
   void IdentitySP::step(stk::StkFrames& buffer, Tick tick, bool is_new_event) {

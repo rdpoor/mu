@@ -32,16 +32,15 @@
 
 namespace mu {
 
-#define TRACE(s)
-  // resolve circular dependencies
-  class SampleProcessor;
-  class Player;
+// resolve circular dependencies
+class SampleProcessor;
+class Player;
 
-  // define a type for a general vector of SampleProcessors
-  typedef std::vector<SampleProcessor *> SPVector;
+// define a type for a general vector of SampleProcessors
+typedef std::vector<SampleProcessor *> SPVector;
 
-  // TODO: should be in a units.h or utilities.h file
-  double dbToValue(double db);
+// TODO: should be in a units.h or utilities.h file
+double dbToValue(double db);
 
 };
 

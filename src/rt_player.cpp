@@ -92,7 +92,6 @@ namespace mu {
   // Start the player if not already running.  Does not rewind
   // before starting.
   RtPlayer& RtPlayer::start() {
-    TRACE("RtPlayer::start()\n");
     if (!is_running_) {
       RtAudio::StreamParameters dac_parameters;
       if ( device_number_ == 0 ) {
@@ -122,7 +121,6 @@ namespace mu {
   // true, immediately stops the player, otherwise gives time for
   // already queued samples to finish.
   RtPlayer& RtPlayer::stop(bool immediately) {
-    TRACE("RtPlayer::stop()\n");
     if (is_running_) {
       // dac_.isSPRunning() ?
       dac_.closeStream();
