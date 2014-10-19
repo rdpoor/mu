@@ -35,7 +35,10 @@ an existing test package.
   distinct from Transport.stop()?
 * Add command line parsing such as argp.h
 * Create mechanisms for panning and localization.
-
+* Create a fuzzbox
+* Create a morley pedal
+* Experiment in adding 6th harmonic to make a metal string out of nylon
+  
 ## changelog 
 
 * 2014-06-09: Partway though major refactor: "make install" installs
