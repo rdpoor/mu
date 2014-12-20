@@ -1,43 +1,75 @@
 # mu
 
-An experiment in blurring the lines between music composition and sound synthesis
+An experiment in blurring the lines between music composition and
+sound synthesis
 
 ## todo 
 
+* Sprint: create framework for a Redis interface.  See
+  https://github.com/redis/hiredis and
+  https://github.com/luca3m/redis3m
+
+* Adopt a unit test library (and coverage tests)
+
 * create EventStream (or briefly ES) with first() and next() methods.
+
 * scores/tnvm/percussion.cpp (and mune21) show a technique for
-generating percussion parts with variation.  Another (perhaps more
-satisfying) approach would be to have a fixed pattern, but randomize
-the dynamics, e.g. with a LinsegStream or StepStream.
-* Some stream elements -- e.g. MultiplyStream, SineStream -- would
-benefit from a constant input and a stream input.  (Look for examples
-that have used ConstantStream.)
+  generating percussion parts with variation.  Another (perhaps more
+  satisfying) approach would be to have a fixed pattern, but randomize
+  the dynamics, e.g. with a LinsegStream or StepStream.
+
+* Many stream elements -- e.g. MultiplyStream, SineStream -- would
+  benefit from a constant input and a stream input.  (Look for examples
+  that have used ConstantStream.)
+
 * Slide guitar
+
 * Add has_errors and get_errors methods to Stream objects.
+
 * Add doxygen comments
+
 * Add 'make docs' to Makefile
+
 * Make it easy to run unit tests with libgmalloc turned on.  
+
 * Write unit test for FileWriteStream.
+
 * Stop Player when tick >= source.getEnd().  Clean up implementations.
+
 * Optimize a few inner loops (copy buffer, zero part of buffer...)
+
 * Can we (should we?) change Tick to Seconds?
+
 * Beef up assert.c=>assert.cpp Create a tester object that can print
-out context, print on error only, print always, etc.  Better, find
-an existing test package.
+  out context, print on error only, print always, etc.  Better, find
+  an existing test package.
+
 * Create F(t)Stream and test file.
+
 * setSource() and related should check for compatible frameRate(), channelCount()
+
 * setSource() and related should check for circular loops.
+
 * Write a generalized graph traversal method for inspect and loop detection.
+
 * Think about automatic conversion from mono to stereo -- what happens
   when you connect a mono source to a stereo stream object?  Should that
   be an error or expand automatically?
+
 * When do we release resources?  Do we need a Transport.pause() method
   distinct from Transport.stop()?
+
 * Add command line parsing such as argp.h
+
 * Create mechanisms for panning and localization.
+
 * Create a fuzzbox
+
 * Create a morley pedal
+
 * Experiment in adding 6th harmonic to make a metal string out of nylon
+
+* State-variable filter with stream control inputs
   
 ## changelog 
 
@@ -738,3 +770,30 @@ much progress I can make with the existing structure.  Created a good
 sounding strummed multi-string instrument with hammer-on, hammer-off.
 See mune33.cpp.
 
+=== Client / Server Split
+
+It's time to split the system into a server and a client.  The server
+is a synthesis engine, responsible for generating audio.  The client
+runs as a separate process (possibly on a different machine) and feed
+feeds "gestural" directives to the server.
+
+As a first step, I'm defining the interface to be JSON based, with
+messages flowing from client to server.  (We may want server => client
+messages at some point, but I'm not worrying about them yet).  The
+basic message is JSON object with two well-known fields: name and
+method:
+
+       { "name": "fred",
+         "method": "addSegment",
+         "time": 123.456,
+         "file_name": "lib/snd/a.snd"
+       }
+
+which, on the server side translates into a method call on named
+object "fred":
+
+    fred.addSegment(... args ...);
+
+I expect the server to be written in pure C++, the client to be
+written in the language du jour -- I'm leaning towards Ruby or Python,
+but any language that can push JSON over an IPC port is fair game.

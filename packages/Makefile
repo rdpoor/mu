@@ -24,6 +24,11 @@ FFTW-TARBALL := ./fftw-3.3.4.tar.gz
 FFTW-SOURCES := ./fftw-3.3.4
 FFTW-DISTRO := http://www.fftw.org/fftw-3.3.4.tar.gz
 
+HIREDIS-TARGET := $(MU_ROOT)/lib/libhiredis.dylib
+HIREDIS-TARBALL := ./hiredis-0.11.0.tar.gz
+HIREDIS-SOURCES := ./hiredis-0.11.0
+HIREDIS-DISTRO := https://github.com/redis/hiredis/archive/v0.11.0.tar.gz
+
 # ================================================================
 # standard targets
 
@@ -109,4 +114,23 @@ $(FFTW-SOURCES) : $(FFTW-TARBALL)
 
 $(FFTW-TARBALL) : | wget
 	wget -O $(FFTW-TARBALL) $(FFTW-DISTRO)
+
+# ================================================================
+# Redis for pub/sub ipc
+
+hiredis : 	$(HIREDIS-TARGET)
+
+# final "touch -c" is to make sure target has newer date than the source directory
+$(HIREDIS-TARGET) : $(HIREDIS-SOURCES) | $(MU_ROOT)
+	(cd $< && \
+	PREFIX=$(MU_ROOT) make && \
+	PREFIX=$(MU_ROOT) make install && \
+	PREFIX=$(MU_ROOT) make clean && \
+	touch -c $(HIREDIS-TARGET))
+
+$(HIREDIS-SOURCES) : $(HIREDIS-TARBALL)
+	$(TAR) xf $(HIREDIS-TARBALL)
+
+$(HIREDIS-TARBALL) : | wget
+	wget -O $(HIREDIS-TARBALL) $(HIREDIS-DISTRO)
 

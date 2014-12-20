@@ -9,6 +9,7 @@ export MU_ROOT=/Users/r/Projects/Mu/usr
 # ================================================================
 # set the path
 export PATH=${MU_ROOT}/bin:${PATH}
+export DYLD_LIBRARY_PATH=${MU_ROOT}/lib
 
 # ================================================================
 # set the prompt so we know we're in the sandbox
