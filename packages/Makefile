@@ -29,10 +29,16 @@ HIREDIS-TARBALL := ./hiredis-0.11.0.tar.gz
 HIREDIS-SOURCES := ./hiredis-0.11.0
 HIREDIS-DISTRO := https://github.com/redis/hiredis/archive/v0.11.0.tar.gz
 
+JANSSON-TARGET := $(MU_ROOT)/lib/libjansson.a
+JANSSON-SOURCES := ./jansson-2.7
+JANSSON-TARBALL := ./jansson-2.7.tar.gz
+JANSSON-DISTRO := http://www.digip.org/jansson/releases/jansson-2.7.tar.gz
+
+
 # ================================================================
 # standard targets
 
-all:  wget gsl stk fftw
+all:  wget gsl stk fftw hiredis jansson
 
 clean:
 	(test -e $(WGET-SOURCES) && cd $(WGET-SOURCES) && make clean)
@@ -133,4 +139,18 @@ $(HIREDIS-SOURCES) : $(HIREDIS-TARBALL)
 
 $(HIREDIS-TARBALL) : | wget
 	wget -O $(HIREDIS-TARBALL) $(HIREDIS-DISTRO)
+
+# ================================================================
+# JANSSON JSON->C parser
+
+jansson : 	$(JANSSON-TARGET)
+
+$(JANSSON-TARGET) : $(JANSSON-SOURCES) | $(MU_ROOT)
+	(cd $< && ./configure --prefix=$(MU_ROOT) && make && make install && make clean && touch -c $(JANSSON-TARGET))
+
+$(JANSSON-SOURCES) : $(JANSSON-TARBALL)
+	$(TAR) xf $(JANSSON-TARBALL)
+
+$(JANSSON-TARBALL) : | wget
+	wget -O $(JANSSON-TARBALL) $(JANSSON-DISTRO)
 

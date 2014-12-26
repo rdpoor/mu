@@ -5,6 +5,9 @@ sound synthesis
 
 ## todo 
 
+* So maybe we don't need Redis?  http://zeromq.org/intro:read-the-manual
+  and https://github.com/imatix/zguide/blob/master/examples/C/asyncsrv.c
+
 * Sprint: create framework for a Redis interface.  See
   https://github.com/redis/hiredis and
   https://github.com/luca3m/redis3m
@@ -797,3 +800,41 @@ object "fred":
 I expect the server to be written in pure C++, the client to be
 written in the language du jour -- I'm leaning towards Ruby or Python,
 but any language that can push JSON over an IPC port is fair game.
+
+## A Two-Process Architecture
+
+I'm setting about splitting Mu into two parts: a synthesis engine (MUS)
+a controller (MUC).  MUS is all about real-time performance: everything
+is timed off the DAC buffers when playing.  MUC is all about creating
+musically complex textures and feeding MUC.
+
+I think it works like this:
+
+There is a "bespoke" synthesizer with a custom parser.  It receives
+JSON packets via a Redis Pub/Sub channel.  How it interprets those 
+JSON packets is up to it, but I'm imagining a general strcuture like:
+
+[ <time>, <target>, <arguments> ]
+
+where arguments is a JSON key/value object.
+
+## JSON / C libraries
+
+### overviews
+
+* https://docs.google.com/spreadsheet/ccc?key=0AsfskDziXAR6dEpVUk9iT2RrODJ1amt1X0g5aWNRcEE#gid=0
+* http://www.json.org/
+
+### repos
+
+* frozen: https://github.com/cesanta/frozen
+* jansson: https://github.com/akheron/jansson
+* jsmn: https://bitbucket.org/zserge/jsmn/overview
+* json-c: https://github.com/json-c/json-c
+* jsoncpp: https://github.com/open-source-parsers/jsoncpp
+* mjson: http://sourceforge.net/projects/mjson/
+* parson: https://github.com/kgabis/parson
+* yajl: http://github.com/lloyd/yajl
+
+For now, I'm going with Jansson since it is well documented and has a
+"normal" compile / install model.
