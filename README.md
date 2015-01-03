@@ -775,66 +775,140 @@ See mune33.cpp.
 
 === Client / Server Split
 
-It's time to split the system into a server and a client.  The server
-is a synthesis engine, responsible for generating audio.  The client
+It's time to split the system into a Server and a Client.  The Server
+is a synthesis engine, responsible for generating audio.  The Client
 runs as a separate process (possibly on a different machine) and feed
-feeds "gestural" directives to the server.
+feeds "gestural" directives to the Server.
 
-As a first step, I'm defining the interface to be JSON based, with
-messages flowing from client to server.  (We may want server => client
-messages at some point, but I'm not worrying about them yet).  The
-basic message is JSON object with two well-known fields: name and
-method:
+=== Four Boxes
 
-       { "name": "fred",
-         "method": "addSegment",
-         "time": 123.456,
-         "file_name": "lib/snd/a.snd"
-       }
+Client generates Events on demand for the Renderer.
 
-which, on the server side translates into a method call on named
-object "fred":
+Renderer generates buffers of audio samples on demand for the Transport.
 
-    fred.addSegment(... args ...);
+Transport passes buffers of audio samples on demand to the Player.
 
-I expect the server to be written in pure C++, the client to be
-written in the language du jour -- I'm leaning towards Ruby or Python,
-but any language that can push JSON over an IPC port is fair game.
+Player passes buffes of audio samples to the system DAC.
 
-## A Two-Process Architecture
+All time-critical code, i.e. sample level synthesis, runs in the
+Renderer/Transport/Player (hereafter the Server).  Timing is
+determined by RTAudio requests for buffers which are in turn tied to
+the DAC.
 
-I'm setting about splitting Mu into two parts: a synthesis engine (MUS)
-a controller (MUC).  MUS is all about real-time performance: everything
-is timed off the DAC buffers when playing.  MUC is all about creating
-musically complex textures and feeding MUC.
+The Server is written in pure C++, the Client is written in the
+language du jour -- I'm leaning towards Ruby or Python, but any
+language that can push JSON over an IPC port is fair game.
 
-I think it works like this:
+The Server contains a Transport and publishes an API for commands such
+as start, stop, seek_to(time), pause.  When the Transport is running,
+it passes buffers of audio data to the Renderer to get filled with
+data.  Each buffer has a start time (inclusive) and an end time
+(exclusive).
 
-There is a "bespoke" synthesizer with a custom parser.  It receives
-JSON packets via a Redis Pub/Sub channel.  How it interprets those 
-JSON packets is up to it, but I'm imagining a general strcuture like:
+The Renderer asks the Client for any events that fall between the 
+start time and end time and processes those events.  These events
+will typically allocate and configure processing elements and link
+them into the processing graph, or else remove processing elements
+from the graph if their work is done.
 
-[ <time>, <target>, <arguments> ]
+==== Some example events
 
-where arguments is a JSON key/value object.
+Here's a hypothetical example of playing a 2.5 second sine tone
+starting at t=10.0 and ending at t=12.5 with a linear gain ramp from
+1.0 down to 0.0:
 
-## JSON / C libraries
+```
+t=0.0, a = SinePE.allocate()
+t=0.0, a.setFreq(440.0)
 
-### overviews
+t=0.0, b = RampPE.allocate()
+t=0.0, b.setValue(1.0)
+t=0.0, b.setdVdT(-1.0/2.5)
 
-* https://docs.google.com/spreadsheet/ccc?key=0AsfskDziXAR6dEpVUk9iT2RrODJ1amt1X0g5aWNRcEE#gid=0
-* http://www.json.org/
+t=0.0, c = MultPE.allocate()
+t=0.0, c.addInput(a)
+t=0.0, c.addInput(b)
 
-### repos
+t=10.0, DAC.setInput(c)
+t=12.5, DAC.setInput(NULL)
+```
 
-* frozen: https://github.com/cesanta/frozen
-* jansson: https://github.com/akheron/jansson
-* jsmn: https://bitbucket.org/zserge/jsmn/overview
-* json-c: https://github.com/json-c/json-c
-* jsoncpp: https://github.com/open-source-parsers/jsoncpp
-* mjson: http://sourceforge.net/projects/mjson/
-* parson: https://github.com/kgabis/parson
-* yajl: http://github.com/lloyd/yajl
+If we wanted to go a bit crazy:
+```
+(before-run
+  (setq a ((SinePE :allocate) :setFreq 440.0))
+  (setq b (((RampPE :allocate) :setValue 1.0) :setDVDT -0.4))
+  (setq c (((MultPE :allocate) :addInput a) :addInput b)))
 
-For now, I'm going with Jansson since it is well documented and has a
-"normal" compile / install model.
+(at 10.0 (dac :setInput c))
+(at 12.5 (dac :setInput null))
+
+(after-run (c :deallocate))
+```
+
+But those are still too complicated.  Assuming JSON as a transport
+language, let's see how far we can get with a simple syntax:
+
+time : t, target : x, method : y, args : z
+
+Assume that 'x' can always be mapped to a NamedObject (found in a
+symbol table / dictionary / hash ).  That object has an `eval` method
+that accepts and evaluates y (the method) and z (the args).
+
+The Mu object can handle meta tasks, such as:
+
+{ target : Mu, method : set, :args { name : a, value : { ... }}
+
+or more concisely:
+
+["Mu", "set", { name : a, [["SinePE", "alloc", {}], "setFreq", { "value" : 440 }]}]
+
+At the heart of this is an eval method that reads JSON forms:
+
+def json_eval(form) {
+  first = json_array_get(form, 0);
+  if (json_string?(first)) {
+     obj = symbol_table_lookup(json_string_value(first));
+     obj.eval(json_array_get(form, 1, -1));
+  } else if (json_array?(json_array_get(form, 0))) {
+     obj = json_eval(first);
+     obj.eval(json_array_get(form, 1, -1));
+  }
+
+}
+
+==== Inner loop
+
+When the Transport requests "fill this buffer with samples from t0 to
+t1", the following happens:
+
+The Renderer consults the Queue for the next discrete event.  If there
+is none, (possibly) stop the playback.  Assume there is at least one
+event, the first one occuring at time = ta (and it is less than t1).
+
+The Renderer calls upon the Processing Graph to generate samples from
+t0 (inclusive) and ta (exclusive).  Then it removes the event from the
+Queue, evaluates it, and repeats the process until tile t1.
+
+==== Interface language.  
+
+As a first step, I'm defining the messages to be JSON based.  For
+starters, assume each message to be an array of three JSON entities:
+
+     [target method arguments]
+
+where +target+ is a named object, +method+ is a verb and +arguments+
+is either a JSON NULL or a JSON Object with the arguments for the
+target.
+
+For now, I've downloaded and tested the jansson JSON library
+(https://github.com/akheron/jansson) -- it has a sane compile / 
+install approach that works well with Mu's sandbox model.
+
+==== IPC 
+
+For Client / Server linkage, I'm starting with Redis and using the C++
+bindings from HiRedis: https://github.com/redis/hiredis.  An alternative
+to consider is ZeroMQ, but Redis feels good enough for now.
+
+

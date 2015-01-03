@@ -34,6 +34,15 @@ JANSSON-SOURCES := ./jansson-2.7
 JANSSON-TARBALL := ./jansson-2.7.tar.gz
 JANSSON-DISTRO := http://www.digip.org/jansson/releases/jansson-2.7.tar.gz
 
+CMAKE-TARGET := $(MU_ROOT)/bin/cmake
+CMAKE-SOURCES := ./cmake-3.1.0
+CMAKE-TARBALL := ./cmake-3.1.0.tar.gz
+CMAKE-DISTRO := http://www.cmake.org/files/v3.1/cmake-3.1.0.tar.gz
+
+GTEST-TARGET := $(GTEST_DIR)/libgtest.a
+GTEST-SOURCES := ./gtest-1.7.0
+GTEST-TARBALL := ./gtest-1.7.0.zip
+GTEST-DISTRO := https://googletest.googlecode.com/files/gtest-1.7.0.zip
 
 # ================================================================
 # standard targets
@@ -153,4 +162,32 @@ $(JANSSON-SOURCES) : $(JANSSON-TARBALL)
 
 $(JANSSON-TARBALL) : | wget
 	wget -O $(JANSSON-TARBALL) $(JANSSON-DISTRO)
+
+# ================================================================
+# CMAKE neo-make facility
+
+cmake : 	$(CMAKE-TARGET)
+
+$(CMAKE-TARGET) : $(CMAKE-SOURCES) | $(MU_ROOT)
+	(cd $< && ./bootstrap --prefix=$(MU_ROOT) && make && make install && make clean && touch -c $(CMAKE-TARGET))
+
+$(CMAKE-SOURCES) : $(CMAKE-TARBALL)
+	$(TAR) xf $(CMAKE-TARBALL)
+
+$(CMAKE-TARBALL) : | wget
+	wget -O $(CMAKE-TARBALL) $(CMAKE-DISTRO)
+
+# ================================================================
+# GTEST Google Test unit test framework
+
+gtest : 	$(GTEST-TARGET)
+
+$(GTEST-TARGET) : $(GTEST-SOURCES) | $(MU_ROOT)
+	(cd $< && g++ -isystem $(GTEST_DIR)/include -I$(GTEST_DIR) -pthread -c $(GTEST_DIR)/src/gtest-all.cc && ar -rv libgtest.a gtest-all.o)
+
+$(GTEST-SOURCES) : $(GTEST-TARBALL)
+	$(TAR) xf $(GTEST-TARBALL)
+
+$(GTEST-TARBALL) : | wget
+	wget -O $(GTEST-TARBALL) $(GTEST-DISTRO)
 

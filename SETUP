@@ -6,8 +6,10 @@
 export SANDBOX_NAME='Mu'
 export MU_ROOT=/Users/r/Projects/Mu/usr
 
+# keep GTEST in the packages dir to avoid potential name clashses
+export GTEST_DIR=/Users/r/Projects/Mu/packages/gtest-1.7.0
 # ================================================================
-# set the path
+# set the paths
 export PATH=${MU_ROOT}/bin:${PATH}
 export DYLD_LIBRARY_PATH=${MU_ROOT}/lib
 

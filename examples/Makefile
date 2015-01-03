@@ -12,8 +12,8 @@ endif
 
 LFLAGS   = -L$(MU_ROOT)/lib
 DEFS     = 
-INCLUDES = -I$(MU_ROOT)/include/mu -I$(MU_ROOT)/include/stk -I$(MU_ROOT)/include
-LIBRARY  = -lpthread -framework CoreAudio -framework CoreFoundation -framework CoreMidi -lm -lgsl -lstk -lmu
+INCLUDES = -I$(MU_ROOT)/include/mu -I$(MU_ROOT)/include/stk -I$(MU_ROOT)/include/hiredis -I$(MU_ROOT)/include
+LIBRARY  = -lpthread -framework CoreAudio -framework CoreFoundation -framework CoreMidi -lm -lgsl -lstk -lhiredis -lmu
 
 .PHONY:	clean
 
