@@ -1,6 +1,7 @@
 # Download, unpack, compile and install all external packages required by Mu
 #
-MU_ROOT=/Users/r/Projects/Mu/usr
+MU_ROOT = /Users/r/Projects/Mu/usr
+GMOCK_DIR ?= /Users/r/Projects/Mu/packages/gmock-1.7.0
 
 TAR=/usr/bin/tar
 
@@ -39,25 +40,29 @@ CMAKE-SOURCES := ./cmake-3.1.0
 CMAKE-TARBALL := ./cmake-3.1.0.tar.gz
 CMAKE-DISTRO := http://www.cmake.org/files/v3.1/cmake-3.1.0.tar.gz
 
-GTEST-TARGET := $(GTEST_DIR)/libgtest.a
-GTEST-SOURCES := ./gtest-1.7.0
-GTEST-TARBALL := ./gtest-1.7.0.zip
-GTEST-DISTRO := https://googletest.googlecode.com/files/gtest-1.7.0.zip
+GMOCK-TARGET := $(MU_ROOT)/lib/libgmock.a
+GMOCK-MAIN-TARGET := $(MU_ROOT)/lib/gmock_main.a
+GMOCK-SOURCES := ./gmock-1.7.0
+GMOCK-TARBALL := ./gmock-1.7.0.zip
+GMOCK-DISTRO := https://googlemock.googlecode.com/files/gmock-1.7.0.zip
 
 # ================================================================
 # standard targets
 
-all:  wget gsl stk fftw hiredis jansson
+all:  wget gsl stk fftw hiredis jansson gmock
 
+# remove build artifacts, but keep tarballs
 clean:
 	(test -e $(WGET-SOURCES) && cd $(WGET-SOURCES) && make clean)
 	(test -e $(GSL-SOURCES) && cd $(GSL-SOURCES) && make clean)
 	(test -e $(STK-SOURCES) && cd $(STK-SOURCES) && make clean)
 	(test -e $(FFTW-SOURCES) && cd $(FFTW-SOURCES) && make clean)
+	(test -e $(GMOCK-SOURCES) && cd $(GMOCK-SOURCES) && make clean)
 
 # reset everything.
 scour:
-	rm -rf $(WGET-SOURCES) $(WGET-TARBALL) $(GSL-SOURCES) $(GSL-TARBALL) $(STK-SOURCES) $(STK-TARBALL) $(FFTW-SOURCES) $(FFTW-TARBALL)
+	make clean
+	rm -rf $(WGET-TARBALL) $(GSL-TARBALL) $(STK-TARBALL) $(FFTW-TARBALL) $(GMOCK-TARBALL)
 
 # ================================================================
 # MU_ROOT is the install directory
@@ -176,6 +181,42 @@ $(CMAKE-SOURCES) : $(CMAKE-TARBALL)
 
 $(CMAKE-TARBALL) : | wget
 	wget -O $(CMAKE-TARBALL) $(CMAKE-DISTRO)
+
+# ================================================================
+# GMOCK Google Test unit test framework
+
+# Slightly nonstandard.  Ends up creating:
+#   $(MU_ROOT)/lib/libgmock.a
+#   $(MU_ROOT)/lib/gmock_main.a
+#   $(MU_ROOT)/include/gmock/*.h
+#   $(MU_ROOT)/include/gtest/*.h
+#
+# To compile a test (note inclusion of gmock_main.a from lib directory):
+#
+# g++ -isystem ${MU_ROOT}/include -L${MU_ROOT}/lib -g -Wall -Wextra -pthread \
+# 	my_test.cc -o my_test -lgmock ${MU_ROOT}/lib/gmock_main.a
+#
+gmock : 	$(GMOCK-TARGET) $(GMOCK-MAIN-TARGET)
+
+$(GMOCK-TARGET) : $(GMOCK-SOURCES) | $(MU_ROOT)
+	g++ -isystem $(GTEST_DIR)/include -I$(GTEST_DIR) -isystem $(GMOCK_DIR)/include -I$(GMOCK_DIR) \
+		-pthread -c $(GTEST_DIR)/src/gtest-all.cc -o /tmp/gtest-all.o
+	g++ -isystem $(GTEST_DIR)/include -I$(GTEST_DIR) -isystem $(GMOCK_DIR)/include -I$(GMOCK_DIR) \
+		-pthread -c $(GMOCK_DIR)/src/gmock-all.cc -o /tmp/gmock-all.o
+	cp -rp $(GTEST_DIR)/include/gtest $(MU_ROOT)/include
+	cp -rp $(GMOCK_DIR)/include/gmock $(MU_ROOT)/include
+	ar -rv $@ /tmp/gtest-all.o /tmp/gmock-all.o
+
+$(GMOCK-SOURCES) : $(GMOCK-TARBALL)
+	$(TAR) xf $(GMOCK-TARBALL)
+
+$(GMOCK-TARBALL) : | wget
+	wget -O $(GMOCK-TARBALL) $(GMOCK-DISTRO)
+
+$(GMOCK-MAIN-TARGET) : $(GMOCK-SOURCES) | $(MU_ROOT)
+	g++ -isystem $(GTEST_DIR)/include -I$(GTEST_DIR) -isystem $(GMOCK_DIR)/include -I$(GMOCK_DIR) \
+		-pthread -c $(GMOCK_DIR)/src/gmock_main.cc -o /tmp/gmock_main.o
+	ar -rv $@ /tmp/gmock_main.o
 
 # ================================================================
 # GTEST Google Test unit test framework

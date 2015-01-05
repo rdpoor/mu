@@ -33,7 +33,10 @@ SOURCES := \
 	sine_sp.cpp \
 	single_source_sp.cpp \
 	splice_sp.cpp \
-	tick_utils.cpp
+	tick_utils.cpp \
+	timed_event.cpp \
+	timed_queue.cpp
+
 
 OBJECTS := $(patsubst %.cpp,%.o,$(SOURCES))
 HEADERS := $(patsubst %.cpp,%.h,$(SOURCES))

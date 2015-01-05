@@ -5,8 +5,11 @@ sound synthesis
 
 ## todo 
 
-* So maybe we don't need Redis?  http://zeromq.org/intro:read-the-manual
-  and https://github.com/imatix/zguide/blob/master/examples/C/asyncsrv.c
+* Clean up usr/include: put fftw* into a fftw directory and jansson*
+  into a jansson directory.
+
+* ZeroMQ vs Redis?  http://zeromq.org/intro:read-the-manual and
+  https://github.com/imatix/zguide/blob/master/examples/C/asyncsrv.c
 
 * Sprint: create framework for a Redis interface.  See
   https://github.com/redis/hiredis and
@@ -890,6 +893,21 @@ The Renderer calls upon the Processing Graph to generate samples from
 t0 (inclusive) and ta (exclusive).  Then it removes the event from the
 Queue, evaluates it, and repeats the process until tile t1.
 
+void render(stk::StkFrames &buffer, Time buffer_start_time) {
+  Time buffer_end_time = computeEndTime(buffer, start_time);
+  Time t = buffer_start_time;
+  while (t < buffer_end_time) {
+    TimedEvent *ne = event_queue_.peekNext();
+    bool event_pending = ne && (ne->getTime() < buffer_end_time);
+    Time next_time = (event_pending) ? ne->getTime() : buffer_end_time;
+    this->getSource()->step(buffer, t, next_time);
+    if (event_pending) {
+      this->interpret(event_queue_.getEvent());
+    }
+    t = next_time;
+  }
+}
+  
 ==== Interface language.  
 
 As a first step, I'm defining the messages to be JSON based.  For
