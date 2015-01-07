@@ -1,5 +1,5 @@
-#ifndef TIMED_EVENT_H
-#define TIMED_EVENT_H
+#ifndef MU_TIMED_EVENT_H
+#define MU_TIMED_EVENT_H
 
 #include <stdio.h>
 

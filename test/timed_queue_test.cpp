@@ -27,10 +27,6 @@ TEST_F(TimedQueueTest, InitiallyEmpty) {
   EXPECT_EQ(1, q0_->size());
 }
 
-TEST_F(TimedQueueTest, EnqueueReturnsThis) {
-  EXPECT_EQ(q0_, q0_->enqueue(e0_));
-}
-
 TEST_F(TimedQueueTest, InitiallyNonEmpty) {
   mu::TimedEvent *e;
 

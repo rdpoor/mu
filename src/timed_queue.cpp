@@ -8,10 +8,11 @@ namespace mu {
     return e0->getTime() > e1->getTime();
   }
 
-  TimedQueue *TimedQueue::enqueue(TimedEvent *event) {
+  void TimedQueue::enqueue(TimedEvent *event) {
     std::vector<TimedEvent *>::iterator low;
+    mutex_.lock();
     low = std::lower_bound(v_.begin(), v_.end(), event, timedEventComparison);
     v_.insert(low, event);
-    return this;
+    mutex_.unlock();
   }
 };

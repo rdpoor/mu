@@ -1,6 +1,9 @@
 MU_ROOT = ../usr
 RELEASE = 0.0.1
 
+# TODO: Figure a clean way to install header files that don't have
+# a corresponding .cpp file.  For now, create a dummy cpp file.
+
 SOURCES := \
 	add_sp.cpp \
 	channelizer_sp.cpp \
@@ -15,16 +18,20 @@ SOURCES := \
 	loop_sp.cpp \
 	map_sp.cpp \
 	mu.cpp \
+	mu_types.cpp \
 	multi_source_sp.cpp \
 	multiply_sp.cpp \
 	nrt_player.cpp \
 	null_sp.cpp \
 	pitch_utilities.cpp \
 	player.cpp \
+	player2.cpp \
+	player_rt.cpp \
 	probability_sp.cpp \
 	psi_sp.cpp \
 	psi_waveform.cpp \
 	random_select_sp.cpp \
+	render_stream.cpp \
 	resample_sp.cpp \
 	reverb_sp.cpp \
 	rt_player.cpp \
@@ -35,7 +42,8 @@ SOURCES := \
 	splice_sp.cpp \
 	tick_utils.cpp \
 	timed_event.cpp \
-	timed_queue.cpp
+	timed_queue.cpp \
+	transport.cpp
 
 
 OBJECTS := $(patsubst %.cpp,%.o,$(SOURCES))

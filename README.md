@@ -880,34 +880,13 @@ def json_eval(form) {
 
 }
 
-==== Inner loop
+==== Something fun
 
-When the Transport requests "fill this buffer with samples from t0 to
-t1", the following happens:
+The object that contains a timed_queue and interprets commands therein
+can be an ordinary RenderStream subclass.  It will normally(?) be the
+root of the rendering stream graph, but it doesn't have to be (e.g. if
+there's a sound file writing object between the Transport and it).
 
-The Renderer consults the Queue for the next discrete event.  If there
-is none, (possibly) stop the playback.  Assume there is at least one
-event, the first one occuring at time = ta (and it is less than t1).
-
-The Renderer calls upon the Processing Graph to generate samples from
-t0 (inclusive) and ta (exclusive).  Then it removes the event from the
-Queue, evaluates it, and repeats the process until tile t1.
-
-void render(stk::StkFrames &buffer, Time buffer_start_time) {
-  Time buffer_end_time = computeEndTime(buffer, start_time);
-  Time t = buffer_start_time;
-  while (t < buffer_end_time) {
-    TimedEvent *ne = event_queue_.peekNext();
-    bool event_pending = ne && (ne->getTime() < buffer_end_time);
-    Time next_time = (event_pending) ? ne->getTime() : buffer_end_time;
-    this->getSource()->step(buffer, t, next_time);
-    if (event_pending) {
-      this->interpret(event_queue_.getEvent());
-    }
-    t = next_time;
-  }
-}
-  
 ==== Interface language.  
 
 As a first step, I'm defining the messages to be JSON based.  For

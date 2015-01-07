@@ -1,9 +1,10 @@
-#ifndef TIMED_QUEUE_H
-#define TIMED_QUEUE_H
+#ifndef MU_TIMED_QUEUE_H
+#define MU_TIMED_QUEUE_H
 
 #include <vector>
 #include <stdlib.h>
 #include "timed_event.h"
+#include <mutex>
 
 namespace mu {
 
@@ -15,34 +16,41 @@ namespace mu {
     }
 
     TimedEvent *peekNext() {
-      if (v_.size() == 0) { return NULL; }
-      return v_.at(v_.size() - 1);
+      TimedEvent *te = NULL;
+      mutex_.lock();
+      if (v_.size() > 0) {
+        te = v_.back();
+      }
+      mutex_.unlock();
+      return te;
     }
 
     TimedEvent *getNext() {
-      if (v_.size() == 0) { return NULL; }
-      TimedEvent *e = v_.back();
-      v_.pop_back();
-      return e;
+      TimedEvent *te = NULL;
+      mutex_.lock();
+      if (v_.size() > 0) { 
+        te = v_.back();
+        v_.pop_back();
+      }
+      mutex_.unlock();
+      return te;
     }
-
-    TimedQueue *enqueue(TimedEvent *event);
-    /*
-      v_.push_back(event);
-      return this;
-    }
-    */
+    
+    void enqueue(TimedEvent *event);
 
     size_t size() {
       return v_.size();
     }
 
     void clear() {
+      mutex_.lock();
       v_.clear();
+      mutex_.unlock();
     }
 
   protected:
     std::vector<TimedEvent *> v_;
+    std::mutex mutex_;
   };
 
 
