@@ -79,6 +79,10 @@ namespace mu {
       seek(0);
     }
 
+    void jog(MuTick ticks) {
+      tick_ += ticks;
+    }
+
     // Called from Player in a dedicated processing thread.
     void render(stk::StkFrames &frames);
 

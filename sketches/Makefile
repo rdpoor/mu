@@ -37,3 +37,5 @@ sketch_hiredis02 :	sketch_hiredis02.c
 sketch_hiredis03 :	sketch_hiredis03.c
 	$(CC) -x c $(CFLAGS) -L $(MU_ROOT)/lib $(LFLAGS) $(DEFS) -I $(MU_ROOT)/include/hiredis -I $(MU_ROOT)/include -o $(@) $(<) -lhiredis -ljansson
 
+# t12 :	t12.cpp
+#	$(CC) $(CFLAGS) -L $(MU_ROOT)/lib $(LFLAGS) $(DEFS) -I $(MU_ROOT)/include -o $(@) $(<) -ljansson

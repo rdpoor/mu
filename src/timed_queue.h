@@ -38,6 +38,10 @@ namespace mu {
     
     void enqueue(TimedEvent *event);
 
+    // Process one event in the queue.  Returns false if
+    // there were no events to process.
+    bool step();
+
     size_t size() {
       return v_.size();
     }

@@ -1,8 +1,8 @@
 MU_ROOT = ../usr
 RELEASE = 0.0.1
 
-# TODO: Figure a clean way to install header files that don't have
-# a corresponding .cpp file.  For now, create a dummy cpp file.
+INCLUDES := \
+	mu_types.h
 
 SOURCES := \
 	add_sp.cpp \
@@ -10,15 +10,17 @@ SOURCES := \
 	constant_sp.cpp \
 	crop_sp.cpp \
 	delay_sp.cpp \
+	delay_rs.cpp \
 	fade_sp.cpp \
 	file_read_sp.cpp \
+	file_read_rs.cpp \
 	file_write_sp.cpp \
 	identity_sp.cpp \
 	linseg_sp.cpp \
 	loop_sp.cpp \
 	map_sp.cpp \
 	mu.cpp \
-	mu_types.cpp \
+	mu_pool.cpp \
 	multi_source_sp.cpp \
 	multiply_sp.cpp \
 	nrt_player.cpp \
@@ -70,14 +72,14 @@ endif
 
 IFLAGS = -I$(MU_ROOT)/include/mu -I$(MU_ROOT)/include/stk -I$(MU_ROOT)/include
 
-%.o : %.cpp %.h mu.h
+%.o : %.cpp %.h $(INCLUDES)
 	$(CC) $(CFLAGS) $(IFLAGS) -c $(<) -o $@
 
 all: $(OBJECTS)
 
-install: $(STATICLIB) $(LIB_DIR) $(HEADER_DIR) # $(SHAREDLIB) -- sharedlib doesn't work yet
+install: $(STATICLIB) $(LIB_DIR) $(HEADER_DIR) $(INCLUDES) # $(SHAREDLIB) -- sharedlib doesn't work yet
 	mv $(STATICLIB) $(MU_ROOT)/lib
-	cp -p $(HEADERS) $(HEADER_DIR)
+	cp -p $(INCLUDES) $(HEADERS) $(HEADER_DIR)
 
 clean:
 	rm -f $(OBJECTS)

@@ -15,4 +15,16 @@ namespace mu {
     v_.insert(low, event);
     mutex_.unlock();
   }
+
+  // pop from end, evaluate event, free event
+  bool TimedQueue::step() {
+    TimedEvent *te = getNext();
+    if (te != NULL) {
+      te->call();
+      return true;
+    } else {
+      return false;
+    }
+  }
+
 };
