@@ -8,6 +8,8 @@
 
 namespace mu {
 
+  class TimedEvent;             // forward ref
+
   class TimedQueue {
   public:
     TimedQueue() {

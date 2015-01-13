@@ -5,7 +5,7 @@
 namespace mu {
 
   bool timedEventComparison(TimedEvent *e0, TimedEvent *e1) {
-    return e0->getTime() > e1->getTime();
+    return e0->time() > e1->time();
   }
 
   void TimedQueue::enqueue(TimedEvent *event) {
@@ -20,7 +20,7 @@ namespace mu {
   bool TimedQueue::step() {
     TimedEvent *te = getNext();
     if (te != NULL) {
-      te->call();
+      te->call(this);
       return true;
     } else {
       return false;

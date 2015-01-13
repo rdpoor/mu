@@ -30,12 +30,12 @@ namespace mu {
     // Get/Set the Render_Stream.  The contract of the Render_Stream is to fill
     // a buffer of sample data on demand.  "It is an error" to change
     // clients when in any state other than TRANSPORT_STOPPED.
-    RenderStream *render_stream() { 
-      return render_stream_;
+    RenderStream *source() { 
+      return source_;
     }
 
-    void set_render_stream(RenderStream *render_stream) {
-      render_stream_ = render_stream;
+    void set_source(RenderStream *source) {
+      source_ = source;
     }
 
     enum TransportState { 
@@ -88,7 +88,7 @@ namespace mu {
 
   protected:
     Player2 *player_;
-    RenderStream *render_stream_;
+    RenderStream *source_;
     TransportState state_;
     MuTick tick_;
 

@@ -15,9 +15,10 @@ namespace mu {
     return file_name_;
   }
 
-  void FileReadRS::set_file_name(std::string file_name) { 
+  FileReadRS& FileReadRS::set_file_name(std::string file_name) { 
     file_name_ = file_name;
     file_read_.open(file_name_);
+    return *this;
   }
 
   // Return true if there is an open sound file and its parameters
@@ -39,11 +40,23 @@ namespace mu {
     // check for end of file
     if (start_tick >= file_read_.fileSize()) return;
 
-    // fast and loose: this simply fills as much of the buffer as
-    // possible on each call without honoring start_tick or end_tick.
-    // TODO: honor start_tick and end_tick!
-    file_read_.read(frames, base_tick);
+    if ((start_tick == base_tick) && (end_tick == base_tick + frames.frames())) {
+      // render directly into frames
+      file_read_.read(frames, base_tick);
+    } else if (start_tick < end_tick) {
+      temp_buffer_.resize(end_tick - start_tick, frames.channels());
+      file_read_.read(temp_buffer_, start_tick);
+      // TODO: memcpy!
+      MuTick offset = start_tick - base_tick;
+      for (int i=0; i<temp_buffer_.frames(); i++) {
+        for (int j=0; j<frames.channels(); j++) {
+          frames(i+offset, j) = temp_buffer_(i, j);
+        }
+      }
+    } else {
+      // nothing to render
+    }
   }
 
-}
+} // namespace mu
 

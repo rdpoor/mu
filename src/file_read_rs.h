@@ -10,7 +10,7 @@ namespace mu {
     FileReadRS();
     ~FileReadRS();
     std::string file_name(void);
-    void set_file_name(std::string file_name);
+    FileReadRS& set_file_name(std::string file_name);
 
     void render(stk::StkFrames &frames, MuTick base_tick, MuTick start_tick, MuTick end_tick);
   protected:

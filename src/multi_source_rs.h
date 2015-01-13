@@ -1,4 +1,8 @@
 /*
+ * MultiSourceRS is an abstract superclass for streams that take an
+ * arbitrary number of homogeneous sources.
+ */
+/*
   ================================================================
   Copyright (C) 2014 Robert D. Poor
   
@@ -22,8 +26,53 @@
   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
   ================================================================
 */
-#include "multi_source_sp.h"
+
+#ifndef MU_MULTI_SOURCE_RS
+#define MU_MULTI_SOURCE_RS
+
+#include "render_stream.h"
 
 namespace mu {
-  int dummy;                    // prevent linker warning
+
+  template <typename T> class MultiSourceRS : public RenderStream {
+  public:
+    
+    T& add_source(RenderStream *source) {
+      sources_.push_back(source);
+      return *static_cast<T *>(this);
+    }
+  
+    T& remove_source(RenderStream *source) {
+      for (int i=0; i<sources_.size(); i++) {
+        if (sources_.at(i) == source) {
+          sources_.erase(sources_.begin()+i);
+          break;
+        }
+      }
+      return *static_cast<T *>(this);
+    }
+    
+    T& remove_all_sources() {
+      sources_.clear();
+      return *static_cast<T *>(this);
+    }
+    
+    size_t source_count() { return sources_.size(); }
+
+    // Allow readonly access to the underlying sources.  This is
+    // primarily intended for unit testing.
+    const std::vector<RenderStream *>& sources() const { return sources_; }
+
+  protected:
+    std::vector<RenderStream *> sources_;
+    stk::StkFrames buffer_;
+  };
+
 }
+
+#endif
+
+
+// Local Variables:
+// mode: c++
+// End:

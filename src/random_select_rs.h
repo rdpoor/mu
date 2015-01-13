@@ -1,4 +1,14 @@
 /*
+ * RandomSelectSP accepts an arbitrary number of input streams.
+ * One stream is selected as the "current" stream.  In each call to
+ * step(), if the tick time goes backwards, another stream is randomly
+ * selected as the current stream.
+ *
+ * Note that each input stream could have a different delay stream
+ * (to randomize start times) or different sound files (to randomize
+ * the sound played), etc.
+ */
+/*
   ================================================================
   Copyright (C) 2014 Robert D. Poor
   
@@ -22,8 +32,35 @@
   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
   ================================================================
 */
-#include "multi_source_sp.h"
+
+#ifndef MU_RANDOM_SELECT_RS_H
+#define MU_RANDOM_SELECT_RS_H
+
+#include "mu_types.h"
+#include "multi_source_rs.h"
 
 namespace mu {
-  int dummy;                    // prevent linker warning
-}
+
+  class RandomSelectRS : public MultiSourceRS<RandomSelectRS> {
+  public:
+    
+    RandomSelectRS( void );
+    ~RandomSelectRS( void );
+
+    std::string class_name() { return "RandomSelectRS"; }
+
+    void render(stk::StkFrames &frames, MuTick base_tick, MuTick start_tick, MuTick end_tick);
+
+  protected:
+    RandomSelectRS& reset();
+    RenderStream *current_stream_;
+
+  };                            // class RandomSelectRS
+
+}                               // namespace mu
+
+#endif
+
+// Local Variables:
+// mode: c++
+// End:

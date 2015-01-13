@@ -909,3 +909,18 @@ bindings from HiRedis: https://github.com/redis/hiredis.  An alternative
 to consider is ZeroMQ, but Redis feels good enough for now.
 
 
+==== Cold feet (again)
+
+So I've implemented a simple scheduler and integrated it into
+processing streams (see mune43).  Works.  But I'm getting stuck on how
+to intepret events from the Client side into C++ calls in the server.
+
+What if instead I simply generated C++ code from a high level language
+and compiled that in order to create complex compositions?  Since I'm 
+not really interested in real-time performance, that would serve the 
+same purpose.
+
+And besides, I'm beginning to suspect all this client / server stuff
+is simply another way to avoid creating the actual music.  Grumph.  I'll
+write some music sketches right now with what I've got.
+

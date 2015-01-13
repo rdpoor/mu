@@ -1,4 +1,7 @@
 /*
+ * AddRS mixes N sources together.
+ */
+/*
   ================================================================
   Copyright (C) 2014 Robert D. Poor
   
@@ -22,8 +25,29 @@
   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
   ================================================================
 */
-#include "multi_source_sp.h"
+
+#ifndef MU_ADD_RS_H
+#define MU_ADD_RS_H
+
+#include "mu_types.h"
+#include "multi_source_rs.h"
 
 namespace mu {
-  int dummy;                    // prevent linker warning
-}
+
+  class AddRS : public MultiSourceRS<AddRS> {
+  public:
+
+    AddRS();
+    ~AddRS( void );
+
+    void render(stk::StkFrames& frames, MuTick base_tick, MuTick start_tick, MuTick end_tick);
+
+  };                            // class AddRS
+
+}                               // namespace mu
+
+#endif
+
+// Local Variables:
+// mode: c++
+// End:

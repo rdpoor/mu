@@ -22,8 +22,23 @@
   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
   ================================================================
 */
-#include "multi_source_sp.h"
+#include "identity_rs.h"
 
 namespace mu {
-  int dummy;                    // prevent linker warning
+
+  IdentityRS::IdentityRS() {
+  }
+  
+  IdentityRS::~IdentityRS() {
+  }
+  
+  void IdentityRS::render(stk::StkFrames &frames, MuTick base_tick, MuTick start_tick, MuTick end_tick) {
+    for (MuTick i=start_tick; i<end_tick; i++) {
+      for (int j=frames.channels()-1; j>=0; j--) {
+        frames(frame_index(base_tick, i), j) = i;
+      }
+    }
+  }
+
+
 }

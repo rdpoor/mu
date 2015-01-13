@@ -10,10 +10,8 @@ SOURCES := \
 	constant_sp.cpp \
 	crop_sp.cpp \
 	delay_sp.cpp \
-	delay_rs.cpp \
 	fade_sp.cpp \
 	file_read_sp.cpp \
-	file_read_rs.cpp \
 	file_write_sp.cpp \
 	identity_sp.cpp \
 	linseg_sp.cpp \
@@ -33,7 +31,6 @@ SOURCES := \
 	psi_sp.cpp \
 	psi_waveform.cpp \
 	random_select_sp.cpp \
-	render_stream.cpp \
 	resample_sp.cpp \
 	reverb_sp.cpp \
 	rt_player.cpp \
@@ -45,6 +42,19 @@ SOURCES := \
 	tick_utils.cpp \
 	timed_event.cpp \
 	timed_queue.cpp \
+	add_rs.cpp \
+	crop_rs.cpp \
+	delay_rs.cpp \
+	dirac_rs.cpp \
+	file_read_rs.cpp \
+	identity_rs.cpp \
+	loop_rs.cpp \
+	multi_source_rs.cpp \
+	random_select_rs.cpp \
+	render_stream.cpp \
+	sine_rs.cpp \
+	single_source_rs.cpp \
+	stk_effect_rs.cpp \
 	transport.cpp
 
 

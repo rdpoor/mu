@@ -22,8 +22,35 @@
   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
   ================================================================
 */
-#include "multi_source_sp.h"
+#include "random_select_rs.h"
 
 namespace mu {
-  int dummy;                    // prevent linker warning
+  
+  RandomSelectRS::RandomSelectRS()
+    : current_stream_ (NULL) {
+  }
+  
+  RandomSelectRS::~RandomSelectRS() { 
+  }
+
+  void RandomSelectRS::render(stk::StkFrames& frames, MuTick base_tick, MuTick start_tick, MuTick end_tick) {
+    if (start_tick == 0) {
+      reset();
+    }
+    if (current_stream_ != NULL) {
+      current_stream_->render(frames, base_tick, start_tick, end_tick);
+    }
+  }
+    
+  RandomSelectRS& RandomSelectRS::reset() {
+    if (sources_.size() > 0) {
+      int index = std::rand() % sources_.size();
+      current_stream_ = sources_.at(index);
+    } else {
+      current_stream_ = NULL;
+    }
+    return *this;
+  }
+    
+  
 }

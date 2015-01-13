@@ -25,4 +25,5 @@
 #include "tick_utils.h"
 
 namespace mu {
+  int dummy;                    // prevent linker warning
 } // namesmpace mu

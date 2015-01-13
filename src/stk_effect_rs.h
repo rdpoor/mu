@@ -1,4 +1,6 @@
 /*
+  StkEffectRS: simplify using an STK instrument as an effect.
+
   ================================================================
   Copyright (C) 2014 Robert D. Poor
   
@@ -22,8 +24,45 @@
   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
   ================================================================
 */
-#include "multi_source_sp.h"
+
+#ifndef MU_STK_EFFECT_RS
+#define MU_STK_EFFECT_RS
+
+#include "single_source_rs.h"
 
 namespace mu {
-  int dummy;                    // prevent linker warning
-}
+
+  class StkEffectRS : public SingleSourceRS {
+  public:
+
+    StkEffectRS() : blend_(1.0) {
+      source_ = NULL;
+    }
+    ~StkEffectRS() {}
+
+    // blend of 1.0 = 100% effect, 0.0 = 0% effect
+    MuFloat blend( void ) { return blend_; }
+    void set_blend(MuFloat blend) { blend_ = blend; }
+  
+    void render(stk::StkFrames& buffer, MuTick base_tick, MuTick start_tick, MuTick end_tick);
+
+    // Pass one sample into the StkEffect.  In the current
+    // implementation, this is the sum of all channels.
+    virtual void tick(MuFloat value) = 0;
+
+    // Fetch the result of the last call to tick() for the specified
+    // channel.
+    virtual MuFloat last_out(int channel) = 0;
+
+  protected:
+    MuFloat blend_;
+
+  }; // class StkEffectRS
+    
+} // namespace mu
+
+#endif
+
+// Local Variables:
+// mode: c++
+// End:

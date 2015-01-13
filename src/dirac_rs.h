@@ -1,4 +1,8 @@
 /*
+ * DiracRS is a source of test data.  It generates a 1.0 value at tick
+ * 0 and 0.0 everywhere else.
+ */
+/*
   ================================================================
   Copyright (C) 2014 Robert D. Poor
   
@@ -22,8 +26,29 @@
   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
   ================================================================
 */
-#include "multi_source_sp.h"
+
+#ifndef MU_DIRAC_RS_H
+#define MU_DIRAC_RS_H
+
+#include "mu_types.h"
+#include "render_stream.h"
 
 namespace mu {
-  int dummy;                    // prevent linker warning
-}
+
+  class DiracRS : public RenderStream {
+  public:
+
+    DiracRS( void );
+    ~DiracRS( void );
+
+    void render(stk::StkFrames &frames, MuTick base_tick, MuTick start_tick, MuTick end_tick);
+
+  };                            // class DiracRS
+
+}                               // namespace mu
+
+#endif
+
+// Local Variables:
+// mode: c++
+// End:

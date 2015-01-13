@@ -22,8 +22,38 @@
   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
   ================================================================
 */
-#include "multi_source_sp.h"
+#include "add_rs.h"
 
 namespace mu {
-  int dummy;                    // prevent linker warning
+
+  AddRS::AddRS() {
+    buffer_.resize(stk::RT_BUFFER_SIZE, 2);
+  }
+
+  AddRS::~AddRS() {
+  }
+
+  void AddRS::render(stk::StkFrames& frames, MuTick base_tick, MuTick start_tick, MuTick end_tick) {
+    bool is_first = true;
+
+    for (int i=sources_.size()-1; i>=0; i--) {
+      RenderStream *source = sources_.at(i);
+      buffer_.resize(frames.frames(), frames.channels());
+      
+      if (is_first) {
+        // The first source can be rendered directly into frames
+        source->render(frames, base_tick, start_tick, end_tick);
+        is_first = false;
+      } else {
+        // Subsequent sources render into temp buffer and sum into frames
+        source->render(buffer_, base_tick, start_tick, end_tick);
+        for (int i=start_tick; i<end_tick; i++){
+          for (int j=buffer_.channels()-1; j>=0; j--) {
+            frames(frame_index(base_tick,i),j) += buffer_(frame_index(base_tick,i),j);
+          } // for j
+        }   // for i
+      }     // else
+    }       // for
+  }
+
 }

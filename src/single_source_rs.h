@@ -1,4 +1,8 @@
 /*
+ * SingleSourceSP is an abstract superclass for streams that take a
+ * single source stream as an input.
+ */
+/*
   ================================================================
   Copyright (C) 2014 Robert D. Poor
   
@@ -22,8 +26,33 @@
   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
   ================================================================
 */
-#include "multi_source_sp.h"
+
+#ifndef MU_SINGLE_SOURCE_RS
+#define MU_SINGLE_SOURCE_RS
+
+#include "mu_types.h"
+#include "render_stream.h"
 
 namespace mu {
-  int dummy;                    // prevent linker warning
+
+  class SingleSourceRS : public RenderStream {
+  public:
+    SingleSourceRS() : source_ ( NULL ) { }
+    ~SingleSourceRS() { }
+    RenderStream *source() { return source_; }
+    void set_source(RenderStream *source) { source_ = source; }
+
+    void render(stk::StkFrames &frames, MuTick base_tick, MuTick start_tick, MuTick end_tick) = 0;
+  protected:
+    RenderStream *source_;
+    stk::StkFrames buffer_;
+  };
+
 }
+
+#endif
+
+
+// Local Variables:
+// mode: c++
+// End:

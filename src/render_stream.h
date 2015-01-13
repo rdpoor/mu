@@ -14,6 +14,7 @@ namespace mu {
     // start_tick (inclusive) to end_tick (exclusive).
     virtual void render(stk::StkFrames &frames, MuTick base_tick, MuTick start_tick, MuTick end_tick) = 0;
 
+    static long int frame_index(MuTick base_tick, MuTick tick) { return tick - base_tick; }
   };
 
 }

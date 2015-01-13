@@ -1,4 +1,8 @@
 /*
+ * LoopRS takes an input stream and causes it to repeat every
+ * loopDuration seconds.
+ */
+/*
   ================================================================
   Copyright (C) 2014 Robert D. Poor
   
@@ -22,8 +26,36 @@
   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
   ================================================================
 */
-#include "multi_source_sp.h"
+
+#ifndef MU_LOOP_RS_H
+#define MU_LOOP_RS_H
+
+#include "mu_types.h"
+#include "single_source_rs.h"
 
 namespace mu {
-  int dummy;                    // prevent linker warning
-}
+
+  class LoopRS : public SingleSourceRS {
+  public:
+
+    static const MuTick kDefaultDuration = 44100;
+
+    LoopRS( void );
+    ~LoopRS( void );
+
+    void render(stk::StkFrames &frames, MuTick base_tick, MuTick start_tick, MuTick end_tick);
+
+    MuTick duration() const { return duration_; }
+    void set_duration(MuTick duration) { duration_ = duration; }
+
+  protected:
+    MuTick duration_;
+  };                            // class LoopRS
+
+}                               // namespace mu
+
+#endif
+
+// Local Variables:
+// mode: c++
+// End:

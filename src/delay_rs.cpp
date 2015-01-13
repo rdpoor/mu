@@ -11,6 +11,7 @@ namespace mu {
 
   void DelayRS::render(stk::StkFrames &frames, MuTick base_tick, MuTick start_tick, MuTick end_tick) {
     if (source_ != NULL) {
+      // printf("DelayRS::render(%p, %ld, %ld, %ld) delay=%ld\n", &frames, base_tick, start_tick, end_tick, delay_);
       source_->render(frames, base_tick - delay_, start_tick - delay_, end_tick - delay_);
     }
   }

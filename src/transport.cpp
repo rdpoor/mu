@@ -2,7 +2,8 @@
 
 namespace mu {
 
-  Transport::Transport() {
+  Transport::Transport() 
+    : player_(NULL), source_(NULL), state_(kStopped), tick_(0) {
   }
 
   Transport::~Transport() {
@@ -26,7 +27,7 @@ namespace mu {
   // and set state to kRunning.  The player will start feeding buffers
   // via the render() method.
   void Transport::run() {
-    printf("Transport::run()"); fflush(stdout);
+    // printf("Transport::run()"); fflush(stdout);
     if (player_ != NULL) {
       state_ = kRunning;
       player_->start();
@@ -38,7 +39,7 @@ namespace mu {
   // via the render() method, but they will be ignored until the state
   // switches to kRunning.
   void Transport::pause() {
-    printf("Transport::pause()"); fflush(stdout);
+    // printf("Transport::pause()"); fflush(stdout);
     if (player_ != NULL) {
       state_ = kPaused;
       player_->start();
@@ -49,7 +50,7 @@ namespace mu {
   // Note that additional buffers may arrive in the processing
   // thread.
   void Transport::stop() {
-    printf("Transport::stop()"); fflush(stdout);
+    // printf("Transport::stop()"); fflush(stdout);
     if (player_ != NULL) {
       state_ = kStopped;
       player_->stop();
@@ -65,11 +66,11 @@ namespace mu {
   }
 
   void Transport::render(stk::StkFrames &frames) {
-    printf("."); fflush(stdout);
+    // printf("."); fflush(stdout);
     zeroFrames(frames);
-    if ((render_stream_ != NULL) && (state_ == kRunning)) {
+    if ((source_ != NULL) && (state_ == kRunning)) {
       MuTick end_tick = tick_ + frames.frames();
-      render_stream_->render(frames, tick_, tick_, end_tick);
+      source_->render(frames, tick_, tick_, end_tick);
       tick_ = end_tick;
     }
   }

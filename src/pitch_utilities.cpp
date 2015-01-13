@@ -25,6 +25,6 @@
 #include "pitch_utilities.h"
 
 namespace mu {
-
+  int dummy;                    // prevent linker warning
 }
 

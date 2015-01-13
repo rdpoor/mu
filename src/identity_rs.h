@@ -1,4 +1,8 @@
 /*
+ * IdentityRS is a source of test data.  It simply outputs
+ * a value of F at frame F.
+ */
+/*
   ================================================================
   Copyright (C) 2014 Robert D. Poor
   
@@ -22,8 +26,29 @@
   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
   ================================================================
 */
-#include "multi_source_sp.h"
+
+#ifndef MU_IDENTITY_RS_H
+#define MU_IDENTITY_RS_H
+
+#include "mu_types.h"
+#include "render_stream.h"
 
 namespace mu {
-  int dummy;                    // prevent linker warning
-}
+
+  class IdentityRS : public RenderStream {
+  public:
+
+    IdentityRS( void );
+    ~IdentityRS( void );
+
+    void render(stk::StkFrames &frames, MuTick base_tick, MuTick start_tick, MuTick end_tick);
+
+  };                            // class IdentityRS
+
+}                               // namespace mu
+
+#endif
+
+// Local Variables:
+// mode: c++
+// End:

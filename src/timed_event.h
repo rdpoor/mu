@@ -1,48 +1,61 @@
 #ifndef MU_TIMED_EVENT_H
 #define MU_TIMED_EVENT_H
 
+#include "mu_types.h"
+#include "timed_queue.h"
 #include <stdio.h>
-#include "mu_closure.h"
-
-// Consider using functors in TimedEvent.  e.g.:
-//   http://www.newty.de/fpt/functor.html
 
 namespace mu {
 
-  typedef double Time;
-  typedef void *Whazzit;        // dunno what this is supposed to be yet
+  class TimedEvent;             // forward ref
+  class TimedQueue;             // forward ref
+
+  typedef void (*TimedEventCallback)(TimedQueue *timed_queue, TimedEvent *timed_event);
 
   class TimedEvent {
   public:
-    static TimedEvent *create(Time time, Whazzit form) {
-      // TODO: allocate from a resource pool, since events
-      // will be created and freed rapidly and often.
-      return new TimedEvent(time, form);
+    static TimedEvent *allocate(MuTick time, TimedEventCallback callback, void *user_data) {
+      // TODO: allocate from a MuPool, since events will be created
+      // and freed rapidly and often.
+      return new TimedEvent(time, callback, user_data);
     }
-
-    static void dispose(TimedEvent *te) {
+    static void deallocate(TimedEvent *te) {
       delete te;
     }
 
-    Time getTime() const {
+    TimedEvent(MuTick time, TimedEventCallback callback, void *user_data) : 
+      time_(time), callback_(callback), user_data_(user_data) {}
+    ~TimedEvent() {}
+
+    MuTick time() const {
       return time_;
     }
-
-    Whazzit getForm() {
-      return form_;
+    void set_time(MuTick time) {
+      time_ = time;
     }
 
-    void call() {
-      // TODO: who you gonna call?
-      // form_.call();
+    TimedEventCallback callback() const {
+      return callback_;
+    }
+    void set_callback(TimedEventCallback callback) {
+      callback_ = callback;
+    }
+
+    void *user_data() const {
+      return user_data_;
+    }
+    void set_user_data(void *user_data) {
+      user_data_ = user_data;
+    }
+
+    void call(TimedQueue *timed_queue) {
+      callback_(timed_queue, this);
     }
 
   protected:
-    TimedEvent(Time time, Whazzit form) : time_(time), form_(form) {}
-    ~TimedEvent() {}
-    Time time_;
-    Whazzit form_;
-
+    MuTick time_;
+    TimedEventCallback callback_;
+    void *user_data_;
   };
 
 } // namespace mu

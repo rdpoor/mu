@@ -22,7 +22,7 @@
   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
   ================================================================
 */
-#include "multi_source_sp.h"
+#include "multi_source_rs.h"
 
 namespace mu {
   int dummy;                    // prevent linker warning
