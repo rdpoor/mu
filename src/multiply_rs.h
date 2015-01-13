@@ -1,6 +1,5 @@
 /*
- * MultiSourceRS is an abstract superclass for streams that take an
- * arbitrary number of homogeneous sources.
+ * AddRS mixes N sources together.
  */
 /*
   ================================================================
@@ -27,48 +26,32 @@
   ================================================================
 */
 
-#ifndef MU_MULTI_SOURCE_RS
-#define MU_MULTI_SOURCE_RS
+#ifndef MU_MULTIPLY_RS_H
+#define MU_MULTIPLY_RS_H
 
-#include "render_stream.h"
+#include "mu_types.h"
+#include "multi_source_rs.h"
 
 namespace mu {
 
-  class MultiSourceRS : public RenderStream {
+  class MultiplyRS : public MultiSourceRS {
   public:
-    
-    void add_source(RenderStream *source) {
-      sources_.push_back(source);
-    }
-  
-    void remove_source(RenderStream *source) {
-      for (unsigned long int i=0; i<sources_.size(); i++) {
-        if (sources_.at(i) == source) {
-          sources_.erase(sources_.begin()+i);
-          break;
-        }
-      }
-    }
-    
-    void remove_all_sources() {
-      sources_.clear();
-    }
-    
-    size_t source_count() { return sources_.size(); }
 
-    // Allow readonly access to the underlying sources.  This is
-    // primarily intended for unit testing.
-    const std::vector<RenderStream *>& sources() const { return sources_; }
+    MultiplyRS();
+    ~MultiplyRS( void );
+
+    MuFloat scale() { return scale_; }
+    void set_scale(MuFloat scale) { scale_ = scale;}
+
+    void render(stk::StkFrames& frames, MuTick base_tick, MuTick start_tick, MuTick end_tick);
 
   protected:
-    std::vector<RenderStream *> sources_;
-    stk::StkFrames buffer_;
-  };
+    MuFloat scale_;
+  };                            // class MultiplyRS
 
-}
+}                               // namespace mu
 
 #endif
-
 
 // Local Variables:
 // mode: c++

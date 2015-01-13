@@ -50,6 +50,7 @@ SOURCES := \
 	identity_rs.cpp \
 	loop_rs.cpp \
 	multi_source_rs.cpp \
+	multiply_rs.cpp \
 	random_select_rs.cpp \
 	render_stream.cpp \
 	sine_rs.cpp \

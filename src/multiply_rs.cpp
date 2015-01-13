@@ -1,8 +1,4 @@
 /*
- * MultiSourceRS is an abstract superclass for streams that take an
- * arbitrary number of homogeneous sources.
- */
-/*
   ================================================================
   Copyright (C) 2014 Robert D. Poor
   
@@ -26,50 +22,39 @@
   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
   ================================================================
 */
-
-#ifndef MU_MULTI_SOURCE_RS
-#define MU_MULTI_SOURCE_RS
-
-#include "render_stream.h"
+#include "multiply_rs.h"
 
 namespace mu {
 
-  class MultiSourceRS : public RenderStream {
-  public:
-    
-    void add_source(RenderStream *source) {
-      sources_.push_back(source);
-    }
-  
-    void remove_source(RenderStream *source) {
-      for (unsigned long int i=0; i<sources_.size(); i++) {
-        if (sources_.at(i) == source) {
-          sources_.erase(sources_.begin()+i);
-          break;
-        }
+  MultiplyRS::MultiplyRS() {
+    scale_ = 1.0;
+    buffer_.resize(stk::RT_BUFFER_SIZE, 2);
+  }
+
+  MultiplyRS::~MultiplyRS() {
+  }
+
+  void MultiplyRS::render(stk::StkFrames& frames, MuTick base_tick, MuTick start_tick, MuTick end_tick) {
+
+    // "pre-bias" destination frames with scale
+    for (int i=start_tick; i<end_tick; i++) {
+      for (int j=frames.channels()-1; j>=0; j--) {
+        frames(frame_index(base_tick,i),j) = scale_;
       }
     }
-    
-    void remove_all_sources() {
-      sources_.clear();
-    }
-    
-    size_t source_count() { return sources_.size(); }
 
-    // Allow readonly access to the underlying sources.  This is
-    // primarily intended for unit testing.
-    const std::vector<RenderStream *>& sources() const { return sources_; }
-
-  protected:
-    std::vector<RenderStream *> sources_;
-    stk::StkFrames buffer_;
-  };
+    for (int i=sources_.size()-1; i>=0; i--) {
+      RenderStream *source = sources_.at(i);
+      buffer_.resize(frames.frames(), frames.channels());
+      
+      // render source into temp buffer and sum into frames
+      source->render(buffer_, base_tick, start_tick, end_tick);
+      for (int tick=start_tick; tick<end_tick; tick++){
+        for (int ch=buffer_.channels()-1; ch>=0; ch--) {
+          frames(frame_index(base_tick,tick),ch) *= buffer_(frame_index(base_tick,tick),ch);
+        } // for ch
+      }   // for tick
+    }     // for i
+  }
 
 }
-
-#endif
-
-
-// Local Variables:
-// mode: c++
-// End:

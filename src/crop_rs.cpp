@@ -23,6 +23,18 @@ namespace mu {
     // printf("base=%ld, start=%ld, end=%ld, cstart=%ld, cend=%ld, cdstart=%ld, cdend=%ld\n",
     // base_tick, start_tick, end_tick, crop_start_, crop_end_, cropped_start, cropped_end);
     source_->render(frames, base_tick, cropped_start, cropped_end);
+    // trim the tails
+    unsigned int n_channels = frames.channels();
+    for (MuTick tick=start_tick; tick<cropped_start; tick++) {
+      for (unsigned int ch=0; ch<n_channels; ch++) {
+        frames(frame_index(base_tick, tick), ch) = 0.0;
+      }
+    }
+    for (MuTick tick=cropped_end; tick<end_tick; tick++) {
+      for (unsigned int ch=0; ch<n_channels; ch++) {
+        frames(frame_index(base_tick, tick), ch) = 0.0;
+      }
+    }
   }
 
 }

@@ -1,5 +1,4 @@
-#include "add_rs.h"
-#include "dirac_rs.h"
+#include "multiply_rs.h"
 #include "identity_rs.h"
 #include "mu_types.h"
 
@@ -7,37 +6,37 @@
 #include "gtest/gtest.h"
 
 
-class AddRSFixture : public FramesFixture {
+class MultiplyRSFixture : public FramesFixture {
 protected:
   virtual void SetUp() {
     FramesFixture::SetUp();
   }
 
-  void Render(mu::MuTick base_tick, mu::MuTick start_tick, mu::MuTick end_tick, mu::MuFloat offset) {
-    add_rs_.set_offset(offset);
-    add_rs_.render(frames_, base_tick, start_tick, end_tick);
+  void Render(mu::MuTick base_tick, mu::MuTick start_tick, mu::MuTick end_tick, mu::MuFloat scale) {
+    multiply_rs_.set_scale(scale);
+    multiply_rs_.render(frames_, base_tick, start_tick, end_tick);
   }
 
-  mu::AddRS add_rs_;
+  mu::MultiplyRS multiply_rs_;
 };
 
 
-class AddRSZeroSources : public AddRSFixture {
+class MultiplyRSZeroSources : public MultiplyRSFixture {
 protected:
   virtual void SetUp() {
-    AddRSFixture::SetUp();
+    MultiplyRSFixture::SetUp();
   }
 
-  void RunTest(mu::MuTick base_tick, mu::MuTick start_tick, mu::MuTick end_tick, mu::MuFloat offset) {
-    Render(base_tick, start_tick, end_tick, offset);
-    Verify(base_tick, start_tick, end_tick, offset);
+  void RunTest(mu::MuTick base_tick, mu::MuTick start_tick, mu::MuTick end_tick, mu::MuFloat scale) {
+    Render(base_tick, start_tick, end_tick, scale);
+    Verify(base_tick, start_tick, end_tick, scale);
   }
 
-  void Verify(mu::MuTick base_tick, mu::MuTick start_tick, mu::MuTick end_tick, mu::MuFloat offset) {
+  void Verify(mu::MuTick base_tick, mu::MuTick start_tick, mu::MuTick end_tick, mu::MuFloat scale) {
     for (mu::MuTick i=base_tick; i<base_tick + frames_.frames(); i++) {
       mu::MuFloat expected = FramesFixture::guard_value();
       if ((i>=start_tick) && (i<end_tick)) {
-        expected = offset;
+        expected = scale;
       }
       for (unsigned int j=0; j<frames_.channels(); j++) {
         mu::MuFloat value = frames_(mu::RenderStream::frame_index(base_tick, i), j);
@@ -48,31 +47,23 @@ protected:
 
 };
 
-TEST_F(AddRSZeroSources, Render) {
+TEST_F(MultiplyRSZeroSources, Render) {
   mu::MuTick base_tick = 0;
   mu::MuTick start_tick = base_tick;
   mu::MuTick end_tick = base_tick + frames_.frames();
 
-  RunTest(base_tick, start_tick, end_tick, 0.0);
+  RunTest(base_tick, start_tick, end_tick, 1.0);
 }
 
-TEST_F(AddRSZeroSources, RenderShifted) {
+TEST_F(MultiplyRSZeroSources, RenderShifted) {
   mu::MuTick base_tick = 19;
   mu::MuTick start_tick = base_tick;
   mu::MuTick end_tick = base_tick + frames_.frames();
 
-  RunTest(base_tick, start_tick, end_tick, 0.0);
+  RunTest(base_tick, start_tick, end_tick, 1.0);
 }
 
-TEST_F(AddRSZeroSources, RenderSubset) {
-  mu::MuTick base_tick = 19;
-  mu::MuTick start_tick = base_tick + 1;
-  mu::MuTick end_tick = base_tick + frames_.frames() - 1;
-
-  RunTest(base_tick, start_tick, end_tick, 0.0);
-}
-
-TEST_F(AddRSZeroSources, RenderOffset) {
+TEST_F(MultiplyRSZeroSources, RenderSubset) {
   mu::MuTick base_tick = 19;
   mu::MuTick start_tick = base_tick + 1;
   mu::MuTick end_tick = base_tick + frames_.frames() - 1;
@@ -81,23 +72,23 @@ TEST_F(AddRSZeroSources, RenderOffset) {
 }
 
 // ================================================================
-class AddRSOneSource : public AddRSFixture {
+class MultiplyRSOneSource : public MultiplyRSFixture {
 protected:
   virtual void SetUp() {
-    AddRSFixture::SetUp();
-    add_rs_.add_source(&identity_rs_);
+    MultiplyRSFixture::SetUp();
+    multiply_rs_.add_source(&identity_rs_);
   }
 
-  void RunTest(mu::MuTick base_tick, mu::MuTick start_tick, mu::MuTick end_tick, mu::MuFloat offset) {
-    Render(base_tick, start_tick, end_tick, offset);
-    Verify(base_tick, start_tick, end_tick, offset);
+  void RunTest(mu::MuTick base_tick, mu::MuTick start_tick, mu::MuTick end_tick, mu::MuFloat scale) {
+    Render(base_tick, start_tick, end_tick, scale);
+    Verify(base_tick, start_tick, end_tick, scale);
   }
 
-  void Verify(mu::MuTick base_tick, mu::MuTick start_tick, mu::MuTick end_tick, mu::MuFloat offset) {
+  void Verify(mu::MuTick base_tick, mu::MuTick start_tick, mu::MuTick end_tick, mu::MuFloat scale) {
     for (mu::MuTick i=base_tick; i<base_tick + frames_.frames(); i++) {
       mu::MuFloat expected = FramesFixture::guard_value();
       if ((i>=start_tick) && (i<end_tick)) {
-        expected = i + offset;
+        expected = i * scale;
       }
       for (unsigned int j=0; j<frames_.channels(); j++) {
         mu::MuFloat value = frames_(mu::RenderStream::frame_index(base_tick, i), j);
@@ -111,31 +102,23 @@ protected:
 
 
 
-TEST_F(AddRSOneSource, Render) {
+TEST_F(MultiplyRSOneSource, Render) {
   mu::MuTick base_tick = 0;
   mu::MuTick start_tick = base_tick;
   mu::MuTick end_tick = base_tick + frames_.frames();
 
-  RunTest(base_tick, start_tick, end_tick, 0.0);
+  RunTest(base_tick, start_tick, end_tick, 1.0);
 }
 
-TEST_F(AddRSOneSource, RenderShifted) {
+TEST_F(MultiplyRSOneSource, RenderShifted) {
   mu::MuTick base_tick = 19;
   mu::MuTick start_tick = base_tick;
   mu::MuTick end_tick = base_tick + frames_.frames();
 
-  RunTest(base_tick, start_tick, end_tick, 0.0);
+  RunTest(base_tick, start_tick, end_tick, 1.0);
 }
 
-TEST_F(AddRSOneSource, RenderSubset) {
-  mu::MuTick base_tick = 19;
-  mu::MuTick start_tick = base_tick + 1;
-  mu::MuTick end_tick = base_tick + frames_.frames() - 1;
-
-  RunTest(base_tick, start_tick, end_tick, 0.0);
-}
-
-TEST_F(AddRSOneSource, RenderOffset) {
+TEST_F(MultiplyRSOneSource, RenderSubset) {
   mu::MuTick base_tick = 19;
   mu::MuTick start_tick = base_tick + 1;
   mu::MuTick end_tick = base_tick + frames_.frames() - 1;
@@ -143,26 +126,33 @@ TEST_F(AddRSOneSource, RenderOffset) {
   RunTest(base_tick, start_tick, end_tick, 1.0);
 }
 
+TEST_F(MultiplyRSOneSource, RenderScaled) {
+  mu::MuTick base_tick = 19;
+  mu::MuTick start_tick = base_tick + 1;
+  mu::MuTick end_tick = base_tick + frames_.frames() - 1;
+
+  RunTest(base_tick, start_tick, end_tick, 2.0);
+}
+
 // ================================================================
-class AddRSTwoSources : public AddRSFixture {
+class MultiplyRSTwoSources : public MultiplyRSFixture {
 protected:
   virtual void SetUp() {
-    AddRSFixture::SetUp();
-    add_rs_.add_source(&dirac_rs_);
-    add_rs_.add_source(&identity_rs_);
+    MultiplyRSFixture::SetUp();
+    multiply_rs_.add_source(&identity_rs1_);
+    multiply_rs_.add_source(&identity_rs2_);
   }
 
-  void RunTest(mu::MuTick base_tick, mu::MuTick start_tick, mu::MuTick end_tick, mu::MuFloat offset) {
-    Render(base_tick, start_tick, end_tick, offset);
-    Verify(base_tick, start_tick, end_tick, offset);
+  void RunTest(mu::MuTick base_tick, mu::MuTick start_tick, mu::MuTick end_tick, mu::MuFloat scale) {
+    Render(base_tick, start_tick, end_tick, scale);
+    Verify(base_tick, start_tick, end_tick, scale);
   }
 
-  void Verify(mu::MuTick base_tick, mu::MuTick start_tick, mu::MuTick end_tick, mu::MuFloat offset) {
+  void Verify(mu::MuTick base_tick, mu::MuTick start_tick, mu::MuTick end_tick, mu::MuFloat scale) {
     for (mu::MuTick i=base_tick; i<base_tick + frames_.frames(); i++) {
       mu::MuFloat expected = FramesFixture::guard_value();
       if ((i>=start_tick) && (i<end_tick)) {
-        // output should equal 1.0 when dirac's tick = 0, tick otherwise
-        expected = (i == 0) ? 1.0 + offset : i + offset;
+        expected = i * i * scale;
       }
       for (unsigned int j=0; j<frames_.channels(); j++) {
         mu::MuFloat value = frames_(mu::RenderStream::frame_index(base_tick, i), j);
@@ -171,40 +161,40 @@ protected:
     }
   }
 
-  mu::DiracRS dirac_rs_;
-  mu::IdentityRS identity_rs_;
+  mu::IdentityRS identity_rs1_;
+  mu::IdentityRS identity_rs2_;
 };
 
 
-TEST_F(AddRSTwoSources, Render) {
+TEST_F(MultiplyRSTwoSources, Render) {
   mu::MuTick base_tick = 0;
   mu::MuTick start_tick = base_tick;
   mu::MuTick end_tick = base_tick + frames_.frames();
 
-  RunTest(base_tick, start_tick, end_tick, 0.0);
+  RunTest(base_tick, start_tick, end_tick, 1.0);
 }
 
-TEST_F(AddRSTwoSources, RenderShifted) {
+TEST_F(MultiplyRSTwoSources, RenderShifted) {
   mu::MuTick base_tick = 19;
   mu::MuTick start_tick = base_tick;
   mu::MuTick end_tick = base_tick + frames_.frames();
 
-  RunTest(base_tick, start_tick, end_tick, 0.0);
+  RunTest(base_tick, start_tick, end_tick, 1.0);
 }
 
-TEST_F(AddRSTwoSources, RenderSubset) {
-  mu::MuTick base_tick = 19;
-  mu::MuTick start_tick = base_tick + 1;
-  mu::MuTick end_tick = base_tick + frames_.frames() - 1;
-
-  RunTest(base_tick, start_tick, end_tick, 0.0);
-}
-
-TEST_F(AddRSTwoSources, RenderOffset) {
+TEST_F(MultiplyRSTwoSources, RenderSubset) {
   mu::MuTick base_tick = 19;
   mu::MuTick start_tick = base_tick + 1;
   mu::MuTick end_tick = base_tick + frames_.frames() - 1;
 
   RunTest(base_tick, start_tick, end_tick, 1.0);
+}
+
+TEST_F(MultiplyRSTwoSources, RenderScaled) {
+  mu::MuTick base_tick = 19;
+  mu::MuTick start_tick = base_tick + 1;
+  mu::MuTick end_tick = base_tick + frames_.frames() - 1;
+
+  RunTest(base_tick, start_tick, end_tick, 2.0);
 }
 

@@ -28,8 +28,11 @@ protected:
   void Verify(mu::MuTick base_tick, mu::MuTick start_tick, mu::MuTick end_tick, mu::MuTick crop_start, mu::MuTick crop_end) {
     for (mu::MuTick i=base_tick; i<base_tick + frames_.frames(); i++) {
       mu::MuFloat expected;
-      if ((i<start_tick) || (i<crop_start) || (i>=end_tick) || (i>=crop_end)) {
+      if ((i<start_tick) || (i>=end_tick)) {
         expected = FramesFixture::guard_value();
+      } else if ((i<crop_start) || (i>=crop_end)) {
+        // crop writes zeros outside of [crop_start...crop_end)
+        expected = 0.0;
       } else {
         expected = i;
       }

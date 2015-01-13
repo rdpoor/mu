@@ -41,13 +41,11 @@
 
 namespace mu {
 
-  class RandomSelectRS : public MultiSourceRS<RandomSelectRS> {
+  class RandomSelectRS : public MultiSourceRS {
   public:
     
     RandomSelectRS( void );
     ~RandomSelectRS( void );
-
-    std::string class_name() { return "RandomSelectRS"; }
 
     void render(stk::StkFrames &frames, MuTick base_tick, MuTick start_tick, MuTick end_tick);
 
