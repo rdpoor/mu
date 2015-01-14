@@ -6,6 +6,7 @@
 * dirac_rs.h [done]
 * file_read_rs.h [done]
 * identity_rs.h [done]
+* line_segment_rs [done]
 * loop_rs.h [done]
 * multi_source_rs.h [implicitly]
 * multiply_rs.h [done]
@@ -16,18 +17,25 @@
 
 === RenderStreams to write:
 
-* line_segment_rs
-* FadeIn/FadeOut(start_tick, end_tick, ramp_rate)
+* FadeIn/FadeOut(start_tick, end_tick, ramp_rate) (What Would SOX Do?)
 
 === TODO
 
-* crop_rs should write zeros outside of its start and end range. [done]
+* crop_rs should write zeros outside of its start and end
+  range. [done, but see Design Ponder below.]
 * bool RenderStream::render() return false when frames left untouched.
+  (See Design Ponder below)
+* Should linseg_rs work over an open interval (includes starting
+  point, excludes ending point) or closed (includes both)?  Now it
+  works over an open interval, which means if you ramp from 10.0 to
+  1.0, it will never emit the 1.0.  That might be surprising to some.
+* Reinstate introspection (from previous versions) to allow printing
+  and eventual GUI.
 
-=== Design ponder
+=== Design Ponder
 
 What should a RenderStream do when asked to render something outside
-of its range.  For example, imagine a one second sound file asked to
+of its range?  For example, imagine a one second sound file asked to
 render something at time=100.0.  Should it always zero the frame
 buffer before returning it?  Imagine if there are thousands of sound
 files -- that's a lot of zeroing.  
@@ -41,5 +49,6 @@ object maintaining startTick() and endTick() methods.
 
 So far, the only RenderStream classes with a finite extent are CropRS
 and FileReadRS.  I need to write tests for the latter before changing
-the contract of RenderStream.render().
+the contract of RenderStream.render().  LineSegmentRS will also have
+finite extent.
 

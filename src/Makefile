@@ -48,6 +48,7 @@ SOURCES := \
 	dirac_rs.cpp \
 	file_read_rs.cpp \
 	identity_rs.cpp \
+	linseg_rs.cpp \
 	loop_rs.cpp \
 	multi_source_rs.cpp \
 	multiply_rs.cpp \
