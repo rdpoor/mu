@@ -19,7 +19,7 @@ namespace mu {
     MuTick crop_end() { return crop_end_; }
     void set_crop_end(MuTick crop_end) { crop_end_ = crop_end; }
 
-    void render(stk::StkFrames &frames, MuTick base_tick, MuTick start_tick, MuTick end_tick);
+    bool render(stk::StkFrames &frames, MuTick base_tick, MuTick start_tick, MuTick end_tick);
 
   protected:
     MuTick crop_start_;

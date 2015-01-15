@@ -33,13 +33,18 @@ namespace mu {
   RandomSelectRS::~RandomSelectRS() { 
   }
 
-  void RandomSelectRS::render(stk::StkFrames& frames, MuTick base_tick, MuTick start_tick, MuTick end_tick) {
+  bool RandomSelectRS::render(stk::StkFrames& frames, MuTick base_tick, MuTick start_tick, MuTick end_tick) {
+    bool anything_rendered = false;
+
     if (start_tick == 0) {
       reset();
     }
-    if (current_stream_ != NULL) {
-      current_stream_->render(frames, base_tick, start_tick, end_tick);
+
+    if ((current_stream_ != NULL) && (current_stream_->render(frames, base_tick, start_tick, end_tick))) {
+      anything_rendered = true;
     }
+
+    return anything_rendered;
   }
     
   RandomSelectRS& RandomSelectRS::reset() {

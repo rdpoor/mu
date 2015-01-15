@@ -2,8 +2,8 @@
 
 namespace mu {
 
-  void StkEffectRS::render(stk::StkFrames& buffer, MuTick base_tick, MuTick start_tick, MuTick end_tick) {
-    if (source_ == NULL) return;
+  bool StkEffectRS::render(stk::StkFrames& buffer, MuTick base_tick, MuTick start_tick, MuTick end_tick) {
+    if (source_ == NULL) return false;
 
     int n_frames = buffer.frames();
     int n_channels = buffer.channels();
@@ -32,6 +32,7 @@ namespace mu {
           (blend_ * output_value);
       }
     }
+    return true;
   }
 
 

@@ -70,7 +70,11 @@ namespace mu {
     zeroFrames(frames);
     if ((source_ != NULL) && (state_ == kRunning)) {
       MuTick end_tick = tick_ + frames.frames();
-      source_->render(frames, tick_, tick_, end_tick);
+      if (source_->render(frames, tick_, tick_, end_tick)) {
+        // something got rendered
+      } else {
+        // nothing got rendered
+      }
       tick_ = end_tick;
     }
   }

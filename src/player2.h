@@ -15,7 +15,7 @@ namespace mu {
 
     // defaults and getters and setters
 
-    static const unsigned int default_channel_count() {
+    static unsigned int default_channel_count() {
       return 2u;
     }
 
@@ -27,7 +27,7 @@ namespace mu {
       channel_count_ = channel_count;
     }
 
-    static const MuFloat default_frame_rate() {
+    static MuFloat default_frame_rate() {
       return 44100.0;
     }
 
@@ -39,7 +39,7 @@ namespace mu {
       frame_rate_ = frame_rate;
     }
 
-    static const unsigned int default_frame_size() {
+    static unsigned int default_frame_size() {
       return 512u;
     }
 

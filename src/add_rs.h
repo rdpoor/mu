@@ -40,13 +40,9 @@ namespace mu {
     AddRS();
     ~AddRS( void );
 
-    MuFloat offset() { return offset_; }
-    void set_offset(MuFloat offset) { offset_ = offset;}
-
-    void render(stk::StkFrames& frames, MuTick base_tick, MuTick start_tick, MuTick end_tick);
+    bool render(stk::StkFrames& frames, MuTick base_tick, MuTick start_tick, MuTick end_tick);
 
   protected:
-    MuFloat offset_;
   };                            // class AddRS
 
 }                               // namespace mu

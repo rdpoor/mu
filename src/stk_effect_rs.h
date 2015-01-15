@@ -44,7 +44,7 @@ namespace mu {
     MuFloat blend( void ) { return blend_; }
     void set_blend(MuFloat blend) { blend_ = blend; }
   
-    void render(stk::StkFrames& buffer, MuTick base_tick, MuTick start_tick, MuTick end_tick);
+    bool render(stk::StkFrames& buffer, MuTick base_tick, MuTick start_tick, MuTick end_tick);
 
     // Pass one sample into the StkEffect.  In the current
     // implementation, this is the sum of all channels.

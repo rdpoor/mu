@@ -12,8 +12,7 @@ protected:
     FramesFixture::SetUp();
   }
 
-  void Render(mu::MuTick base_tick, mu::MuTick start_tick, mu::MuTick end_tick, mu::MuFloat scale) {
-    multiply_rs_.set_scale(scale);
+  void Render(mu::MuTick base_tick, mu::MuTick start_tick, mu::MuTick end_tick) {
     multiply_rs_.render(frames_, base_tick, start_tick, end_tick);
   }
 
@@ -27,20 +26,20 @@ protected:
     MultiplyRSFixture::SetUp();
   }
 
-  void RunTest(mu::MuTick base_tick, mu::MuTick start_tick, mu::MuTick end_tick, mu::MuFloat scale) {
-    Render(base_tick, start_tick, end_tick, scale);
-    Verify(base_tick, start_tick, end_tick, scale);
+  void RunTest(mu::MuTick base_tick, mu::MuTick start_tick, mu::MuTick end_tick) {
+    Render(base_tick, start_tick, end_tick);
+    Verify(base_tick, start_tick, end_tick);
   }
 
-  void Verify(mu::MuTick base_tick, mu::MuTick start_tick, mu::MuTick end_tick, mu::MuFloat scale) {
+  void Verify(mu::MuTick base_tick, mu::MuTick start_tick, mu::MuTick end_tick) {
+    (void)start_tick;           // suppress compiler warnings
+    (void)end_tick;
+
     for (mu::MuTick i=base_tick; i<base_tick + frames_.frames(); i++) {
       mu::MuFloat expected = FramesFixture::guard_value();
-      if ((i>=start_tick) && (i<end_tick)) {
-        expected = scale;
-      }
       for (unsigned int j=0; j<frames_.channels(); j++) {
         mu::MuFloat value = frames_(mu::RenderStream::frame_index(base_tick, i), j);
-        ASSERT_EQ(expected, value) << "at (frame, channel)=(" << i << ", " << j << ")";
+        ASSERT_DOUBLE_EQ(expected, value) << "at (frame, channel)=(" << i << ", " << j << ")";
       }
     }
   }
@@ -52,7 +51,7 @@ TEST_F(MultiplyRSZeroSources, Render) {
   mu::MuTick start_tick = base_tick;
   mu::MuTick end_tick = base_tick + frames_.frames();
 
-  RunTest(base_tick, start_tick, end_tick, 1.0);
+  RunTest(base_tick, start_tick, end_tick);
 }
 
 TEST_F(MultiplyRSZeroSources, RenderShifted) {
@@ -60,7 +59,7 @@ TEST_F(MultiplyRSZeroSources, RenderShifted) {
   mu::MuTick start_tick = base_tick;
   mu::MuTick end_tick = base_tick + frames_.frames();
 
-  RunTest(base_tick, start_tick, end_tick, 1.0);
+  RunTest(base_tick, start_tick, end_tick);
 }
 
 TEST_F(MultiplyRSZeroSources, RenderSubset) {
@@ -68,7 +67,7 @@ TEST_F(MultiplyRSZeroSources, RenderSubset) {
   mu::MuTick start_tick = base_tick + 1;
   mu::MuTick end_tick = base_tick + frames_.frames() - 1;
 
-  RunTest(base_tick, start_tick, end_tick, 1.0);
+  RunTest(base_tick, start_tick, end_tick);
 }
 
 // ================================================================
@@ -79,20 +78,20 @@ protected:
     multiply_rs_.add_source(&identity_rs_);
   }
 
-  void RunTest(mu::MuTick base_tick, mu::MuTick start_tick, mu::MuTick end_tick, mu::MuFloat scale) {
-    Render(base_tick, start_tick, end_tick, scale);
-    Verify(base_tick, start_tick, end_tick, scale);
+  void RunTest(mu::MuTick base_tick, mu::MuTick start_tick, mu::MuTick end_tick) {
+    Render(base_tick, start_tick, end_tick);
+    Verify(base_tick, start_tick, end_tick);
   }
 
-  void Verify(mu::MuTick base_tick, mu::MuTick start_tick, mu::MuTick end_tick, mu::MuFloat scale) {
+  void Verify(mu::MuTick base_tick, mu::MuTick start_tick, mu::MuTick end_tick) {
     for (mu::MuTick i=base_tick; i<base_tick + frames_.frames(); i++) {
       mu::MuFloat expected = FramesFixture::guard_value();
       if ((i>=start_tick) && (i<end_tick)) {
-        expected = i * scale;
+        expected = i * guard_value();
       }
       for (unsigned int j=0; j<frames_.channels(); j++) {
         mu::MuFloat value = frames_(mu::RenderStream::frame_index(base_tick, i), j);
-        ASSERT_EQ(expected, value) << "at (frame, channel)=(" << i << ", " << j << ")";
+        ASSERT_DOUBLE_EQ(expected, value) << "at (frame, channel)=(" << i << ", " << j << ")";
       }
     }
   }
@@ -107,7 +106,7 @@ TEST_F(MultiplyRSOneSource, Render) {
   mu::MuTick start_tick = base_tick;
   mu::MuTick end_tick = base_tick + frames_.frames();
 
-  RunTest(base_tick, start_tick, end_tick, 1.0);
+  RunTest(base_tick, start_tick, end_tick);
 }
 
 TEST_F(MultiplyRSOneSource, RenderShifted) {
@@ -115,7 +114,7 @@ TEST_F(MultiplyRSOneSource, RenderShifted) {
   mu::MuTick start_tick = base_tick;
   mu::MuTick end_tick = base_tick + frames_.frames();
 
-  RunTest(base_tick, start_tick, end_tick, 1.0);
+  RunTest(base_tick, start_tick, end_tick);
 }
 
 TEST_F(MultiplyRSOneSource, RenderSubset) {
@@ -123,15 +122,7 @@ TEST_F(MultiplyRSOneSource, RenderSubset) {
   mu::MuTick start_tick = base_tick + 1;
   mu::MuTick end_tick = base_tick + frames_.frames() - 1;
 
-  RunTest(base_tick, start_tick, end_tick, 1.0);
-}
-
-TEST_F(MultiplyRSOneSource, RenderScaled) {
-  mu::MuTick base_tick = 19;
-  mu::MuTick start_tick = base_tick + 1;
-  mu::MuTick end_tick = base_tick + frames_.frames() - 1;
-
-  RunTest(base_tick, start_tick, end_tick, 2.0);
+  RunTest(base_tick, start_tick, end_tick);
 }
 
 // ================================================================
@@ -143,20 +134,20 @@ protected:
     multiply_rs_.add_source(&identity_rs2_);
   }
 
-  void RunTest(mu::MuTick base_tick, mu::MuTick start_tick, mu::MuTick end_tick, mu::MuFloat scale) {
-    Render(base_tick, start_tick, end_tick, scale);
-    Verify(base_tick, start_tick, end_tick, scale);
+  void RunTest(mu::MuTick base_tick, mu::MuTick start_tick, mu::MuTick end_tick) {
+    Render(base_tick, start_tick, end_tick);
+    Verify(base_tick, start_tick, end_tick);
   }
 
-  void Verify(mu::MuTick base_tick, mu::MuTick start_tick, mu::MuTick end_tick, mu::MuFloat scale) {
+  void Verify(mu::MuTick base_tick, mu::MuTick start_tick, mu::MuTick end_tick) {
     for (mu::MuTick i=base_tick; i<base_tick + frames_.frames(); i++) {
       mu::MuFloat expected = FramesFixture::guard_value();
       if ((i>=start_tick) && (i<end_tick)) {
-        expected = i * i * scale;
+        expected = guard_value() * i * i;
       }
       for (unsigned int j=0; j<frames_.channels(); j++) {
         mu::MuFloat value = frames_(mu::RenderStream::frame_index(base_tick, i), j);
-        ASSERT_EQ(expected, value) << "at (frame, channel)=(" << i << ", " << j << ")";
+        ASSERT_DOUBLE_EQ(expected, value) << "at (frame, channel)=(" << i << ", " << j << ")";
       }
     }
   }
@@ -171,7 +162,7 @@ TEST_F(MultiplyRSTwoSources, Render) {
   mu::MuTick start_tick = base_tick;
   mu::MuTick end_tick = base_tick + frames_.frames();
 
-  RunTest(base_tick, start_tick, end_tick, 1.0);
+  RunTest(base_tick, start_tick, end_tick);
 }
 
 TEST_F(MultiplyRSTwoSources, RenderShifted) {
@@ -179,7 +170,7 @@ TEST_F(MultiplyRSTwoSources, RenderShifted) {
   mu::MuTick start_tick = base_tick;
   mu::MuTick end_tick = base_tick + frames_.frames();
 
-  RunTest(base_tick, start_tick, end_tick, 1.0);
+  RunTest(base_tick, start_tick, end_tick);
 }
 
 TEST_F(MultiplyRSTwoSources, RenderSubset) {
@@ -187,14 +178,7 @@ TEST_F(MultiplyRSTwoSources, RenderSubset) {
   mu::MuTick start_tick = base_tick + 1;
   mu::MuTick end_tick = base_tick + frames_.frames() - 1;
 
-  RunTest(base_tick, start_tick, end_tick, 1.0);
+  RunTest(base_tick, start_tick, end_tick);
 }
 
-TEST_F(MultiplyRSTwoSources, RenderScaled) {
-  mu::MuTick base_tick = 19;
-  mu::MuTick start_tick = base_tick + 1;
-  mu::MuTick end_tick = base_tick + frames_.frames() - 1;
-
-  RunTest(base_tick, start_tick, end_tick, 2.0);
-}
 

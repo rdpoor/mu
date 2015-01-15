@@ -66,12 +66,12 @@ TEST_F(LinsegRS, WithTwoBreakpoints) {
 
   for (mu::MuTick tick=base_tick; tick<base_tick + frames_.frames(); tick++) {
     mu::MuFloat expected = FramesFixture::guard_value();
-    if ((tick >= break0_tick) && (tick < break1_tick)) {
+    if ((tick >= break0_tick) && (tick <= break1_tick)) {
       expected = break0_value + (break1_value - break0_value) * (tick - break0_tick) / (break1_tick - break0_tick);
     }
     for (unsigned int ch=0; ch<frames_.channels(); ch++) {
       mu::MuFloat actual = frames_(mu::RenderStream::frame_index(base_tick, tick), ch);
-      EXPECT_DOUBLE_EQ(expected, actual) << "at (tick, channel)=(" << tick << ", " << ch << ")";
+      ASSERT_DOUBLE_EQ(expected, actual) << "at (tick, channel)=(" << tick << ", " << ch << ")";
     }
   }
 }
@@ -92,12 +92,12 @@ TEST_F(LinsegRS, BeforeTwoBreakpoints) {
 
   for (mu::MuTick tick=base_tick; tick<base_tick + frames_.frames(); tick++) {
     mu::MuFloat expected = FramesFixture::guard_value();
-    if ((tick >= break0_tick) && (tick < break1_tick)) {
+    if ((tick >= break0_tick) && (tick <= break1_tick)) {
       expected = break0_value + (break1_value - break0_value) * (tick - break0_tick) / (break1_tick - break0_tick);
     }
     for (unsigned int ch=0; ch<frames_.channels(); ch++) {
       mu::MuFloat actual = frames_(mu::RenderStream::frame_index(base_tick, tick), ch);
-      EXPECT_DOUBLE_EQ(expected, actual) << "at (tick, channel)=(" << tick << ", " << ch << ")";
+      ASSERT_DOUBLE_EQ(expected, actual) << "at (tick, channel)=(" << tick << ", " << ch << ")";
     }
   }
 }
@@ -118,12 +118,12 @@ TEST_F(LinsegRS, AfterTwoBreakpoints) {
 
   for (mu::MuTick tick=base_tick; tick<base_tick + frames_.frames(); tick++) {
     mu::MuFloat expected = FramesFixture::guard_value();
-    if ((tick >= break0_tick) && (tick < break1_tick)) {
+    if ((tick >= break0_tick) && (tick <= break1_tick)) {
       expected = break0_value + (break1_value - break0_value) * (tick - break0_tick) / (break1_tick - break0_tick);
     }
     for (unsigned int ch=0; ch<frames_.channels(); ch++) {
       mu::MuFloat actual = frames_(mu::RenderStream::frame_index(base_tick, tick), ch);
-      EXPECT_DOUBLE_EQ(expected, actual) << "at (tick, channel)=(" << tick << ", " << ch << ")";
+      ASSERT_DOUBLE_EQ(expected, actual) << "at (tick, channel)=(" << tick << ", " << ch << ")";
     }
   }
 }

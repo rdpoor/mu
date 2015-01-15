@@ -33,16 +33,18 @@ namespace mu {
     return true;
   }
 
-  void FileReadRS::render(stk::StkFrames &frames, MuTick base_tick, MuTick start_tick, MuTick end_tick) {
+  bool FileReadRS::render(stk::StkFrames &frames, MuTick base_tick, MuTick start_tick, MuTick end_tick) {
     // check for format mismatch
-    if (!verify_format(frames)) return;
+    if (!verify_format(frames)) return false;
 
     // check for end of file
-    if (start_tick >= file_read_.fileSize()) return;
+    if (start_tick >= file_read_.fileSize()) return false;
 
     if ((start_tick == base_tick) && (end_tick == base_tick + frames.frames())) {
       // render directly into frames
       file_read_.read(frames, base_tick);
+      return true;
+
     } else if (start_tick < end_tick) {
       temp_buffer_.resize(end_tick - start_tick, frames.channels());
       file_read_.read(temp_buffer_, start_tick);
@@ -53,8 +55,11 @@ namespace mu {
           frames(i+offset, j) = temp_buffer_(i, j);
         }
       }
+      return true;
+
     } else {
-      // nothing to render
+      return false;             // nothing to render
+
     }
   }
 

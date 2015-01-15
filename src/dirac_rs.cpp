@@ -33,13 +33,16 @@ namespace mu {
   DiracRS::~DiracRS() {
   }
   
-  void DiracRS::render(stk::StkFrames &frames, MuTick base_tick, MuTick start_tick, MuTick end_tick) {
+  bool DiracRS::render(stk::StkFrames &frames, MuTick base_tick, MuTick start_tick, MuTick end_tick) {
+    if (end_tick <= start_tick) return false;
+
     // printf("DiracRS::render(%p, %ld, %ld, %ld)\n", &frames, base_tick, start_tick, end_tick);
     for (mu::MuTick i=start_tick; i<end_tick; i++) {
       for (int j=frames.channels()-1; j>=0; j--) {
         frames(i-base_tick, j) = (i==0) ? 1.0 : 0.0;
       }
     }
+    return true;
   }
 
 

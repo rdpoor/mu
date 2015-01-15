@@ -1,6 +1,7 @@
-=== RenderStreams to test:
+=== RenderStreams to write / test:
 
 * add_rs.h [done]
+* constant_rs.h [done]
 * crop_rs.h [done]
 * delay_rs.h [done]
 * dirac_rs.h [done]
@@ -14,10 +15,7 @@
 * sine_rs.h
 * single_source_rs.h [implicitly]
 * stk_effect_rs.h [done]
-
-=== RenderStreams to write:
-
-* FadeIn/FadeOut(start_tick, end_tick, ramp_rate) (What Would SOX Do?)
+* xfade_rs.h 
 
 === TODO
 
@@ -28,27 +26,52 @@
 * Should linseg_rs work over an open interval (includes starting
   point, excludes ending point) or closed (includes both)?  Now it
   works over an open interval, which means if you ramp from 10.0 to
-  1.0, it will never emit the 1.0.  That might be surprising to some.
+  1.0, it will never emit the 1.0.  That might be surprising to some. [done]
 * Reinstate introspection (from previous versions) to allow printing
   and eventual GUI.
 
-=== Design Ponder
+=== Design Decision
 
-What should a RenderStream do when asked to render something outside
-of its range?  For example, imagine a one second sound file asked to
-render something at time=100.0.  Should it always zero the frame
-buffer before returning it?  Imagine if there are thousands of sound
-files -- that's a lot of zeroing.  
+Calls to RenderStream::render() should leave frames untouched outside
+of the range [start_frame, end_frame).  In addition, RenderStreams of
+finite extent (currently CropRS, FileReadRS, LinsegRS) should leave
+frames untouched outside of their extent.
 
-I could rewrite the contract of render() to return false when the
-frames buffer was untouched.  Then the caller of render() would just
-skip whatever it was about to do with the frames buffer.
+As an optimization, RenderStream::render() will return false if
+nothing in frames was touched, signalling to the caller that nothing
+needs to be done.
 
-I think that works, and it's much more natural than each RenderStream
-object maintaining startTick() and endTick() methods.
+=== But what about Empty Sum and Empty Products?
 
-So far, the only RenderStream classes with a finite extent are CropRS
-and FileReadRS.  I need to write tests for the latter before changing
-the contract of RenderStream.render().  LineSegmentRS will also have
-finite extent.
+For AddRS and MultiplyRS, what should the effect be if there are no
+inputs contributing to the output?  Some options (using MultiplyRS as
+an example):
 
+* Always emit 1.0 when there are zero inputs contributing and always
+  return true, i.e. the stream has infinite extent.
+
+* Always emit 1.0 when there are zero inputs contributing and return
+  false, i.e. the stream has extent determined by its inputs.  (That's
+  weird because it violates the contract render()'s return value.)
+
+* Don't modify the frames buffer if there are no inputs contributing
+  and return false (that's the current behavior).  If you want
+  something different, you can attach a ConstantRS(1.0) as an input
+  which will give it infinite extent.
+
+=== XFadeRS
+
+Originally I was thinking of writing a RS that takes one input and
+fades it in at the beginning and out at the end.
+
+Then I thought that it should take two inputs and crossfade from one
+to the other at a specific time.
+
+Then I thought it should take N inputs, each with a start time (?)
+and crossfade from one to the next.
+
+(Tangentially, this makes me wonder if the semantics of LoopRS should
+be changed to create an infinite series of its input without cropping.
+One implication is that the input to LoopRS must have finite extent.)
+
+For now I think I'll just wait until I need it.

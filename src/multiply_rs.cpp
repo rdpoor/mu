@@ -27,34 +27,31 @@
 namespace mu {
 
   MultiplyRS::MultiplyRS() {
-    scale_ = 1.0;
     buffer_.resize(stk::RT_BUFFER_SIZE, 2);
   }
 
   MultiplyRS::~MultiplyRS() {
   }
 
-  void MultiplyRS::render(stk::StkFrames& frames, MuTick base_tick, MuTick start_tick, MuTick end_tick) {
-
-    // "pre-bias" destination frames with scale
-    for (int i=start_tick; i<end_tick; i++) {
-      for (int j=frames.channels()-1; j>=0; j--) {
-        frames(frame_index(base_tick,i),j) = scale_;
-      }
-    }
+  bool MultiplyRS::render(stk::StkFrames& frames, MuTick base_tick, MuTick start_tick, MuTick end_tick) {
+    bool anything_rendered = false;
 
     for (int i=sources_.size()-1; i>=0; i--) {
       RenderStream *source = sources_.at(i);
       buffer_.resize(frames.frames(), frames.channels());
       
       // render source into temp buffer and sum into frames
-      source->render(buffer_, base_tick, start_tick, end_tick);
-      for (int tick=start_tick; tick<end_tick; tick++){
-        for (int ch=buffer_.channels()-1; ch>=0; ch--) {
-          frames(frame_index(base_tick,tick),ch) *= buffer_(frame_index(base_tick,tick),ch);
-        } // for ch
-      }   // for tick
-    }     // for i
+      if (source->render(buffer_, base_tick, start_tick, end_tick)) {
+        anything_rendered = true;
+        for (int tick=start_tick; tick<end_tick; tick++){
+          for (int ch=buffer_.channels()-1; ch>=0; ch--) {
+            frames(frame_index(base_tick,tick),ch) *= buffer_(frame_index(base_tick,tick),ch);
+          } // for ch
+        }   // for tick
+      }     // if (source->)
+    }       // for i
+
+    return anything_rendered;
   }
 
 }

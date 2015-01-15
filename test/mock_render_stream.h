@@ -5,5 +5,5 @@
 
 class MockRenderStream : public mu::RenderStream {
  public:
-  MOCK_METHOD4(render, void(stk::StkFrames&, mu::MuTick base_tick, mu::MuTick start_tick, mu::MuTick end_tick));
+  MOCK_METHOD4(render, bool(stk::StkFrames&, mu::MuTick base_tick, mu::MuTick start_tick, mu::MuTick end_tick));
 };

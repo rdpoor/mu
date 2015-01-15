@@ -42,7 +42,7 @@ namespace mu {
     RenderStream *source() { return source_; }
     void set_source(RenderStream *source) { source_ = source; }
 
-    void render(stk::StkFrames &frames, MuTick base_tick, MuTick start_tick, MuTick end_tick) = 0;
+    bool render(stk::StkFrames &frames, MuTick base_tick, MuTick start_tick, MuTick end_tick) = 0;
   protected:
     RenderStream *source_;
     stk::StkFrames buffer_;

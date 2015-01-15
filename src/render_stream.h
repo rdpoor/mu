@@ -15,9 +15,9 @@ namespace mu {
     //   frames_[end_tick - base_tick] (exclusive).
     // Target promises not to touch any sample outside of that range,
     // but MAY return false to indicate that no samples were written.
-    virtual void render(stk::StkFrames &frames, MuTick base_tick, MuTick start_tick, MuTick end_tick) = 0;
+    virtual bool render(stk::StkFrames &frames, MuTick base_tick, MuTick start_tick, MuTick end_tick) = 0;
 
-    // Compute an index into the frame basedon base_tick, tick.
+    // Compute an index into the frame based on base_tick, tick.
     static long int frame_index(MuTick base_tick, MuTick tick) { return tick - base_tick; }
   };
 

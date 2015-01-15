@@ -40,13 +40,9 @@ namespace mu {
     MultiplyRS();
     ~MultiplyRS( void );
 
-    MuFloat scale() { return scale_; }
-    void set_scale(MuFloat scale) { scale_ = scale;}
-
-    void render(stk::StkFrames& frames, MuTick base_tick, MuTick start_tick, MuTick end_tick);
+    bool render(stk::StkFrames& frames, MuTick base_tick, MuTick start_tick, MuTick end_tick);
 
   protected:
-    MuFloat scale_;
   };                            // class MultiplyRS
 
 }                               // namespace mu

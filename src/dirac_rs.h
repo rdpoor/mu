@@ -41,7 +41,7 @@ namespace mu {
     DiracRS( void );
     ~DiracRS( void );
 
-    void render(stk::StkFrames &frames, MuTick base_tick, MuTick start_tick, MuTick end_tick);
+    bool render(stk::StkFrames &frames, MuTick base_tick, MuTick start_tick, MuTick end_tick);
 
   };                            // class DiracRS
 

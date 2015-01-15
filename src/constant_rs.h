@@ -1,12 +1,6 @@
 /*
- * RandomSelectSP accepts an arbitrary number of input streams.
- * One stream is selected as the "current" stream.  In each call to
- * step(), if the tick time goes backwards, another stream is randomly
- * selected as the current stream.
- *
- * Note that each input stream could have a different delay stream
- * (to randomize start times) or different sound files (to randomize
- * the sound played), etc.
+ * ConstantRS is a source of test data.  It simply outputs
+ * a value of F at frame F.
  */
 /*
   ================================================================
@@ -33,27 +27,28 @@
   ================================================================
 */
 
-#ifndef MU_RANDOM_SELECT_RS_H
-#define MU_RANDOM_SELECT_RS_H
+#ifndef MU_CONSTANT_RS_H
+#define MU_CONSTANT_RS_H
 
 #include "mu_types.h"
-#include "multi_source_rs.h"
+#include "render_stream.h"
 
 namespace mu {
 
-  class RandomSelectRS : public MultiSourceRS {
+  class ConstantRS : public RenderStream {
   public:
-    
-    RandomSelectRS( void );
-    ~RandomSelectRS( void );
+
+    ConstantRS( void ) : value_(0.0) {}
+    ~ConstantRS( void ) {}
+
+    MuFloat value( void ) { return value_; }
+    void set_value(MuFloat value) { value_ = value; }
 
     bool render(stk::StkFrames &frames, MuTick base_tick, MuTick start_tick, MuTick end_tick);
 
   protected:
-    RandomSelectRS& reset();
-    RenderStream *current_stream_;
-
-  };                            // class RandomSelectRS
+    MuFloat value_;
+  };                            // class ConstantRS
 
 }                               // namespace mu
 

@@ -43,6 +43,7 @@ SOURCES := \
 	timed_event.cpp \
 	timed_queue.cpp \
 	add_rs.cpp \
+	constant_rs.cpp \
 	crop_rs.cpp \
 	delay_rs.cpp \
 	dirac_rs.cpp \

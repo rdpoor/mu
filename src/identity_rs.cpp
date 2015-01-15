@@ -32,12 +32,13 @@ namespace mu {
   IdentityRS::~IdentityRS() {
   }
   
-  void IdentityRS::render(stk::StkFrames &frames, MuTick base_tick, MuTick start_tick, MuTick end_tick) {
+  bool IdentityRS::render(stk::StkFrames &frames, MuTick base_tick, MuTick start_tick, MuTick end_tick) {
     for (MuTick i=start_tick; i<end_tick; i++) {
       for (int j=frames.channels()-1; j>=0; j--) {
         frames(frame_index(base_tick, i), j) = i;
       }
     }
+    return true;
   }
 
 

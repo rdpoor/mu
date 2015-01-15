@@ -43,10 +43,10 @@ namespace mu {
     LoopRS( void );
     ~LoopRS( void );
 
-    void render(stk::StkFrames &frames, MuTick base_tick, MuTick start_tick, MuTick end_tick);
-
     MuTick duration() const { return duration_; }
     void set_duration(MuTick duration) { duration_ = duration; }
+
+    bool render(stk::StkFrames &frames, MuTick base_tick, MuTick start_tick, MuTick end_tick);
 
   protected:
     MuTick duration_;

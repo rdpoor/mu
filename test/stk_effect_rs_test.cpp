@@ -53,7 +53,7 @@ protected:
       }
       for (unsigned int j=0; j<n_channels; j++) {
         mu::MuFloat actual = frames_(mu::RenderStream::frame_index(base_tick, i), j);
-        EXPECT_EQ(expected, actual) << "at (frame, channel)=(" << i << ", " << j << ")";
+        ASSERT_EQ(expected, actual) << "at (frame, channel)=(" << i << ", " << j << ")";
       }
     }
   }

@@ -50,8 +50,10 @@ namespace mu {
   //    render(-15, 0, 5)  tick=35, src_start=0, avail=5, ?=src_start+tick-base = -15
   //
 
-  void LoopRS::render(stk::StkFrames &frames, MuTick base_tick, MuTick start_tick, MuTick end_tick) {
-    if (source_ == NULL) return;
+  bool LoopRS::render(stk::StkFrames &frames, MuTick base_tick, MuTick start_tick, MuTick end_tick) {
+    bool anything_rendered = false;
+
+    if (source_ == NULL) return anything_rendered;
 
     // printf("LoopRS::render(%p, %ld, %ld, %ld)\n", &frames, base_tick, start_tick, end_tick);
     MuTick tick = start_tick;
@@ -64,10 +66,12 @@ namespace mu {
       // src_start = tick of first sample to be fetched 
       // src_base = effective tick of frames[0]
       // printf("  LoopRS::render(%p, %ld, %ld, %ld) [avail=%d]\n", &frames, src_base, src_start, src_end, avail);
-      source_->render(frames, src_base, src_start, src_end);
+      if (source_->render(frames, src_base, src_start, src_end)) {
+        anything_rendered = true;
+      }
       tick += avail;
     }
-
+    return anything_rendered;
   }
 
 

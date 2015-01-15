@@ -33,7 +33,7 @@ namespace mu {
     double phase() { return phase_; }
     void set_phase(double phase) { phase_ = phase; }
 
-    void render(stk::StkFrames &frames, MuTick base_tick, MuTick start_tick, MuTick end_tick);
+    bool render(stk::StkFrames &frames, MuTick base_tick, MuTick start_tick, MuTick end_tick);
 
   protected:
     double amplitude_;          // normally 1.0 max
