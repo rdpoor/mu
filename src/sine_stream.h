@@ -22,59 +22,56 @@
    ================================================================ 
 */
 
-// File: player_rt.h
-// Defines an audio player that uses the RtAudio package for platform
-// independent realtime playback.
+// File: sine_stream.h
+// SineStream represents a sine wave.
 
-#ifndef MU_PLAYER_RT
-#define MU_PLAYER_RT
+#ifndef MU_SINE_STREAM_H
+#define MU_SINE_STREAM_H
 
-#include "mu_types.h"
-#include "RtAudio.h"
-#include "player.h"
-#include "Stk.h"
+#include "mu_stream.h"
 
 namespace mu {
-
-  class PlayerRt : public Player {
-
+  class SineStream : public MuStream {
   public:
-
-    PlayerRt( void );
-    ~PlayerRt( void );
-
-    static const int default_device_number() {
-      return 0;
-    }
-
-    int device_number() { 
-      return device_number_;
-    }
-
-    void set_device_number(int device_number) {
-      device_number_ = device_number;
-    }
-
-    void start();
-    void stop();
-
-    enum RtAudioDirective { 
-      kContinue = 0, 
-      kStopAndDrain = 1, 
-      kStopImmediately = 2 };
     
-    // callback method for RtAudio
-    RtAudioDirective processBuffer(void *buffer, 
-                                     unsigned int frame_count, 
-                                     double stream_time);
+    static const MuFloat default_frequency() {
+      return 440.0;
+    }
     
+    static const MuFloat default_amplitude() {
+      return 0.5;
+    }
+    
+    static const MuFloat default_phase() {
+      return 0.0;
+    }
+    
+    SineStream()
+      : amplitude_(default_amplitude()),
+        frequency_(default_frequency()),
+        phase_(default_phase()) {}
+    
+    double amplitude() { return amplitude_; }
+    void set_amplitude(double amplitude) { amplitude_ = amplitude; }
+
+    double frequency() { return frequency_; }
+    void set_frequency(double frequency) { frequency_ = frequency; }
+
+    double phase() { return phase_; }
+    void set_phase(double phase) { phase_ = phase; }
+
+    bool render(MuBuffer &buffer, MuTick start_tick);
+
   protected:
-    int device_number_;
-    RtAudio dac_;
-    stk::StkFrames stk_frames_;
-    
+    double amplitude_;          // normally 1.0 max
+    double frequency_;          // hz
+    double phase_;              // radians
   };
-
+    
 }
 
 #endif
+
+// Local Variables:
+// mode: c++
+// End:

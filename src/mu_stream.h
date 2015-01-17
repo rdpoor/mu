@@ -22,59 +22,30 @@
    ================================================================ 
 */
 
-// File: player_rt.h
-// Defines an audio player that uses the RtAudio package for platform
-// independent realtime playback.
+// File: mu_stream.h
+//
+// MuStream describes a framework for vectorized computing of audio samples.
+// MuStream objects provide a render() function whose contract is to write
+// samples into the provided buffer.
 
-#ifndef MU_PLAYER_RT
-#define MU_PLAYER_RT
+#ifndef MU_STREAM_H
+#define MU_STREAM_H
 
 #include "mu_types.h"
-#include "RtAudio.h"
-#include "player.h"
-#include "Stk.h"
 
 namespace mu {
 
-  class PlayerRt : public Player {
+  class MuStream {
 
   public:
+    virtual bool render(MuBuffer &buffer, MuTick start_tick) = 0;
 
-    PlayerRt( void );
-    ~PlayerRt( void );
-
-    static const int default_device_number() {
-      return 0;
-    }
-
-    int device_number() { 
-      return device_number_;
-    }
-
-    void set_device_number(int device_number) {
-      device_number_ = device_number;
-    }
-
-    void start();
-    void stop();
-
-    enum RtAudioDirective { 
-      kContinue = 0, 
-      kStopAndDrain = 1, 
-      kStopImmediately = 2 };
-    
-    // callback method for RtAudio
-    RtAudioDirective processBuffer(void *buffer, 
-                                     unsigned int frame_count, 
-                                     double stream_time);
-    
-  protected:
-    int device_number_;
-    RtAudio dac_;
-    stk::StkFrames stk_frames_;
-    
   };
 
 }
 
 #endif
+
+// Local Variables:
+// mode: c++
+// End:

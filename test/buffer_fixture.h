@@ -19,62 +19,37 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
    SOFTWARE.  
-   ================================================================ 
+   ================================================================
 */
 
-// File: player_rt.h
-// Defines an audio player that uses the RtAudio package for platform
-// independent realtime playback.
+// File: buffer_fixture.h
+// Create a MuBuffer filled with a guard value for general testing.
 
-#ifndef MU_PLAYER_RT
-#define MU_PLAYER_RT
-
+#include "gtest/gtest.h"
 #include "mu_types.h"
-#include "RtAudio.h"
-#include "player.h"
-#include "Stk.h"
 
-namespace mu {
+class BufferFixture : public testing::Test {
+ public:
 
-  class PlayerRt : public Player {
+ protected:
+  static int default_frame_count() { return 32; }
+  static int default_channel_count() { return 2; }
+  static mu::MuFloat guard_value() { return 654321.0; }
 
-  public:
+  virtual void SetUp() {
+    buffer_.resize(default_frame_count(), default_channel_count());
+    int n_channels = buffer_.channels();
 
-    PlayerRt( void );
-    ~PlayerRt( void );
-
-    static const int default_device_number() {
-      return 0;
+    for (mu::MuTick tick=buffer_.frames()-1; tick >= 0; tick--) {
+      for (int channel = n_channels-1; channel >= 0; channel--) {
+        buffer_(tick, channel) = guard_value();
+      }
     }
+  }
 
-    int device_number() { 
-      return device_number_;
-    }
+  mu::MuBuffer buffer_;
+};
 
-    void set_device_number(int device_number) {
-      device_number_ = device_number;
-    }
-
-    void start();
-    void stop();
-
-    enum RtAudioDirective { 
-      kContinue = 0, 
-      kStopAndDrain = 1, 
-      kStopImmediately = 2 };
-    
-    // callback method for RtAudio
-    RtAudioDirective processBuffer(void *buffer, 
-                                     unsigned int frame_count, 
-                                     double stream_time);
-    
-  protected:
-    int device_number_;
-    RtAudio dac_;
-    stk::StkFrames stk_frames_;
-    
-  };
-
-}
-
-#endif
+// Local Variables:
+// mode: c++
+// End:

@@ -1,6 +1,9 @@
-MU_ROOT := ../usr
+# Compile Mu examples.  Filenames must be in the form "mu_*.cpp" to be
+# recognized.
 
-SOURCES := $(wildcard *.cpp)
+MU_ROOT ?= /Users/r/Projects/Mu/usr
+
+SOURCES := $(wildcard mu_*.cpp)
 TARGETS := $(patsubst %.cpp,%,$(SOURCES))
 
 CC       = g++
@@ -12,8 +15,12 @@ endif
 
 LFLAGS   = -L$(MU_ROOT)/lib
 DEFS     = 
-INCLUDES = -I$(MU_ROOT)/include/mu -I$(MU_ROOT)/include/stk -I$(MU_ROOT)/include/hiredis -I$(MU_ROOT)/include
-LIBRARY  = -lpthread -framework CoreAudio -framework CoreFoundation -framework CoreMidi -lm -lgsl -lstk -lhiredis -lmu -lcurses
+INCLUDES = -I$(MU_ROOT)/include/mu -I$(MU_ROOT)/include/stk -I$(MU_ROOT)/include
+LIBRARY  = -lpthread \
+	-framework CoreAudio \
+	-framework CoreFoundation \
+	-framework CoreMidi \
+	-lm -lgsl -lstk -lmu -lcurses
 
 .PHONY:	clean
 

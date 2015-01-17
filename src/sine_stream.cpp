@@ -22,59 +22,23 @@
    ================================================================ 
 */
 
-// File: player_rt.h
-// Defines an audio player that uses the RtAudio package for platform
-// independent realtime playback.
-
-#ifndef MU_PLAYER_RT
-#define MU_PLAYER_RT
-
-#include "mu_types.h"
-#include "RtAudio.h"
-#include "player.h"
-#include "Stk.h"
+#include "sine_stream.h"
+#include <math.h>
 
 namespace mu {
 
-  class PlayerRt : public Player {
+  bool SineStream::render(MuBuffer &buffer, MuTick start_tick) {
+    double omega = 2.0 * M_PI * frequency_ / buffer.dataRate();
+    int n_channels = buffer.channels();
 
-  public:
-
-    PlayerRt( void );
-    ~PlayerRt( void );
-
-    static const int default_device_number() {
-      return 0;
+    for (MuTick tick=buffer.frames()-1; tick >= 0; tick--) {
+      double v = amplitude_ * sin(((tick + start_tick) * omega) + phase_);
+      for (int channel = n_channels -1; channel >= 0; channel--) {
+        buffer(tick, channel) = v;
+      }
     }
+    return true;
+  }
 
-    int device_number() { 
-      return device_number_;
-    }
-
-    void set_device_number(int device_number) {
-      device_number_ = device_number;
-    }
-
-    void start();
-    void stop();
-
-    enum RtAudioDirective { 
-      kContinue = 0, 
-      kStopAndDrain = 1, 
-      kStopImmediately = 2 };
-    
-    // callback method for RtAudio
-    RtAudioDirective processBuffer(void *buffer, 
-                                     unsigned int frame_count, 
-                                     double stream_time);
-    
-  protected:
-    int device_number_;
-    RtAudio dac_;
-    stk::StkFrames stk_frames_;
-    
-  };
 
 }
-
-#endif

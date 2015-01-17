@@ -1,21 +1,66 @@
-MU_ROOT ?= /Users/r/Projects/Mu/usr
-
+MU_ROOT = ../usr
 RELEASE = 0.0.1
 
-# .cpp files to include in /usr/lib/libmu.a, corresponding .h files
-# are copied to /usr/include directory
-SOURCES := \
-	mu_stream.cpp \
-	mu_utils.cpp \
-	player.cpp \
-	player_rt.cpp \
-	sine_stream.cpp \
-	transport.cpp
-
-# .h files that lack a corresponding .cpp file but should be
-# copied to /usr/include directory
 INCLUDES := \
 	mu_types.h
+
+SOURCES := \
+	add_sp.cpp \
+	channelizer_sp.cpp \
+	constant_sp.cpp \
+	crop_sp.cpp \
+	delay_sp.cpp \
+	fade_sp.cpp \
+	file_read_sp.cpp \
+	file_write_sp.cpp \
+	identity_sp.cpp \
+	linseg_sp.cpp \
+	loop_sp.cpp \
+	map_sp.cpp \
+	mu.cpp \
+	mu_pool.cpp \
+	multi_source_sp.cpp \
+	multiply_sp.cpp \
+	nrt_player.cpp \
+	null_sp.cpp \
+	pitch_utilities.cpp \
+	player.cpp \
+	player2.cpp \
+	player_rt.cpp \
+	probability_sp.cpp \
+	psi_sp.cpp \
+	psi_waveform.cpp \
+	random_select_sp.cpp \
+	resample_sp.cpp \
+	reverb_sp.cpp \
+	rt_player.cpp \
+	sample_processor.cpp \
+	sequence_sp.cpp \
+	sine_sp.cpp \
+	single_source_sp.cpp \
+	splice_sp.cpp \
+	tick_utils.cpp \
+	timed_event.cpp \
+	timed_queue.cpp \
+	add_rs.cpp \
+	constant_rs.cpp \
+	crop_rs.cpp \
+	delay_rs.cpp \
+	dirac_rs.cpp \
+	file_read_rs.cpp \
+	identity_rs.cpp \
+	linseg_rs.cpp \
+	loop_rs.cpp \
+	multi_source_rs.cpp \
+	multiply_rs.cpp \
+	random_select_rs.cpp \
+	render_stream.cpp \
+	resample_rs.cpp \
+	sine_rs.cpp \
+	single_source_rs.cpp \
+	stk_effect_rs.cpp \
+	transport.cpp
+
 
 OBJECTS := $(patsubst %.cpp,%.o,$(SOURCES))
 HEADERS := $(patsubst %.cpp,%.h,$(SOURCES))

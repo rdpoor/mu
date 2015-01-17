@@ -1,4 +1,6 @@
 # Unit Test Driver
+# To make and run all tests:
+#   $ make run-tests
 # To make all tests:
 #   $ make tests
 # To run all tests:
@@ -26,6 +28,9 @@ objects : $(OBJECTS)
 clean :
 	rm -rf tests $(TARGETS) *.dSYM $(OBJECTS)
 
+run-tests : tests
+	./tests
+
 # $< is name of prerequisite and $@ is the name of the target
 # Note that gmock_main.a needs to be linked in order to define _main();
 
@@ -33,5 +38,4 @@ clean :
 	$(CXX) $(IFLAGS) $(CPPFLAGS) $(CXXFLAGS) -c $(<) -o $(@)
 
 tests : $(OBJECTS)
-	$(CXX) $(LFLAGS) $(OBJECTS) \
-		-lpthread -lgmock -lmu -lstk $(MU_ROOT)/lib/gmock_main.a -o $@
+	$(CXX) $(LFLAGS) $(OBJECTS) -lpthread -lgmock -lmu -lstk $(MU_ROOT)/lib/gmock_main.a -o $@

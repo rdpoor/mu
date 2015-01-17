@@ -1,27 +1,3 @@
-/* 
-   ================================================================
-   Copyright (C) 2014-2015 Robert D. Poor
-  
-   Permission is hereby granted, free of charge, to any person obtaining a copy
-   of this software and associated documentation files (the "Software"), to deal
-   in the Software without restriction, including without limitation the rights
-   to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-   copies of the Software, and to permit persons to whom the Software is
-   furnished to do so, subject to the following conditions:
-   
-   The above copyright notice and this permission notice shall be included in
-   all copies or substantial portions of the Software.
-   
-   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-   AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-   SOFTWARE.  
-   ================================================================ 
-*/
-
 #include "transport.h"
 
 namespace mu {
@@ -33,11 +9,11 @@ namespace mu {
   Transport::~Transport() {
   }
 
-  Player *Transport::player() {
+  Player2 *Transport::player() {
     return player_;
   }
   
-  void Transport::set_player(Player *player) {
+  void Transport::set_player(Player2 *player) {
     if (player_ != NULL) {
       player_->set_transport(NULL);
     }
@@ -81,7 +57,7 @@ namespace mu {
     }
   }
 
-  void zeroFrames(MuBuffer &frames) {
+  void zeroFrames(stk::StkFrames &frames) {
     for (int i=frames.frames()-1; i>=0; i--) {
       for (int j=frames.channels()-1; j>=0; j--) {
         frames(i,j) = 0.0;
@@ -89,12 +65,12 @@ namespace mu {
     }
   }
 
-  void Transport::render(MuBuffer &frames) {
+  void Transport::render(stk::StkFrames &frames) {
     // printf("."); fflush(stdout);
     zeroFrames(frames);
     if ((source_ != NULL) && (state_ == kRunning)) {
       MuTick end_tick = tick_ + frames.frames();
-      if (source_->render(frames, tick_)) {
+      if (source_->render(frames, tick_, tick_, end_tick)) {
         // something got rendered
       } else {
         // nothing got rendered
