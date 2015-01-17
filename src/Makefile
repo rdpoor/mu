@@ -55,6 +55,7 @@ SOURCES := \
 	multiply_rs.cpp \
 	random_select_rs.cpp \
 	render_stream.cpp \
+	resample_rs.cpp \
 	sine_rs.cpp \
 	single_source_rs.cpp \
 	stk_effect_rs.cpp \

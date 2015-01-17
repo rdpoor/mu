@@ -27,7 +27,7 @@ namespace mu {
       MuTick s0 = std::max(start_tick, breakpoints_.begin()->first);
       MuTick e0 = std::min(end_tick, breakpoints_.rbegin()->first);
       int n_channels = frames.channels();
-      for (MuTick tick=s0; tick<=e0; tick++) {
+      for (MuTick tick=s0; tick < e0; tick++) {
         MuFloat value = lerp(tick);
         anything_rendered = true;
         for (int ch=n_channels-1; ch>=0; ch--) {

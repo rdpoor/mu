@@ -1,5 +1,8 @@
 /*
- * Linear Segments
+ * ResampleRS has two inputs: a sample stream and a timing stream.
+ * When called to produce samples, it uses the timing stream to create
+ * a timing map into the sample data.  It then fetches the sample data
+ * and uses linear interpolation to generate output samples.
  */
 /*
   ================================================================
@@ -26,36 +29,36 @@
   ================================================================
 */
 
-#ifndef MU_LINSEG_RS_H
-#define MU_LINSEG_RS_H
+#ifndef MU_RESAMPLE_RS_H
+#define MU_RESAMPLE_RS_H
 
 #include "mu_types.h"
 #include "render_stream.h"
-#include <map>
 
 namespace mu {
 
-  typedef std::map<const MuTick, MuFloat> Breakpoints;
-
-  class LinsegRS : public RenderStream {
+  class ResampleRS : public RenderStream {
   public:
 
-    LinsegRS() {}
-    ~LinsegRS( void ) {}
-    
-    void add_breakpoint(MuTick tick, MuFloat value) {
-      breakpoints_[tick] = value;
-    }
+    ResampleRS( void );
+    ~ResampleRS( void );
 
-    void clear() { breakpoints_.clear(); }
+    bool render(stk::StkFrames &frames, MuTick base_tick, MuTick start_tick, MuTick end_tick);
 
-    bool render(stk::StkFrames& frames, MuTick base_tick, MuTick start_tick, MuTick end_tick);
+    RenderStream *sample_source( void ) { return sample_source_; }
+    void set_sample_source(RenderStream *source) { sample_source_ = source; }
+
+    RenderStream *timing_source( void ) { return timing_source_; }
+    void set_timing_source(RenderStream *source) { timing_source_ = source; }
 
   protected:
-    MuFloat lerp(MuTick tick);
-    Breakpoints breakpoints_;
-  };                            // class LinSegRS
+    RenderStream *sample_source_;
+    RenderStream *timing_source_;
+    stk::StkFrames sample_buffer_;
+    stk::StkFrames timing_buffer_;
 
+  };                            // class ResampleRS
+  
 }                               // namespace mu
 
 #endif

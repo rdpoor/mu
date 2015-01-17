@@ -924,3 +924,69 @@ And besides, I'm beginning to suspect all this client / server stuff
 is simply another way to avoid creating the actual music.  Grumph.  I'll
 write some music sketches right now with what I've got.
 
+=== New Rules of render()
+
+Idea: Every ProcessingStream defines:
+
+    bool is_defined_over(start_tick, end_tick)
+
+which returns true if the stream has any samples to contribute 
+between start_tick (inclusive) and end_tick (exclusive).
+
+    void render(frame_buffer, start_tick)
+
+write frame_buffer.frames() samples into frame_buffer where the first
+frame is at start_tick.  The target writes zeros over intervales wher
+it is not defined.
+
+OR
+
+write up to frame_buffer.frames() into the frame buffer where the
+first frame is at start_tick.  The target does not write samples over
+intervals where it is not defined.
+
+OR
+
+    int render(frame_buffer, start_tick)
+
+write up to frame_buffer.frames() into the frame buffer where the
+first frame is at start_tick.  The target does not write samples over
+intervals where it is not defined.  The method returns the number of
+samples actually written.
+
+OR
+
+make the behavior defined by a compile time constant and see which
+works.
+
+
+=== Put some ideas to test.
+
+We can make a sequence of streams by attaching a delay to each stream
+and adding the delay to an adder stream.  (We could also include gain
+for each input.)  
+
+We can make an infinite loop without resorting to defining the extent
+of the source stream by making the extent be parameters to the loop:
+
+   loop_sp.set_loop_duration(MuTick duration)
+   loop_sp.set_input_start(MuTick s0)
+   loop_sp.set_input_end(MuTick e0)
+
+This is equivalent to interposing a CropStream between the source and
+the loop, except that the LoopStream knows the start and end times of
+the intput.
+
+Do any other Streams need to know the extent?
+
+== Decreed
+
+bool mu::Stream.render(mu::FrameBuffer buffer, mu::Tick start_tick, bool is_new_event)
+
+instructs the receiver to write up to buffer.frames() samples into
+`buffer`, where buffer[0] corresponds to time `start_tick`.  For any
+given tick, the receiver may not write a sample if the stream has an
+undefined value at that time.
+
+The method returns true if any samples were written into `buffer,
+false otherwise.

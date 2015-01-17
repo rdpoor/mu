@@ -15,10 +15,9 @@ namespace mu {
     return file_name_;
   }
 
-  FileReadRS& FileReadRS::set_file_name(std::string file_name) { 
+  void FileReadRS::set_file_name(std::string file_name) { 
     file_name_ = file_name;
     file_read_.open(file_name_);
-    return *this;
   }
 
   // Return true if there is an open sound file and its parameters

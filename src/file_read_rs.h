@@ -9,10 +9,12 @@ namespace mu {
   public:
     FileReadRS();
     ~FileReadRS();
+
     std::string file_name(void);
-    FileReadRS& set_file_name(std::string file_name);
+    void set_file_name(std::string file_name);
 
     bool render(stk::StkFrames &frames, MuTick base_tick, MuTick start_tick, MuTick end_tick);
+
   protected:
     bool verify_format(stk::StkFrames &frames);
     std::string file_name_;

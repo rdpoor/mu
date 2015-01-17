@@ -70,8 +70,22 @@ to the other at a specific time.
 Then I thought it should take N inputs, each with a start time (?)
 and crossfade from one to the next.
 
-(Tangentially, this makes me wonder if the semantics of LoopRS should
-be changed to create an infinite series of its input without cropping.
-One implication is that the input to LoopRS must have finite extent.)
-
 For now I think I'll just wait until I need it.
+
+=== LoopRS
+
+I wonder if the semantics of LoopRS should be changed to create an
+infinite series of its input without cropping.  One implication is
+that the input to LoopRS must have finite extent, and that the extent
+be available to LoopRS.
+
+In addition, the arguments to render (base_tick, start_tick, end_tick)
+are almost always start_tick == base_tick and end_tick = base_tick +
+frame_count.  It would be simpler (and less error prone) to reduce
+the args to render(base_tick).
+
+And if I do that, I'm really close to the original LoopSP framework
+where every SP defined its start and end times.  Maybe that was a good
+idea after all.
+
+

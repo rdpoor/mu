@@ -42,14 +42,25 @@ namespace mu {
       
       // render source into temp buffer and sum into frames
       if (source->render(buffer_, base_tick, start_tick, end_tick)) {
-        anything_rendered = true;
-        for (int tick=start_tick; tick<end_tick; tick++){
-          for (int ch=buffer_.channels()-1; ch>=0; ch--) {
-            frames(frame_index(base_tick,tick),ch) *= buffer_(frame_index(base_tick,tick),ch);
-          } // for ch
-        }   // for tick
-      }     // if (source->)
-    }       // for i
+        // first time through the loop just write into frames
+        if (anything_rendered == false) {
+          for (int tick=start_tick; tick<end_tick; tick++){
+            for (int ch=buffer_.channels()-1; ch>=0; ch--) {
+              frames(frame_index(base_tick,tick),ch) = buffer_(frame_index(base_tick,tick),ch);
+            } // for ch
+          }   // for tick
+          anything_rendered = true;
+          
+        } else {
+          // subsequent sources, multiply
+          for (int tick=start_tick; tick<end_tick; tick++) {
+            for (int ch=buffer_.channels()-1; ch>=0; ch--) {
+              frames(frame_index(base_tick,tick),ch) *= buffer_(frame_index(base_tick,tick),ch);
+            } // for ch
+          }   // for tick
+        }     // if (anything_rendered...)
+      }       // if (source->)
+    }         // for i
 
     return anything_rendered;
   }

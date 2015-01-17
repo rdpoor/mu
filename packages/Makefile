@@ -15,7 +15,7 @@ GSL-TARBALL := ./gsl-1.16.tar.gz
 GSL-SOURCES := ./gsl-1.16
 GSL-DISTRO := http://mirrors.zerg.biz/gnu/gsl/gsl-1.16.tar.gz
 
-STK-TARGET := $(MU_ROOT)/lib/libstk.a
+STK-TARGET := $(MU_ROOT)/lib/libstk.dylib
 STK-TARBALL := ./stk-4.5.0.tar.gz
 STK-SOURCES := ./stk-4.5.0
 STK-DISTRO := https://ccrma.stanford.edu/software/stk/release/stk-4.5.0.tar.gz
@@ -107,7 +107,7 @@ stk : 	$(STK-TARGET)
 # final "touch -c" is to make sure target has newer date than the source directory
 # monkey patch the Makefile after creating it to create an absolute path in the dylib
 $(STK-TARGET) : $(STK-SOURCES) | $(MU_ROOT)
-	(cd $(<) && ./configure --prefix=$(MU_ROOT))
+	(cd $(<) && ./configure --prefix=$(MU_ROOT) --enable-debug)
 	(cd $(STK-SOURCES)/src && cp -p Makefile Makefile.orig && sed -f ../../patch-stk-src-makefile.sed Makefile.orig > Makefile )
 	(cd $(<) && make && make install && make clean && touch -c $(STK-TARGET))
 
