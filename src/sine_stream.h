@@ -34,38 +34,54 @@ namespace mu {
   class SineStream : public MuStream {
   public:
     
-    static const MuFloat default_frequency() {
+    static MuFloat default_f0() {
       return 440.0;
     }
     
-    static const MuFloat default_amplitude() {
+    static MuFloat default_a0() {
       return 0.5;
     }
     
-    static const MuFloat default_phase() {
+    static MuFloat default_p0() {
       return 0.0;
     }
     
     SineStream()
-      : amplitude_(default_amplitude()),
-        frequency_(default_frequency()),
-        phase_(default_phase()) {}
+      : a0_(default_a0()),
+        f0_(default_f0()),
+        p0_(default_p0()),
+        am_source_(NULL),
+        pm_source_(NULL) {}
     
-    double amplitude() { return amplitude_; }
-    void set_amplitude(double amplitude) { amplitude_ = amplitude; }
+    double a0() { return a0_; }
+    void set_a0(double a0) { a0_ = a0; }
 
-    double frequency() { return frequency_; }
-    void set_frequency(double frequency) { frequency_ = frequency; }
+    double f0() { return f0_; }
+    void set_f0(double f0) { f0_ = f0; }
 
-    double phase() { return phase_; }
-    void set_phase(double phase) { phase_ = phase; }
+    double p0() { return p0_; }
+    void set_p0(double p0) { p0_ = p0; }
 
+    MuStream *am_source() { return am_source_; }
+    void set_am_source(MuStream *am_source) {
+      am_source_ = am_source;
+    }
+
+    MuStream *pm_source() { return pm_source_; }
+    void set_pm_source(MuStream *pm_source) {
+      pm_source_ = pm_source;
+    }
+    
     bool render(MuBuffer &buffer, MuTick start_tick);
 
   protected:
-    double amplitude_;          // normally 1.0 max
-    double frequency_;          // hz
-    double phase_;              // radians
+    double a0_;                  // base amplitude, normally 1.0 max
+    double f0_;                  // base frequencey in hz
+    double p0_;                  // base phase in radians
+    MuStream *am_source_;        // source of amplitude modulation
+    MuStream *pm_source_;        // source of phase modulation
+    MuBuffer am_buffer_;         // temp buffers for stream sources
+    MuBuffer pm_buffer_;
   };
     
 }

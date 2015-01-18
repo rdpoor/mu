@@ -28,15 +28,38 @@
 namespace mu {
 
   bool SineStream::render(MuBuffer &buffer, MuTick start_tick) {
-    double omega = 2.0 * M_PI * frequency_ / buffer.dataRate();
+    int n_frames = buffer.frames();
     int n_channels = buffer.channels();
+    double data_rate = buffer.dataRate();
 
-    for (MuTick tick=buffer.frames()-1; tick >= 0; tick--) {
-      double v = amplitude_ * sin(((tick + start_tick) * omega) + phase_);
-      for (int channel = n_channels -1; channel >= 0; channel--) {
+    // OPTIMIZATION: split this into eight functions each with its own
+    // particular inner loop.
+
+    if (am_source_) {
+      am_buffer_.resize(n_frames, n_channels);
+      am_source_->render(am_buffer_, start_tick);
+    }
+    if (pm_source_) {
+      pm_buffer_.resize(n_frames, n_channels);
+      pm_source_->render(pm_buffer_, start_tick);
+    }
+
+    // OPTIMIZATION: special case 1 and 2 channels
+
+    double omega = f0_ * 2.0 * M_PI;
+
+    for (MuTick tick=n_frames-1; tick >= 0; tick--) {
+      for (int channel = n_channels-1; channel >= 0; channel--) {
+        double a = a0_;
+        if (am_source_) a += am_buffer_(tick, channel);
+        double p = p0_;
+        if (pm_source_) p += pm_buffer_(tick, channel);
+        double t = (tick + start_tick) / data_rate;
+        double v = a * sin(omega * t + p);
         buffer(tick, channel) = v;
       }
     }
+
     return true;
   }
 

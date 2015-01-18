@@ -38,9 +38,10 @@ install :
 
 
 clean :
+	cd examples && make clean
 	cd src && make clean
+	cd test && make clean
 	cd utilities && make clean
-	cd packages && make clean
 
 # Prepare to rebuild from scratch
 scour :

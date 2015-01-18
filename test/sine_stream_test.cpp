@@ -6,18 +6,19 @@
 class SineStream : public BufferFixture {
 protected:
   void render(mu::MuTick start_tick, double freq, double ampl, double phas) {
-    sine_stream_.set_frequency(freq);
-    sine_stream_.set_amplitude(ampl);
-    sine_stream_.set_phase(phas);
+    sine_stream_.set_f0(freq);
+    sine_stream_.set_a0(ampl);
+    sine_stream_.set_p0(phas);
     sine_stream_.render(buffer_, start_tick);
   }
 
   void verify(mu::MuTick start_tick, double freq, double ampl, double phas) {
-    double omega = (freq * 2.0 * M_PI) / buffer_.dataRate();
+    double omega = (freq * 2.0 * M_PI);
     int n_channels = buffer_.channels();
 
     for (mu::MuTick tick=buffer_.frames()-1; tick >= 0; tick--) {
-      mu::MuFloat expected = ampl * sin((tick + start_tick) * omega + phas);
+      double tau = (tick + start_tick) / buffer_.dataRate();
+      mu::MuFloat expected = ampl * sin(tau * omega + phas);
       for (int channel = n_channels-1; channel >= 0; channel--) {
         mu::MuFloat actual = buffer_(tick, channel);
         ASSERT_DOUBLE_EQ(expected, actual);
