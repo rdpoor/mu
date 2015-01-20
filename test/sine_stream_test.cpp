@@ -5,19 +5,19 @@
 
 class SineStream : public BufferFixture {
 protected:
-  void render(mu::MuTick start_tick, double freq, double ampl, double phas) {
+  void render(mu::MuTick buffer_start, double freq, double ampl, double phas) {
     sine_stream_.set_f0(freq);
     sine_stream_.set_a0(ampl);
     sine_stream_.set_p0(phas);
-    sine_stream_.render(buffer_, start_tick);
+    sine_stream_.render(buffer_, buffer_start);
   }
 
-  void verify(mu::MuTick start_tick, double freq, double ampl, double phas) {
+  void verify(mu::MuTick buffer_start, double freq, double ampl, double phas) {
     double omega = (freq * 2.0 * M_PI);
     int n_channels = buffer_.channels();
 
     for (mu::MuTick tick=buffer_.frames()-1; tick >= 0; tick--) {
-      double tau = (tick + start_tick) / buffer_.dataRate();
+      double tau = (tick + buffer_start) / buffer_.dataRate();
       mu::MuFloat expected = ampl * sin(tau * omega + phas);
       for (int channel = n_channels-1; channel >= 0; channel--) {
         mu::MuFloat actual = buffer_(tick, channel);
@@ -30,22 +30,22 @@ protected:
 };
 
 TEST_F(SineStream, Basic) {
-  mu::MuTick start_tick = 0;
+  mu::MuTick buffer_start = 0;
   double freq = 440.0;
   double ampl = 1.0;
   double phas = 0.0;
 
-  render(start_tick, freq, ampl, phas);
-  verify(start_tick, freq, ampl, phas);
+  render(buffer_start, freq, ampl, phas);
+  verify(buffer_start, freq, ampl, phas);
 }
 
 TEST_F(SineStream, NonZeroStart) {
-  mu::MuTick start_tick = 123;
+  mu::MuTick buffer_start = 123;
   double freq = 440.0;
   double ampl = 1.0;
   double phas = 0.0;
 
-  render(start_tick, freq, ampl, phas);
-  verify(start_tick, freq, ampl, phas);
+  render(buffer_start, freq, ampl, phas);
+  verify(buffer_start, freq, ampl, phas);
 }
 

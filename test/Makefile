@@ -19,6 +19,8 @@ CXXFLAGS += -g -Wall -Wextra -pthread
 IFLAGS   += -I$(MU_ROOT)/include/mu -I$(MU_ROOT)/include/stk 
 LFLAGS   += -L$(MU_ROOT)/lib
 
+install : tests
+
 all : tests
 
 objects : $(OBJECTS)

@@ -5,11 +5,19 @@ RELEASE = 0.0.1
 # .cpp files to include in /usr/lib/libmu.a, corresponding .h files
 # are copied to /usr/include directory
 SOURCES := \
+	delay_stream.cpp \
+	dirac_stream.cpp \
+	identity_stream.cpp \
+	loop_stream.cpp \
 	mu_stream.cpp \
 	mu_utils.cpp \
+	multi_source_stream.cpp \
 	player.cpp \
 	player_rt.cpp \
+	product_stream.cpp \
 	sine_stream.cpp \
+	single_source_stream.cpp \
+	sum_stream.cpp \
 	transport.cpp
 
 # .h files that lack a corresponding .cpp file but should be

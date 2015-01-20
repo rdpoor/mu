@@ -38,7 +38,7 @@ namespace mu {
   class MuStream {
 
   public:
-    virtual bool render(MuBuffer &buffer, MuTick start_tick) = 0;
+    virtual bool render(MuBuffer &buffer, MuTick buffer_start) = 0;
 
   };
 

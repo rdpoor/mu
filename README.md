@@ -926,67 +926,52 @@ write some music sketches right now with what I've got.
 
 === New Rules of render()
 
-Idea: Every ProcessingStream defines:
+Every MuStream defines:
 
-    bool is_defined_over(start_tick, end_tick)
+    bool render(buffer, start_tick);
 
-which returns true if the stream has any samples to contribute 
-between start_tick (inclusive) and end_tick (exclusive).
+We define "the span of the buffer" to be start_tick (inclusive) to start_tick
++ buffer.frames (exclusive).
 
-    void render(frame_buffer, start_tick)
+The contract of render() is as follows:
 
-write frame_buffer.frames() samples into frame_buffer where the first
-frame is at start_tick.  The target writes zeros over intervales wher
-it is not defined.
+* If the intersection of the span of the stream and the span of the buffer
+  equals the span of the buffer, render() overwrites all samples in the
+  buffer and returns true.
 
-OR
+* If the intersection of the span of the stream and the span of the buffer
+  is empty, render() does not touch the buffer and returns false.
 
-write up to frame_buffer.frames() into the frame buffer where the
-first frame is at start_tick.  The target does not write samples over
-intervals where it is not defined.
+* Otherwise (the intersection fo the span of the stream and the span of the
+  buffer is non-empty but less than the span of the buffer, render() writes the
+  defined samples into buffer and writes zeros everywhere else and returns true;
 
-OR
+Design ponder: should I define a MuExtent class that captures the start and end
+times of a stream with a number of predicates on them (contains, intersects)?
+The only two streams I can think of that need to know the extent are Crop and
+Loop, and they can take extent arguments.  I'll try without for starters.
 
-    int render(frame_buffer, start_tick)
+=== On LoopStream
 
-write up to frame_buffer.frames() into the frame buffer where the
-first frame is at start_tick.  The target does not write samples over
-intervals where it is not defined.  The method returns the number of
-samples actually written.
-
-OR
-
-make the behavior defined by a compile time constant and see which
-works.
-
-
-=== Put some ideas to test.
-
-We can make a sequence of streams by attaching a delay to each stream
-and adding the delay to an adder stream.  (We could also include gain
-for each input.)  
-
-We can make an infinite loop without resorting to defining the extent
-of the source stream by making the extent be parameters to the loop:
+We should be able to loop a strem repeatedly:
 
    loop_sp.set_loop_duration(MuTick duration)
-   loop_sp.set_input_start(MuTick s0)
-   loop_sp.set_input_end(MuTick e0)
+   loop_sp.set_source_start(MuTick s0)
+   loop_sp.set_source_end(MuTick e0)
 
-This is equivalent to interposing a CropStream between the source and
-the loop, except that the LoopStream knows the start and end times of
-the intput.
+where s0 and e0 defined the start and stop points of the source stream.
 
-Do any other Streams need to know the extent?
 
 == Decreed
 
-bool mu::Stream.render(mu::FrameBuffer buffer, mu::Tick start_tick, bool is_new_event)
+bool mu::Stream.render(mu::FrameBuffer buffer, 
+                       mu::Tick start_tick, 
+                       bool is_new_event)
 
-instructs the receiver to write up to buffer.frames() samples into
-`buffer`, where buffer[0] corresponds to time `start_tick`.  For any
-given tick, the receiver may not write a sample if the stream has an
-undefined value at that time.
+instructs the receiver to write up to buffer.frames() samples into `buffer`,
+where buffer[0] corresponds to time `start_tick`.  For any given tick, the
+receiver may not write a sample if the stream has an undefined value at that
+time.
 
-The method returns true if any samples were written into `buffer,
-false otherwise.
+The method returns true if any samples were written into `buffer, false
+otherwise.

@@ -27,7 +27,7 @@
 
 namespace mu {
 
-  bool SineStream::render(MuBuffer &buffer, MuTick start_tick) {
+  bool SineStream::render(MuBuffer &buffer, MuTick buffer_start) {
     int n_frames = buffer.frames();
     int n_channels = buffer.channels();
     double data_rate = buffer.dataRate();
@@ -37,11 +37,11 @@ namespace mu {
 
     if (am_source_) {
       am_buffer_.resize(n_frames, n_channels);
-      am_source_->render(am_buffer_, start_tick);
+      am_source_->render(am_buffer_, buffer_start);
     }
     if (pm_source_) {
       pm_buffer_.resize(n_frames, n_channels);
-      pm_source_->render(pm_buffer_, start_tick);
+      pm_source_->render(pm_buffer_, buffer_start);
     }
 
     // OPTIMIZATION: special case 1 and 2 channels
@@ -54,7 +54,7 @@ namespace mu {
         if (am_source_) a += am_buffer_(tick, channel);
         double p = p0_;
         if (pm_source_) p += pm_buffer_(tick, channel);
-        double t = (tick + start_tick) / data_rate;
+        double t = (tick + buffer_start) / data_rate;
         double v = a * sin(omega * t + p);
         buffer(tick, channel) = v;
       }

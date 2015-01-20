@@ -32,40 +32,45 @@
 
 namespace mu {
 
-  // Fill buffer with a constant value
-  void fill_buffer(MuBuffer &buffer, MuFloat value) {
-    int n_channels = buffer.channels();
-    for (MuTick tick = buffer.frames()-1; tick >= 0; tick--) {
-      for (int channel = n_channels-1; channel >= 0; channel--) {
-        buffer(tick, channel) = value;
+  class MuUtils {
+  public:
+
+    // Fill buffer with a constant value
+    static void fill_buffer(MuBuffer &buffer, MuFloat value) {
+      int n_channels = buffer.channels();
+      for (MuTick tick = buffer.frames()-1; tick >= 0; tick--) {
+        for (int channel = n_channels-1; channel >= 0; channel--) {
+          buffer(tick, channel) = value;
+        }
       }
     }
-  }
     
-  // Set contents of buffer to all zeroes.
-  void zero_buffer(MuBuffer &buffer) {
-    fill_buffer(buffer, 0.0);
-  }
+    // Set contents of buffer to all zeroes.
+    static void zero_buffer(MuBuffer &buffer) {
+      fill_buffer(buffer, 0.0);
+    }
 
-  // Copy a subset of the contents of src into dst: src[i] is copied into
-  // dst[i+offset] for count frames.  Assumes that the channel counts match.
-  void copy_buffer_subset(MuBuffer &src, 
-                          MuBuffer &dst, 
-                          MuTick offset, 
-                          MuTick count) {
-    int n_channels = src.channels();
-    for (MuTick src_tick = count-1; src_tick >= 0; src_tick--) {
-      for (int channel = n_channels-1; channel >= 0; channel--) {
-        dst(src_tick + offset, channel) = src(src_tick, channel);
+    // Copy a subset of the contents of src into dst: src[i] is copied into
+    // dst[i+offset] for count frames.  Assumes that the channel counts match.
+    static void copy_buffer_subset(MuBuffer &src, 
+                                   MuBuffer &dst, 
+                                   MuTick offset, 
+                                   MuTick count) {
+      int n_channels = src.channels();
+      for (int src_frame = count-1; src_frame >= 0; src_frame--) {
+        for (int channel = n_channels-1; channel >= 0; channel--) {
+          dst(src_frame + offset, channel) = src(src_frame, channel);
+        }
       }
     }
-  }
 
-  // Copy the contents of src into dst.  Assumes that dst is same size and
-  // channel count as src.
-  void copy_buffer(MuBuffer &src, MuBuffer &dst) {
-    copy_buffer_subset(src, dst, 0, src.frames());
-  }
+    // Copy the contents of src into dst.  Assumes that dst is same size and
+    // channel count as src.
+    static void copy_buffer(MuBuffer &src, MuBuffer &dst) {
+      copy_buffer_subset(src, dst, 0, src.frames());
+    }
+
+  };
 
 }
 

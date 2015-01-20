@@ -22,23 +22,51 @@
    ================================================================ 
 */
 
-// File: mu_types.h
-// Defines the basic data types used throughout the mu system.
+// File: loop_stream.h
+// LoopStream causes its input stream to loop every +interval+ ticks.  To avoid
+// an infinite iteration, the start and end times of the source stream must be
+// specified.
 
-#ifndef MU_TYPES_H
-#define MU_TYPES_H
+#ifndef MU_LOOP_STREAM_H
+#define MU_LOOP_STREAM_H
 
-#include <Stk.h>
+#include "single_source_stream.h"
+#include <limits.h>
 
 namespace mu {
+  class LoopStream : public SingleSourceStream {
+  public:
 
-  class MuStream;               // fwd reference
+    LoopStream() :
+      interval_(44100),
+      source_start_(0), 
+      source_end_(44100) {}
+      
+    ~LoopStream() {}
+    
+    MuTick interval() { return interval_; }
+    void set_interval(MuTick interval) { interval_ = interval; }
 
-  typedef long int MuTick;
-  typedef double MuFloat;
-  typedef stk::StkFrames MuBuffer;
-  typedef std::vector<MuStream *> MuStreamVector;
+    MuTick source_start() { return source_start_; }
+    void set_source_start(MuTick source_start) { source_start_ = source_start; }
 
+    MuTick source_end() { return source_end_; }
+    void set_source_end(MuTick source_end) { source_end_ = source_end; }
+
+    bool render(MuBuffer &buffer, MuTick buffer_start);
+
+  protected:
+    MuTick interval_;
+    MuTick source_start_;
+    MuTick source_end_;
+
+  private:
+    bool render_segment(MuBuffer &buffer, 
+                        MuTick buffer_start, 
+                        MuTick buffer_end,
+                        MuTick delay);
+  };
+    
 }
 
 #endif

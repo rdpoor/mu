@@ -93,13 +93,13 @@ namespace mu {
     // printf("."); fflush(stdout);
     zeroFrames(frames);
     if ((source_ != NULL) && (state_ == kRunning)) {
-      MuTick end_tick = tick_ + frames.frames();
+      MuTick buffer_end = tick_ + frames.frames();
       if (source_->render(frames, tick_)) {
         // something got rendered
       } else {
         // nothing got rendered
       }
-      tick_ = end_tick;
+      tick_ = buffer_end;
     }
   }
 

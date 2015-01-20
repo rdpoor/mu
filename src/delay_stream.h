@@ -22,23 +22,30 @@
    ================================================================ 
 */
 
-// File: mu_types.h
-// Defines the basic data types used throughout the mu system.
+// File: delay_stream.h
+// DelayStream delays its input by delay samples.
 
-#ifndef MU_TYPES_H
-#define MU_TYPES_H
+#ifndef MU_DELAY_STREAM_H
+#define MU_DELAY_STREAM_H
 
-#include <Stk.h>
+#include "single_source_stream.h"
 
 namespace mu {
+  class DelayStream : public SingleSourceStream {
+  public:
+    
+    DelayStream();
+    ~DelayStream();
+    
+    MuTick delay() { return delay_; }
+    void set_delay(MuTick delay) { delay_ = delay; }
+    
+    bool render(MuBuffer &buffer, MuTick buffer_start);
 
-  class MuStream;               // fwd reference
-
-  typedef long int MuTick;
-  typedef double MuFloat;
-  typedef stk::StkFrames MuBuffer;
-  typedef std::vector<MuStream *> MuStreamVector;
-
+  protected:
+    MuTick delay_;
+  };
+    
 }
 
 #endif

@@ -72,7 +72,7 @@ namespace mu {
       pm_source_ = pm_source;
     }
     
-    bool render(MuBuffer &buffer, MuTick start_tick);
+    bool render(MuBuffer &buffer, MuTick buffer_start);
 
   protected:
     double a0_;                  // base amplitude, normally 1.0 max

@@ -22,23 +22,38 @@
    ================================================================ 
 */
 
-// File: mu_types.h
-// Defines the basic data types used throughout the mu system.
+// File: crop_stream.h
+// CropStream crops its input between a starting time (inclusive and ending time
+// (exclusive).
 
-#ifndef MU_TYPES_H
-#define MU_TYPES_H
+#ifndef MU_CROP_STREAM_H
+#define MU_CROP_STREAM_H
 
-#include <Stk.h>
+#include "single_source_stream.h"
+#include <limits.h>
 
 namespace mu {
+  class CropStream : public SingleSourceStream {
+  public:
 
-  class MuStream;               // fwd reference
+    static const MuTick kNotSet = LONG_MIN;
 
-  typedef long int MuTick;
-  typedef double MuFloat;
-  typedef stk::StkFrames MuBuffer;
-  typedef std::vector<MuStream *> MuStreamVector;
+    CropStream() : start_time_(kNotSet), end_time_(kNotSet);
+    ~CropStream();
+    
+    MuTick start_time() { return start_time; }
+    void set_start_time(MuTick start_time) { start_time_ = start_time; }
 
+    MuTick end_time() { return end_time; }
+    void set_end_time(MuTick end_time) { end_time_ = end_time; }
+
+    bool render(MuBuffer &buffer, MuTick buffer_start);
+
+  protected:
+    MuTick start_time_;
+    MuTick end_time_;
+  };
+    
 }
 
 #endif

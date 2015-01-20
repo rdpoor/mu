@@ -35,7 +35,7 @@ class MuUtils : public BufferFixture {
 };
 
 TEST_F(MuUtils, ZeroBuffer) {
-  mu::zero_buffer(buffer_);         // method being tested
+  mu::MuUtils::zero_buffer(buffer_);         // method being tested
 
   mu::MuFloat expected = 0.0;
   int n_channels = buffer_.channels();
@@ -49,7 +49,7 @@ TEST_F(MuUtils, ZeroBuffer) {
 
 TEST_F(MuUtils, FillBuffer) {
   mu::MuFloat expected = 1234.5;
-  mu::fill_buffer(buffer_, expected); // method being tested
+  mu::MuUtils::fill_buffer(buffer_, expected); // method being tested
   
   int n_channels = buffer_.channels();
   for (mu::MuTick tick=buffer_.frames()-1; tick >= 0; tick--) {
@@ -81,7 +81,7 @@ protected:
 
 
 TEST_F(MuUtilsWithSrc, CopyBuffer) {
-  mu::copy_buffer(src_, buffer_);   // method being tested
+  mu::MuUtils::copy_buffer(src_, buffer_);   // method being tested
 
   int n_channels = buffer_.channels();
   for (mu::MuTick tick=buffer_.frames()-1; tick >= 0; tick--) {
@@ -96,7 +96,7 @@ TEST_F(MuUtilsWithSrc, CopyBuffer) {
 TEST_F(MuUtilsWithSrc, CopyBufferSubset) {
   mu::MuTick offset = buffer_.frames() / 4.0;
   mu::MuTick count = buffer_.frames() / 2.0;
-  mu::copy_buffer_subset(src_, buffer_, offset, count);  // method being tested
+  mu::MuUtils::copy_buffer_subset(src_, buffer_, offset, count);
 
   int n_channels = buffer_.channels();
   for (mu::MuTick tick=buffer_.frames()-1; tick >= 0; tick--) {
