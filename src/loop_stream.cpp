@@ -33,28 +33,49 @@ namespace mu {
 
     MuTick buffer_end = buffer_start + buffer.frames();
 
-    // Compute how many segments we need to sum into buffer and then render
-    // them.  We compute segments from k0 (inclusive) to segments k1
-    // (exclusive), where k0 represents the first segment where the source's
-    // end_time exceeds the buffer's start time and k1 is the first segment
-    // where source's start_time equals or exceeds the buffer's end time.
+    // The loop stream function is defined as:
+    //
+    //   loop(source, t) = SUM[i=-inf to +inf] { source(t * i * interval) }
+    //
+    // We can't iterate from -inf to +inf, so we depend upon source_start_ and
+    // source_end_ to limit the iteration.  The first order of business is to
+    // find the minimum and maximum values for i that produce non-zero samples.
 
-    // k0 is the smallest integer such that 
-    //   source_end_ + interval_ * k0 > buffer_start
-    //   k0 > (buffer_start - source_end_) / interval_
-    int k0 = floor((double)(buffer_start - source_end_)/(double)interval_) + 1;
+    // bmin = buffer_start (inclusive) - first t in buffer
+    // bmax = buffer_end (exclusive) - last t in buffer
+    // smin = source_start (inclusive) - first t in source
+    // smax = source_end (exclusive) - last t in source
 
-    // k1 is the smallest integer such that
-    //   source_start_ + interval_ * k1 >= buffer_end
-    //   k1 >= (buffer_end - source_start_) / interval_
-    int k1 = ceil((double)(buffer_end - source_start_)/(double)interval_);
+    // The source is delayed by i * interval.  
 
-    if (k0 >= k1) { return false; }
+    // imin = smallest integer such that smax-1 + (i * interval) >= bmin
+    // imax = largest integer such that smin + (i * interval) < bmax
+    //
+    // (smax - 1) + imin * interval >= bmin
+    // imin >= (bmin - (smax - 1)) / interval
+    // imin = ceil((bmin - (smax -1)) / interval)
+    //
+    // smin + imax * interval < bmax
+    // imax < bmax - smin / interval
+    // imax = ceil((bmax - smin) / interval) - 1
+
+    double bmin = buffer_start;
+    double bmax = buffer_end;
+    double smin = source_start_;
+    double smax = source_end_;
+
+    int imin = ceil((bmin - (smax - 1)) / interval_);
+    int imax = ceil((bmax - smin) / interval_) - 1.0;
+
+    if (imin > imax) { 
+      // printf("Z: imin=%3d, imax = %3d\n", imin, imax);
+      return false; 
+    }
 
     bool any_written = false;
     MuUtils::zero_buffer(buffer);
-    for (int k=k0; k<k1; k++) {
-      MuTick delay = k * interval_;
+    for (int i=imin; i<=imax; i++) {
+      MuTick delay = i * interval_;
       if (render_segment(buffer, buffer_start, buffer_end, delay)) {
         any_written = true;
       }
@@ -73,9 +94,15 @@ namespace mu {
     // source extent is limited to source_start_ to source_end_
     // buffer extent is limited to buffer_start to buffer_end.
     // Calculate the extent of N:
+
+    //  printf("A: bs=%3ld, be=%3ld, ss=%3ld, se=%3ld, dly=%3ld\n",
+    //        buffer_start, buffer_end, source_start_, source_end_, delay);
     MuTick s1 = std::max(source_start_ + delay, buffer_start);
     MuTick e1 = std::min(source_end_ + delay, buffer_end);
-    if (s1 >= e1) { return false; }
+    if (s1 >= e1) { 
+      // printf("B: s1 = %3ld, e1 = %3ld\n", s1, e1);
+      return false; 
+    }
 
     // printf("processing %3ld samples:\n", e1-s1);
     // printf("  src start = %3ld\n", s1 - delay);

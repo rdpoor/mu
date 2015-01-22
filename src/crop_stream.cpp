@@ -23,6 +23,7 @@
 */
 
 #include "crop_stream.h"
+#include "mu_utils.h"
 
 namespace mu {
 
@@ -30,14 +31,11 @@ namespace mu {
     if (source_ == NULL) { return false; }
 
     MuTick buffer_end = buffer.frames() + buffer_start;
-    MuTick earliest = buffer_start;
-    if (start_time_ != kNotSet) {
-      earliest = max(buffer_start, start_time_);
-    }
-    MuTick latest = buffer_end;
-    if (end_time_ != kNotSet) {
-      latest = min(buffer_end, end_time);
-    }
+
+    MuTick earliest = (source_start_ == kUndefined) ? 
+      buffer_start : std::max(buffer_start, source_start_);
+    MuTick latest = (source_end_ == kUndefined) ?
+      buffer_end : std::min(buffer_end, source_end_);
 
     if ((earliest >= buffer_end) || (latest < buffer_start)) {
       // nothing to write
@@ -53,13 +51,13 @@ namespace mu {
     } else {
       // get samples between earliest and latest
       tmp_buffer_.resize(latest-earliest, buffer.channels());
-      bool any_written = source_->render(&tmp_buffer_, earliest);
+      bool any_written = source_->render(tmp_buffer_, earliest);
       if (any_written) {
-        zero_buffer(buffer);
-        copy_buffer_subset(tmp_buffer_, 
-                           buffer_, 
-                           earliest-start_frame,
-                           latest-earliest);
+        MuUtils::zero_buffer(buffer);
+        MuUtils::copy_buffer_subset(tmp_buffer_, 
+                                    buffer, 
+                                    earliest-buffer_start,
+                                    latest-earliest);
       }
       return any_written;
     }

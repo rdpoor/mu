@@ -1,7 +1,66 @@
 # mu
 
-An experiment in blurring the lines between music composition and
-sound synthesis
+mu is an experiment in blurring the lines between music composition and sound
+synthesis.  It comprises a software library of digital audio processing modules
+and the means to render audio in real time to a computer's sound card or to a
+file.
+
+Each digital audio processing module (called a "stream") exposes a method `bool
+render(MuBuffer buffer, MuTick buffer_start)`, whose contract is to fill the
+`buffer` with audio samples, whose first sample is at time `buffer_start`.
+
+Many streams take other streams as inputs in order to process or modify the
+samples.  Ultimately, the streams are connected in a "processing graph",
+specifically a directed acyclic graph in which audio samples are computed on
+demand by calls to `render()` at the root stream.
+
+In a typical configuration, a Transport object connects to the root stream.  The
+Transport's contract is to wait for buffer requests from the computer's sound
+driver, then call render() on the root stream to generate the requested samples.
+
+## Processing Streams
+
+mu defines the following streaming audio classes.
+
+### CropStream
+
+Limits an input stream to a starting and ending time.
+
+### DelayStream
+
+Delays its input stream by `delay` samples.
+
+### DiracStream
+
+Produces a sample value of 1.0 for sample number 0, 0.0 otherwise.
+
+### FileReadStream
+
+Produces samples from a sound file.
+
+### FileWriteStream
+
+Writes sample data to a sound file.
+
+### IdentityStream
+
+Produces sample value t for sample number t.
+
+### LoopStream
+
+Generates a loop from an input stream.
+
+### ProductStream
+
+Generates the product of all of its inputs.
+
+### SineStream
+
+Generates a sine wave with optional inputs for amplitude and phase modulation.
+
+### SumStream
+
+Generates the sum of all of its inputs.  
 
 ## todo 
 

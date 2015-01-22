@@ -5,8 +5,10 @@ RELEASE = 0.0.1
 # .cpp files to include in /usr/lib/libmu.a, corresponding .h files
 # are copied to /usr/include directory
 SOURCES := \
+	crop_stream.cpp \
 	delay_stream.cpp \
 	dirac_stream.cpp \
+	file_read_stream.cpp \
 	identity_stream.cpp \
 	loop_stream.cpp \
 	mu_stream.cpp \

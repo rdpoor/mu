@@ -30,28 +30,25 @@
 #define MU_CROP_STREAM_H
 
 #include "single_source_stream.h"
-#include <limits.h>
 
 namespace mu {
   class CropStream : public SingleSourceStream {
   public:
 
-    static const MuTick kNotSet = LONG_MIN;
-
-    CropStream() : start_time_(kNotSet), end_time_(kNotSet);
-    ~CropStream();
+    CropStream() : source_start_(kUndefined), source_end_(kUndefined) {}
+    ~CropStream() {}
     
-    MuTick start_time() { return start_time; }
-    void set_start_time(MuTick start_time) { start_time_ = start_time; }
+    MuTick source_start() { return source_start_; }
+    void set_source_start(MuTick source_start) { source_start_ = source_start; }
 
-    MuTick end_time() { return end_time; }
-    void set_end_time(MuTick end_time) { end_time_ = end_time; }
+    MuTick source_end() { return source_end_; }
+    void set_source_end(MuTick source_end) { source_end_ = source_end; }
 
     bool render(MuBuffer &buffer, MuTick buffer_start);
 
   protected:
-    MuTick start_time_;
-    MuTick end_time_;
+    MuTick source_start_;
+    MuTick source_end_;
   };
     
 }

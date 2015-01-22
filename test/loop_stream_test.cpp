@@ -8,7 +8,7 @@ using namespace mu;
 class LoopStreamTest : public BufferFixture {
 protected:
   void SetUp() {
-    BufferFixture::SetUp();     // buffer_ filled with guard_value()
+    BufferFixture::SetUp();     // fill buffer_ with guard_value()
   }
 
   void RunTest(MuTick source_start, 

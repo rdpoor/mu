@@ -29,16 +29,18 @@
 #define MU_TYPES_H
 
 #include <Stk.h>
+#include <limits.h>
 
 namespace mu {
 
-  class MuStream;               // fwd reference
+  class MuStream;               // resolve fwd reference
 
   typedef long int MuTick;
   typedef double MuFloat;
   typedef stk::StkFrames MuBuffer;
   typedef std::vector<MuStream *> MuStreamVector;
 
+  static const MuTick kUndefined = LONG_MIN;
 }
 
 #endif

@@ -23,9 +23,13 @@
 */
 
 // File: loop_stream.h
-// LoopStream causes its input stream to loop every +interval+ ticks.  To avoid
-// an infinite iteration, the start and end times of the source stream must be
-// specified.
+// LoopStream causes its input stream to loop every +interval+ ticks:
+//
+//   loop(source, t) = SUM[i=-inf to +inf] { source(t * i * interval) }
+//
+// The result may overlap with itself, so to prevent an infinite iteration, the
+// start and end times of the source stream must be specified.
+//
 
 #ifndef MU_LOOP_STREAM_H
 #define MU_LOOP_STREAM_H
