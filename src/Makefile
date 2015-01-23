@@ -15,6 +15,7 @@ SOURCES := \
 	mu_stream.cpp \
 	mu_utils.cpp \
 	multi_source_stream.cpp \
+	null_stream.cpp \
 	player.cpp \
 	player_rt.cpp \
 	product_stream.cpp \
