@@ -40,6 +40,12 @@ namespace mu {
   public:
     virtual bool render(MuBuffer &buffer, MuTick buffer_start) = 0;
 
+    // Compute an index into a buffer based on buffer_start, tick.
+    static MuTick frame_index(MuTick buffer_start, MuTick tick) { 
+      return tick - buffer_start; 
+    }
+
+
   };
 
 }
