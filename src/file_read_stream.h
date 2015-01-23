@@ -40,6 +40,7 @@ namespace mu {
 
     // Get/set the file name of the sound file.
     std::string file_name(void) { return file_name_; }
+    // const&
     void set_file_name(std::string file_name) { 
       file_name_ = file_name;
       file_read_.open(file_name_);

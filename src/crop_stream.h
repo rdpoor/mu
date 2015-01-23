@@ -51,6 +51,7 @@ namespace mu {
     MuTick source_end_;
   };
     
+  // CHET: namespace comment missing
 }
 
 #endif

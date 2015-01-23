@@ -19,6 +19,7 @@ namespace mu {
   // "before_playing()" callback.  TODO: return a string describing
   // the mismatch (if any)
   bool FileReadStream::verify_format(MuBuffer &buffer) {
+    // nit-pick: no need for "else"
     if (!file_read_.isOpen()) {
       return false;
     } else if (file_read_.channels() != buffer.channels()) {

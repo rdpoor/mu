@@ -32,10 +32,15 @@ namespace mu {
   ConstantStream::~ConstantStream() {
   }
   
+  // buffer is in/out -- make it a pointer, and it comes after
+  // buffer_start.
   bool ConstantStream::render(MuBuffer &buffer, MuTick buffer_start) {
+    // const
     int n_frames = buffer.frames();
     int n_channels = buffer.channels();
     
+    // predecrement (when it matters, it's faster, so get used to
+    // doing it and never worry)
     for (int frame = n_frames-1; frame >= 0; frame--) {
       for (int channel = n_channels-1; channel >= 0; channel--) {
         buffer(frame, channel) = value_;
