@@ -30,6 +30,11 @@ namespace mu {
   DelayStream::~DelayStream() {}
 
   bool DelayStream::render(MuBuffer &buffer, MuTick buffer_start) {
+    // can source be NULL in a well-formed stream?  If not, perhaps
+    // this should assert-fail?
+    //
+    // I recommend you get https://code.google.com/p/google-glog/ and
+    // use CHECK macros for this (if the above is correct).
     if (source_ == NULL) {
       return false;
     } else {

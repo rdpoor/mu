@@ -36,6 +36,9 @@ namespace mu {
 
   class Transport;              // resolve circular dependency
 
+  // Should you be disallowing copying?
+  //
+  // http://stackoverflow.com/questions/6077143/disable-copy-constructor
   class Player {
   public:
     Player();

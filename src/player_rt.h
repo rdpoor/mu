@@ -29,6 +29,10 @@
 #ifndef MU_PLAYER_RT
 #define MU_PLAYER_RT
 
+// style guide sez "sort includes alphabetically"
+//
+// rationale is: you never need to search linearly to see if you've
+// included something -- binary search suffices.
 #include "mu_types.h"
 #include "RtAudio.h"
 #include "player.h"
@@ -55,6 +59,7 @@ namespace mu {
       device_number_ = device_number;
     }
 
+    // these need to be marked override.
     void start();
     void stop();
 

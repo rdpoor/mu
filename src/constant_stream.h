@@ -45,6 +45,7 @@ namespace mu {
     MuFloat value() { return value_; }
     void set_value(MuFloat value) { value_ = value; }
 
+    // swap order, buffer should be a pointer
     bool render(MuBuffer &buffer, MuTick buffer_start);
 
   protected:

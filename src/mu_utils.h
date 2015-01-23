@@ -36,6 +36,7 @@ namespace mu {
   public:
 
     // Fill buffer with a constant value
+    // 'buffer' should be pointer, after 'value'
     static void fill_buffer(MuBuffer &buffer, MuFloat value) {
       int n_channels = buffer.channels();
       for (MuTick tick = buffer.frames()-1; tick >= 0; tick--) {
