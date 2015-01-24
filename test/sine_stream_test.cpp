@@ -9,7 +9,7 @@ protected:
     sine_stream_.set_f0(freq);
     sine_stream_.set_a0(ampl);
     sine_stream_.set_p0(phas);
-    sine_stream_.render(buffer_, buffer_start);
+    sine_stream_.render(buffer_start, &buffer_);
   }
 
   void verify(mu::MuTick buffer_start, double freq, double ampl, double phas) {

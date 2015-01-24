@@ -19,6 +19,7 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
    SOFTWARE.  
+
    ================================================================ 
 */
 
@@ -110,7 +111,7 @@ namespace mu {
 
     // Called from Player in a dedicated processing thread when the Player needs
     // another buffer of data.
-    void render(MuBuffer &frames);
+    void render(MuBuffer *frames);
 
   protected:
     Player *player_;
@@ -120,7 +121,7 @@ namespace mu {
 
   };                            // class Transport
 
-} // namespace mu
+}                               // namespace mu
 
 #endif
 

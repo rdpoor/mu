@@ -10,7 +10,7 @@ protected:
   }
 
   void Render(mu::MuTick buffer_start) {
-    identity_stream_.render(buffer_, buffer_start);
+    identity_stream_.render(buffer_start, &buffer_);
   }
     
   void Verify(mu::MuTick buffer_start) {

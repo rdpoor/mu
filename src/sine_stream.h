@@ -19,6 +19,7 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
    SOFTWARE.  
+
    ================================================================ 
 */
 
@@ -72,7 +73,7 @@ namespace mu {
       pm_source_ = pm_source;
     }
     
-    bool render(MuBuffer &buffer, MuTick buffer_start);
+    bool render(MuTick buffer_start, MuBuffer *buffer);
 
   protected:
     double a0_;                  // base amplitude, normally 1.0 max
@@ -82,9 +83,9 @@ namespace mu {
     MuStream *pm_source_;        // source of phase modulation
     MuBuffer am_buffer_;         // temp buffers for stream sources
     MuBuffer pm_buffer_;
-  };
+  };                            // class SineStream
     
-}
+}                               // namespace mu
 
 #endif
 

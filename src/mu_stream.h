@@ -19,6 +19,7 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
    SOFTWARE.  
+
    ================================================================ 
 */
 
@@ -38,7 +39,7 @@ namespace mu {
   class MuStream {
 
   public:
-    virtual bool render(MuBuffer &buffer, MuTick buffer_start) = 0;
+    virtual bool render(MuTick buffer_start, MuBuffer *buffer) = 0;
 
     // Compute an index into a buffer based on buffer_start, tick.
     static MuTick frame_index(MuTick buffer_start, MuTick tick) { 
@@ -46,9 +47,9 @@ namespace mu {
     }
 
 
-  };
+  };                            // class MuStream
 
-}
+}                               // namespace mu
 
 #endif
 

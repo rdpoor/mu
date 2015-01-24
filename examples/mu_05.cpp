@@ -108,7 +108,7 @@ int main() {
     
 
   loop_stream.set_source_start(0);
-  loop_stream.set_source_end(24 * ticks_per_beat);
+  loop_stream.set_source_end(12 * ticks_per_beat);
   loop_stream.set_interval(12 * ticks_per_beat);
 
   loop_stream.set_source(sequencer.stream());

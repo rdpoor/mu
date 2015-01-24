@@ -1,6 +1,6 @@
 /*
   ================================================================
-  Copyright (C) 2014 Robert D. Poor
+  Copyright (C) 2014-2015 Robert D. Poor
   
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -19,6 +19,7 @@
   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.  
+
   ================================================================
 */
 #include "product_stream.h"
@@ -32,23 +33,23 @@ namespace mu {
   ProductStream::~ProductStream() {
   }
 
-  bool ProductStream::render(MuBuffer &buffer, MuTick buffer_start) {
+  bool ProductStream::render(MuTick buffer_start, MuBuffer *buffer) {
 
     bool any_modified = false;
 
-    tmp_buffer_.resize(buffer.frames(), buffer.channels());
+    tmp_buffer_.resize(buffer->frames(), buffer->channels());
 
     for (int i=sources_.size()-1; i>=0; i--) {
       MuStream *source = sources_.at(i);
       if (any_modified == false) {
         // render first source directly into buffer
-        any_modified = source->render(buffer, buffer_start);
+        any_modified = source->render(buffer_start, buffer);
       } else {
         // render subsequet sources into temp buffer and multiply into buffer
-        if (source->render(tmp_buffer_, buffer_start)) {
-          for (int tick=buffer.frames()-1; tick >= 0; tick--) {
-            for (int ch=buffer.channels()-1; ch>=0; ch--) {
-              buffer(tick, ch) *= tmp_buffer_(tick, ch);
+        if (source->render(buffer_start, &tmp_buffer_)) {
+          for (int tick=buffer->frames()-1; tick >= 0; tick--) {
+            for (int ch=buffer->channels()-1; ch>=0; ch--) {
+              (*buffer)(tick, ch) *= tmp_buffer_(tick, ch);
             } // for ch
           }   // for tick
         }     // if (source->)
@@ -57,4 +58,4 @@ namespace mu {
     return any_modified;
   }
 
-}
+}                               // namespace mu

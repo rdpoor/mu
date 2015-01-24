@@ -19,6 +19,7 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
    SOFTWARE.  
+
    ================================================================ 
 */
 
@@ -29,7 +30,7 @@ namespace mu {
   DelayStream::DelayStream() : delay_(0) {}
   DelayStream::~DelayStream() {}
 
-  bool DelayStream::render(MuBuffer &buffer, MuTick buffer_start) {
+  bool DelayStream::render(MuTick buffer_start, MuBuffer *buffer) {
     // can source be NULL in a well-formed stream?  If not, perhaps
     // this should assert-fail?
     //
@@ -38,8 +39,9 @@ namespace mu {
     if (source_ == NULL) {
       return false;
     } else {
-      return source_->render(buffer, buffer_start - delay_);
+      return source_->render(buffer_start - delay_, buffer);
     }
   }
 
-}
+}                               // namespace mu
+

@@ -19,6 +19,7 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
    SOFTWARE.  
+
    ================================================================ 
 */
 
@@ -29,14 +30,10 @@
 #ifndef MU_PLAYER_RT
 #define MU_PLAYER_RT
 
-// style guide sez "sort includes alphabetically"
-//
-// rationale is: you never need to search linearly to see if you've
-// included something -- binary search suffices.
-#include "mu_types.h"
 #include "RtAudio.h"
-#include "player.h"
 #include "Stk.h"
+#include "mu_types.h"
+#include "player.h"
 
 namespace mu {
 
@@ -78,8 +75,12 @@ namespace mu {
     RtAudio dac_;
     stk::StkFrames stk_frames_;
     
-  };
+  };                            // class PlayerRt
 
-}
+}                               // namespace mu
 
 #endif
+
+// Local Variables:
+// mode: c++
+// End:

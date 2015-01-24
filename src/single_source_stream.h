@@ -1,6 +1,6 @@
 /*
   ================================================================
-  Copyright (C) 2014 Robert D. Poor
+  Copyright (C) 2014-2015 Robert D. Poor
   
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -19,6 +19,7 @@
   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.  
+
   ================================================================
 */
 
@@ -48,9 +49,10 @@ namespace mu {
     // use std::unique_ptr to ensure proper deletion
     MuStream *source_;
     MuBuffer tmp_buffer_;       // courtesy
-  };
 
-}
+  };                            // class SingleSourceStream
+
+}                               // namespace mu
 
 #endif
 

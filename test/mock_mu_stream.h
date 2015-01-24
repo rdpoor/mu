@@ -4,5 +4,5 @@
 
 class MockMuStream : public mu::MuStream {
  public:
-  MOCK_METHOD2(render, bool(mu::MuBuffer&, mu::MuTick start_tick));
+  MOCK_METHOD2(render, bool(mu::MuTick start_tick, mu::MuBuffer *));
 };

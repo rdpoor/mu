@@ -19,6 +19,7 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
    SOFTWARE.  
+
    ================================================================ 
 */
 
@@ -57,7 +58,7 @@ namespace mu {
     MuTick source_end() { return source_end_; }
     void set_source_end(MuTick source_end) { source_end_ = source_end; }
 
-    bool render(MuBuffer &buffer, MuTick buffer_start);
+    bool render(MuTick buffer_start, MuBuffer *buffer);
 
   protected:
     MuTick interval_;
@@ -65,13 +66,14 @@ namespace mu {
     MuTick source_end_;
 
   private:
-    bool render_segment(MuBuffer &buffer, 
+    bool render_segment(MuBuffer *buffer, 
                         MuTick buffer_start, 
                         MuTick buffer_end,
                         MuTick delay);
-  };
+
+  };                            // class LoopStream
     
-}
+}                               // namespace mu
 
 #endif
 

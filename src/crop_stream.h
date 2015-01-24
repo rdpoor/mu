@@ -44,15 +44,14 @@ namespace mu {
     MuTick source_end() { return source_end_; }
     void set_source_end(MuTick source_end) { source_end_ = source_end; }
 
-    bool render(MuBuffer &buffer, MuTick buffer_start);
+    bool render(MuTick buffer_start, MuBuffer *buffer);
 
   protected:
     MuTick source_start_;
     MuTick source_end_;
   };
     
-  // CHET: namespace comment missing
-}
+}                               // namespace mu
 
 #endif
 

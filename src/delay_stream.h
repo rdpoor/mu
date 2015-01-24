@@ -19,6 +19,7 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
    SOFTWARE.  
+
    ================================================================ 
 */
 
@@ -40,13 +41,13 @@ namespace mu {
     MuTick delay() { return delay_; }
     void set_delay(MuTick delay) { delay_ = delay; }
     
-    bool render(MuBuffer &buffer, MuTick buffer_start);
+    bool render(MuTick buffer_start, MuBuffer *buffer);
 
   protected:
     MuTick delay_;
-  };
+  };                            // class DelayStream
     
-}
+}                               // namespace mu
 
 #endif
 

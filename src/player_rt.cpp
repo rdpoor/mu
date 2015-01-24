@@ -19,6 +19,7 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
    SOFTWARE.  
+
    ================================================================ 
 */
 
@@ -101,7 +102,7 @@ namespace mu {
     stk_frames_.resize(frame_count, channel_count_);
 
     // ask the source to generate samples
-    transport_->render(stk_frames_);
+    transport_->render(&stk_frames_);
 
     // Copy the samples to RtAudio's buffer.
     // TODO: ASSERT(sizeof(MuFloat) == sizeof(stk::StkFloat))
@@ -118,4 +119,4 @@ namespace mu {
       kContinue;
   }
   
-}
+}                               // namespace mu

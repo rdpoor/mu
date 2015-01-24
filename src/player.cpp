@@ -35,4 +35,4 @@ namespace mu {
   Player::~Player() {
   }
 
-}
+}                               // namespace mu

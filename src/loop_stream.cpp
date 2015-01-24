@@ -19,6 +19,7 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
    SOFTWARE.  
+
    ================================================================ 
 */
 
@@ -28,10 +29,10 @@
 
 namespace mu {
 
-  bool LoopStream::render(MuBuffer &buffer, MuTick buffer_start) {
+  bool LoopStream::render(MuTick buffer_start, MuBuffer *buffer) {
     if (source_ == NULL) { return false; }
 
-    MuTick buffer_end = buffer_start + buffer.frames();
+    MuTick buffer_end = buffer_start + buffer->frames();
 
     // The loop stream function is defined as:
     //
@@ -86,7 +87,7 @@ namespace mu {
 
   // Add source stream delayed by `delay` frames into buffer.  Returns
   // true if any frames were availble from the source.
-  bool LoopStream::render_segment(MuBuffer &buffer, 
+  bool LoopStream::render_segment(MuBuffer *buffer, 
                                   MuTick buffer_start, 
                                   MuTick buffer_end,
                                   MuTick delay) {
@@ -108,18 +109,18 @@ namespace mu {
     // printf("  src start = %3ld\n", s1 - delay);
     // printf("  dst start = %3ld\n", s1);
 
-    tmp_buffer_.resize(e1 - s1, buffer.channels());
-    if (source_->render(tmp_buffer_, s1 - delay) == false) { return false; }
+    tmp_buffer_.resize(e1 - s1, buffer->channels());
+    if (source_->render(s1 - delay, &tmp_buffer_) == false) { return false; }
 
     // tmp_buffer_ now contains samples from the source to be added into buffer.
     // tmp_buffer[0] contains the sample for (output) time s1.
     for (MuTick frame=s1; frame<e1; frame++) {
-      for (int channel=buffer.channels()-1; channel >= 0; channel--) {
-        buffer(frame-buffer_start, channel) += tmp_buffer_(frame - s1, channel);
+      for (int channel=buffer->channels()-1; channel >= 0; channel--) {
+        (*buffer)(frame-buffer_start, channel) += tmp_buffer_(frame - s1, channel);
       }
     }
 
     return true;
   }
 
-}
+}                               // namespace mu

@@ -18,11 +18,11 @@ TEST(TransportTest, Render) {
   mu::Transport transport;
 
   EXPECT_CALL(player, start());
-  EXPECT_CALL(mu_stream, render(_, 0));
+  EXPECT_CALL(mu_stream, render(0, _));
 
   frames.resize(kFrameCount, 2);
   transport.set_source(&mu_stream);
   transport.set_player(&player);
   transport.run();
-  transport.render(frames);
+  transport.render(&frames);
 } 

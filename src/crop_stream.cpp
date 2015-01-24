@@ -19,7 +19,8 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
    SOFTWARE.  
-   ================================================================ 
+
+   ================================================================
 */
 
 #include "crop_stream.h"
@@ -27,10 +28,10 @@
 
 namespace mu {
 
-  bool CropStream::render(MuBuffer &buffer, MuTick buffer_start) {
+  bool CropStream::render(MuTick buffer_start, MuBuffer *buffer) {
     if (source_ == NULL) { return false; }
 
-    MuTick buffer_end = buffer.frames() + buffer_start;
+    MuTick buffer_end = buffer->frames() + buffer_start;
 
     MuTick earliest = (source_start_ == kUndefined) ? 
       buffer_start : std::max(buffer_start, source_start_);
@@ -43,18 +44,18 @@ namespace mu {
 
     } else if ((earliest == buffer_start) && (latest == buffer_end)) {
       // common case: write the whole buffer
-      return source_->render(buffer, buffer_start);
+      return source_->render(buffer_start, buffer);
 
     } else if (earliest == latest) {
       return false;
 
     } else {
       // get samples between earliest and latest
-      tmp_buffer_.resize(latest-earliest, buffer.channels());
-      bool any_written = source_->render(tmp_buffer_, earliest);
+      tmp_buffer_.resize(latest-earliest, buffer->channels());
+      bool any_written = source_->render(earliest, &tmp_buffer_);
       if (any_written) {
         MuUtils::zero_buffer(buffer);
-        MuUtils::copy_buffer_subset(tmp_buffer_, 
+        MuUtils::copy_buffer_subset(&tmp_buffer_, 
                                     buffer, 
                                     earliest-buffer_start,
                                     latest-earliest);
@@ -64,4 +65,4 @@ namespace mu {
 
   }
 
-}
+}                               // namespace mu

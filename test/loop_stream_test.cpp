@@ -20,7 +20,7 @@ protected:
     loop_stream_.set_source_end(source_end);
     loop_stream_.set_interval(interval);
 
-    loop_stream_.render(buffer_, buffer_start);
+    loop_stream_.render(buffer_start, &buffer_);
   }
 
   void Verify(MuTick interval, MuTick buffer_start, MuFloat overlap) {

@@ -19,9 +19,11 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
    SOFTWARE.  
+
    ================================================================ 
 */
 
+#include "mu_utils.h"
 #include "transport.h"
 
 namespace mu {
@@ -81,20 +83,12 @@ namespace mu {
     }
   }
 
-  void zeroFrames(MuBuffer &frames) {
-    for (int i=frames.frames()-1; i>=0; i--) {
-      for (int j=frames.channels()-1; j>=0; j--) {
-        frames(i,j) = 0.0;
-      }
-    }
-  }
-
-  void Transport::render(MuBuffer &frames) {
+  void Transport::render(MuBuffer *frames) {
     // printf("."); fflush(stdout);
-    zeroFrames(frames);
+    MuUtils::zero_buffer(frames);
     if ((source_ != NULL) && (state_ == kRunning)) {
-      MuTick buffer_end = tick_ + frames.frames();
-      if (source_->render(frames, tick_)) {
+      MuTick buffer_end = tick_ + frames->frames();
+      if (source_->render(tick_, frames)) {
         // something got rendered
       } else {
         // nothing got rendered
@@ -103,4 +97,4 @@ namespace mu {
     }
   }
 
-}
+}                               // namespace mu
