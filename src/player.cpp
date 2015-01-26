@@ -32,7 +32,4 @@ namespace mu {
     set_transport(NULL);
   }
 
-  Player::~Player() {
-  }
-
 }                               // namespace mu

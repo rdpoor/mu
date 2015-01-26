@@ -31,7 +31,23 @@ namespace mu {
   }
 
   SumStream::~SumStream() {
+    // TODO: should be in MultiSourceStream::clone() (but how to call it?)
+    for (int i=sources_.size()-1; i>=0; --i) {
+      MuStream *source = sources_.at(i);
+      if (source != NULL) delete source;
+    }
   }
+
+  SumStream *SumStream::clone() {
+    SumStream *c = new SumStream();
+    // TODO: this should be in MultiSourceStream::clone() (but how do I call it?)
+    for (int i=sources_.size()-1; i>=0; --i) {
+      MuStream *source = sources_.at(i);
+      c->add_source((source == NULL) ? source : source->clone());
+    }
+    return c;
+  }
+
 
   bool SumStream::render(MuTick buffer_start, MuBuffer *buffer) {
 

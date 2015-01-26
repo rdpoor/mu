@@ -32,7 +32,12 @@ namespace mu {
   
   NullStream::~NullStream() {
   }
-  
+
+  NullStream *NullStream::clone() {
+    NullStream *c = new NullStream();
+    return c;
+  }
+
   bool NullStream::render(MuTick buffer_start, MuBuffer *buffer) {
     (void)buffer_start;
 

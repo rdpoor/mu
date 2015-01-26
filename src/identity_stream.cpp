@@ -32,6 +32,11 @@ namespace mu {
   IdentityStream::~IdentityStream() {
   }
   
+  IdentityStream *IdentityStream::clone() {
+    IdentityStream *c = new IdentityStream();
+    return c;
+  }
+
   bool IdentityStream::render(MuTick buffer_start, MuBuffer *buffer) {
     int n_frames = buffer->frames();
     int n_channels = buffer->channels();

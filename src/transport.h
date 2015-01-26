@@ -37,7 +37,7 @@ namespace mu {
 
   class Player;                // resolve circular dependency
 
-  class Transport {
+  class Transport : public MuSink {
   public:
 
     Transport();

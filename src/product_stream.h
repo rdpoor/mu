@@ -40,7 +40,8 @@ namespace mu {
     
     ProductStream();
     ~ProductStream( void );
-    
+    ProductStream *clone( void );
+
     bool render(MuTick buffer_start, MuBuffer *buffer);
     
   protected:

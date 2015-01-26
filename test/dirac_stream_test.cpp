@@ -5,12 +5,13 @@
 class DiracStream : public BufferFixture {
 protected:
   void RunTest(mu::MuTick buffer_start) {
+    dirac_stream_ = new mu::DiracStream();
     Render(buffer_start);
     Verify(buffer_start);
   }
 
   void Render(mu::MuTick buffer_start) {
-    dirac_stream_.render(buffer_start, &buffer_);
+    dirac_stream_->render(buffer_start, &buffer_);
   }
     
   void Verify(mu::MuTick buffer_start) {
@@ -29,7 +30,7 @@ protected:
     }
   }
 
-  mu::DiracStream dirac_stream_;
+  mu::DiracStream *dirac_stream_;
 };
 
 TEST_F(DiracStream, Render) {

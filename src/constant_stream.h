@@ -41,6 +41,7 @@ namespace mu {
 
     ConstantStream( void );
     ~ConstantStream( void );
+    ConstantStream *clone( void );
 
     MuFloat value() { return value_; }
     void set_value(MuFloat value) { value_ = value; }

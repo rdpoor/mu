@@ -43,7 +43,7 @@ namespace mu {
   class Player {
   public:
     Player();
-    ~Player();
+    virtual ~Player() {};
 
     // defaults and getters and setters
 

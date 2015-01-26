@@ -41,6 +41,7 @@ namespace mu {
 
     DiracStream( void );
     ~DiracStream( void );
+    DiracStream *clone( void );
 
     bool render(MuTick buffer_start, MuBuffer *buffer);
 

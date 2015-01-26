@@ -38,6 +38,12 @@ namespace mu {
   FileReadStream::~FileReadStream() {
   }
 
+  FileReadStream *FileReadStream::clone() {
+    FileReadStream *c = new FileReadStream();
+    c->set_file_name(file_name());
+    return c;
+  }
+
   // Return true if there is an open sound file and its parameters
   // (data type, sample rate, number of channels) match the frames
   // object.  TODO: This would be a good candidate for a

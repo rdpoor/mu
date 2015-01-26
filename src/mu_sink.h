@@ -23,31 +23,21 @@
    ================================================================ 
 */
 
-// File: delay_stream.h
-// DelayStream delays its input by delay samples.
+// File: mu_sink.h
+//
+// MuSink defines the interface for any object able to receive data from a
+// MuStream.
 
-#ifndef MU_DELAY_STREAM_H
-#define MU_DELAY_STREAM_H
+#ifndef MU_SINK_H
+#define MU_SINK_H
 
-#include "single_source_stream.h"
+#include "mu_types.h"
 
 namespace mu {
-  class DelayStream : public SingleSourceStream {
-  public:
-    
-    DelayStream( void );
-    ~DelayStream( void );
-    DelayStream *clone( void );
 
-    MuTick delay() { return delay_; }
-    void set_delay(MuTick delay) { delay_ = delay; }
-    
-    bool render(MuTick buffer_start, MuBuffer *buffer);
+  class MuSink {
+  };                            // class MuSink
 
-  protected:
-    MuTick delay_;
-  };                            // class DelayStream
-    
 }                               // namespace mu
 
 #endif

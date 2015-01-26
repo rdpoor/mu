@@ -32,6 +32,11 @@ namespace mu {
   DiracStream::~DiracStream() {
   }
   
+  DiracStream *DiracStream::clone() {
+    DiracStream *c = new DiracStream();
+    return c;
+  }
+
   bool DiracStream::render(MuTick buffer_start, MuBuffer *buffer) {
     int n_frames = buffer->frames();
     int n_channels = buffer->channels();

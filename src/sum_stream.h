@@ -40,6 +40,7 @@ namespace mu {
     
     SumStream();
     ~SumStream( void );
+    SumStream *clone( void );
     
     bool render(MuTick buffer_start, MuBuffer *buffer);
     

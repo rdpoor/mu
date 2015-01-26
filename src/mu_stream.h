@@ -32,21 +32,32 @@
 #ifndef MU_STREAM_H
 #define MU_STREAM_H
 
+#include "mu_sink.h"
 #include "mu_types.h"
 
 namespace mu {
 
+  class MuSink;                 // resolve circular dependency
+
   class MuStream {
 
   public:
-    virtual bool render(MuTick buffer_start, MuBuffer *buffer) = 0;
-
     // Compute an index into a buffer based on buffer_start, tick.
     static MuTick frame_index(MuTick buffer_start, MuTick tick) { 
       return tick - buffer_start; 
     }
 
+    MuStream() : sink_(NULL) {}
+    virtual ~MuStream() {};
+    virtual MuStream *clone() = 0;
 
+    MuSink *sink() { return sink_; }
+    void set_sink(MuSink *sink) { sink_ = sink; }
+
+    virtual bool render(MuTick buffer_start, MuBuffer *buffer) = 0;
+
+  private:
+    MuSink *sink_;
   };                            // class MuStream
 
 }                               // namespace mu

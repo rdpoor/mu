@@ -41,6 +41,7 @@ namespace mu {
 
     IdentityStream( void );
     ~IdentityStream( void );
+    IdentityStream *clone();
 
     bool render(MuTick buffer_start, MuBuffer *buffer);
 

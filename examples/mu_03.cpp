@@ -20,10 +20,10 @@ void wait_for_input() {
 int main() {
   mu::Transport transport;
   mu::PlayerRt player_rt;
-  mu::FileReadStream file_read_stream;
+  mu::FileReadStream *file_read_stream = new mu::FileReadStream();
 
-  file_read_stream.set_file_name(EXAMPLE_DIRECTORY "purple.wav");
-  transport.set_source(&file_read_stream);
+  file_read_stream->set_file_name(EXAMPLE_DIRECTORY "purple.wav");
+  transport.set_source(file_read_stream);
   transport.set_player(&player_rt);
 
   transport.run();

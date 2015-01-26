@@ -37,6 +37,15 @@ namespace mu {
   }
 
   ResampleStream::~ResampleStream() {
+    if (sample_source_ != NULL) delete sample_source_;
+    if (timing_source_ != NULL) delete timing_source_;
+  }
+
+  ResampleStream *ResampleStream::clone() {
+    ResampleStream *c = new ResampleStream();
+    c->set_sample_source(sample_source() ? sample_source()->clone() : NULL);
+    c->set_timing_source(timing_source() ? timing_source()->clone() : NULL);
+    return c;
   }
 
   bool ResampleStream::render(MuTick buffer_start, MuBuffer *buffer) {

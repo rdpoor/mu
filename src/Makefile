@@ -12,6 +12,7 @@ SOURCES := \
 	file_read_stream.cpp \
 	identity_stream.cpp \
 	loop_stream.cpp \
+	mu_sink.cpp \
 	mu_stream.cpp \
 	mu_utils.cpp \
 	multi_source_stream.cpp \

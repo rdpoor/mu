@@ -41,6 +41,8 @@ namespace mu {
 
     NullStream( void );
     ~NullStream( void );
+    NullStream *clone( void );
+
     bool render(MuTick buffer_start, MuBuffer *buffer);
 
   protected:

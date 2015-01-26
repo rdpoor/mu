@@ -33,6 +33,7 @@ namespace mu {
   }
 
   Transport::~Transport() {
+    if (source_) delete source_;
   }
 
   Player *Transport::player() {

@@ -53,7 +53,22 @@ namespace mu {
         p0_(default_p0()),
         am_source_(NULL),
         pm_source_(NULL) {}
-    
+
+    ~SineStream() {
+      if (am_source_) { delete am_source_; }
+      if (pm_source_) { delete pm_source_; }
+    }
+
+    SineStream *clone() {
+      SineStream *c = new SineStream();
+      c->set_a0(a0());
+      c->set_f0(f0());
+      c->set_p0(p0());
+      if (am_source_ != NULL) c->set_am_source(am_source()->clone());
+      if (pm_source_ != NULL) c->set_pm_source(pm_source()->clone());
+      return c;
+    }
+
     double a0() { return a0_; }
     void set_a0(double a0) { a0_ = a0; }
 

@@ -5,12 +5,13 @@
 class IdentityStream : public BufferFixture {
 protected:
   void RunTest(mu::MuTick buffer_start) {
+    identity_stream_ = new mu::IdentityStream();
     Render(buffer_start);
     Verify(buffer_start);
   }
 
   void Render(mu::MuTick buffer_start) {
-    identity_stream_.render(buffer_start, &buffer_);
+    identity_stream_->render(buffer_start, &buffer_);
   }
     
   void Verify(mu::MuTick buffer_start) {
@@ -29,7 +30,7 @@ protected:
     }
   }
 
-  mu::IdentityStream identity_stream_;
+  mu::IdentityStream *identity_stream_;
 };
 
 TEST_F(IdentityStream, Render) {

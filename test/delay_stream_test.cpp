@@ -6,14 +6,17 @@
 class DelayStream : public BufferFixture {
 protected:
   void RunTest(mu::MuTick buffer_start, mu::MuTick delay) {
-    delay_stream_.set_delay(delay);
-    delay_stream_.set_source(&dirac_stream_);
+    delay_stream_ = new mu::DelayStream();
+    dirac_stream_ = new mu::DiracStream();
+
+    delay_stream_->set_delay(delay);
+    delay_stream_->set_source(dirac_stream_);
     Render(buffer_start);
     Verify(buffer_start, delay);
   }
 
   void Render(mu::MuTick buffer_start) {
-    delay_stream_.render(buffer_start, &buffer_);
+    delay_stream_->render(buffer_start, &buffer_);
   }
     
   void Verify(mu::MuTick buffer_start, mu::MuTick delay) {
@@ -33,8 +36,8 @@ protected:
     }
   }
 
-  mu::DelayStream delay_stream_;
-  mu::DiracStream dirac_stream_;
+  mu::DelayStream *delay_stream_;
+  mu::DiracStream *dirac_stream_;
 };
 
 TEST_F(DelayStream, S0D0) {

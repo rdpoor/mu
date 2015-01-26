@@ -32,6 +32,12 @@ namespace mu {
   ConstantStream::~ConstantStream() {
   }
   
+  ConstantStream *ConstantStream::clone() {
+    ConstantStream *c = new ConstantStream();
+    c->set_value(value());
+    return c;
+  }
+
   bool ConstantStream::render(MuTick buffer_start, MuBuffer *buffer) {
     // const
     int n_frames = buffer->frames();

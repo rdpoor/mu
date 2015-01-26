@@ -27,8 +27,19 @@
 
 namespace mu {
 
-  DelayStream::DelayStream() : delay_(0) {}
-  DelayStream::~DelayStream() {}
+  DelayStream::DelayStream( void ) : delay_(0) {}
+
+  DelayStream::~DelayStream( void ) {
+    if (source_ != NULL) delete source_;
+  }
+
+  DelayStream *DelayStream::clone( void ) {
+    DelayStream *c = new DelayStream();
+    // Should be defined in SingleSourceStream
+    c->set_source(source() ? source()->clone() : NULL);
+    c->set_delay(delay());
+    return c;
+  }
 
   bool DelayStream::render(MuTick buffer_start, MuBuffer *buffer) {
     // can source be NULL in a well-formed stream?  If not, perhaps

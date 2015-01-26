@@ -42,6 +42,7 @@ namespace mu {
   public:
     ResampleStream( void );
     ~ResampleStream( void );
+    ResampleStream *clone( void );
 
     MuStream *sample_source( void ) { return sample_source_; }
     void set_sample_source(MuStream *source) { sample_source_ = source; }

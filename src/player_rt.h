@@ -27,8 +27,8 @@
 // Defines an audio player that uses the RtAudio package for platform
 // independent realtime playback.
 
-#ifndef MU_PLAYER_RT
-#define MU_PLAYER_RT
+#ifndef MU_PLAYER_RT_H
+#define MU_PLAYER_RT_H
 
 #include "RtAudio.h"
 #include "Stk.h"

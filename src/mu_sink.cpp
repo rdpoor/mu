@@ -23,35 +23,8 @@
    ================================================================ 
 */
 
-// File: delay_stream.h
-// DelayStream delays its input by delay samples.
-
-#ifndef MU_DELAY_STREAM_H
-#define MU_DELAY_STREAM_H
-
-#include "single_source_stream.h"
+#include "mu_sink.h"
 
 namespace mu {
-  class DelayStream : public SingleSourceStream {
-  public:
-    
-    DelayStream( void );
-    ~DelayStream( void );
-    DelayStream *clone( void );
-
-    MuTick delay() { return delay_; }
-    void set_delay(MuTick delay) { delay_ = delay; }
-    
-    bool render(MuTick buffer_start, MuBuffer *buffer);
-
-  protected:
-    MuTick delay_;
-  };                            // class DelayStream
-    
+  int dummy;                    // inhibit linker warning
 }                               // namespace mu
-
-#endif
-
-// Local Variables:
-// mode: c++
-// End:

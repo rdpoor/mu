@@ -31,6 +31,21 @@ namespace mu {
   }
 
   ProductStream::~ProductStream() {
+    // TODO: should be in MultiSourceStream::clone() (but how to call it?)
+    for (int i=sources_.size()-1; i>=0; --i) {
+      MuStream *source = sources_.at(i);
+      if (source != NULL) delete source;
+    }
+  }
+
+  ProductStream *ProductStream::clone() {
+    ProductStream *c = new ProductStream();
+    // TODO: this should be in MultiSourceStream::clone() (but how do I call it?)
+    for (int i=sources_.size()-1; i>=0; --i) {
+      MuStream *source = sources_.at(i);
+      c->add_source((source == NULL) ? source : source->clone());
+    }
+    return c;
   }
 
   bool ProductStream::render(MuTick buffer_start, MuBuffer *buffer) {

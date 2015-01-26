@@ -6,10 +6,11 @@
 class SineStream : public BufferFixture {
 protected:
   void render(mu::MuTick buffer_start, double freq, double ampl, double phas) {
-    sine_stream_.set_f0(freq);
-    sine_stream_.set_a0(ampl);
-    sine_stream_.set_p0(phas);
-    sine_stream_.render(buffer_start, &buffer_);
+    sine_stream_ = new mu::SineStream();
+    sine_stream_->set_f0(freq);
+    sine_stream_->set_a0(ampl);
+    sine_stream_->set_p0(phas);
+    sine_stream_->render(buffer_start, &buffer_);
   }
 
   void verify(mu::MuTick buffer_start, double freq, double ampl, double phas) {
@@ -26,7 +27,7 @@ protected:
     }
   }
 
-  mu::SineStream sine_stream_;
+  mu::SineStream *sine_stream_;
 };
 
 TEST_F(SineStream, Basic) {

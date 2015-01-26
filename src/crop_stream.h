@@ -36,7 +36,17 @@ namespace mu {
   public:
 
     CropStream() : source_start_(kUndefined), source_end_(kUndefined) {}
-    ~CropStream() {}
+
+    ~CropStream() {
+      if (source()) delete source();
+    }
+
+    CropStream *clone() {
+      CropStream *c = new CropStream();
+      c->set_source_start(source_start());
+      c->set_source_end(source_end());
+      return c;
+    }
     
     MuTick source_start() { return source_start_; }
     void set_source_start(MuTick source_start) { source_start_ = source_start; }
