@@ -123,4 +123,16 @@ namespace mu {
     return true;
   }
 
+  void LoopStream::inspect_aux(std::stringstream& ss, int level) {
+    inspect_indent(ss, level);
+    ss << "interval() = " << interval() << std::endl;
+    inspect_indent(ss, level);
+    ss << "source_start() = " << source_start() << std::endl;
+    inspect_indent(ss, level);
+    ss << "source_end() = " << source_end() << std::endl;
+    inspect_indent(ss, level); 
+    ss << "source()" << std::endl;
+    ss << source()->inspect(level+1);
+  }
+
 }                               // namespace mu

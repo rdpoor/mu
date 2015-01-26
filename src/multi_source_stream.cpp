@@ -25,6 +25,15 @@
 #include "multi_source_stream.h"
 
 namespace mu {
-  int dummy;                    // prevent linker warning
+  
+#if 0
+  MultiSourceStream::~MultiSourceStream( void ) {
+    printf("~MultiSourceStream()\n");
+    for (int i=sources_.size()-1; i>=0; --i) {
+      MuStream *source = sources_.at(i);
+      if (source != NULL) delete source;
+    }
+  }
+#endif
 
 }                               // namespace mu

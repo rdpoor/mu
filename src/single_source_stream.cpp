@@ -25,6 +25,7 @@
 #include "single_source_stream.h"
 
 namespace mu {
+
   int dummy;                    // prevent linker warning
 
 }                               // namespace mu

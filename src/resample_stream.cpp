@@ -103,4 +103,13 @@ namespace mu {
     return true;
   }
 
+  void ResampleStream::inspect_aux(std::stringstream& ss, int level) {
+    inspect_indent(ss, level); 
+    ss << "sample_source()" << std::endl;
+    ss << sample_source()->inspect(level+1);
+    inspect_indent(ss, level); 
+    ss << "timing_source()" << std::endl;
+    ss << timing_source()->inspect(level+1);
+  }
+
 }                               // namespace mu

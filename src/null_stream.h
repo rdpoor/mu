@@ -45,7 +45,11 @@ namespace mu {
 
     bool render(MuTick buffer_start, MuBuffer *buffer);
 
+    std::string get_class_name() { return "NullStream"; }
+
   protected:
+    void inspect_aux(std::stringstream& ss, int level);
+
   };                            // class NullStream
 
 }                               // namespace mu

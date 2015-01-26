@@ -90,5 +90,10 @@ namespace mu {
     }
   }
 
+  void FileReadStream::inspect_aux(std::stringstream& ss, int level) {
+    inspect_indent(ss, level);
+    ss << "file_name() = " << file_name() << std::endl;
+  }
+
 }                               // namespace mu
 

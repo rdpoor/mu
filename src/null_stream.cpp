@@ -45,4 +45,7 @@ namespace mu {
     return true;
   }
 
+  void NullStream::inspect_aux(std::stringstream& ss, int level) {
+  }
+
 }                               // namespace mu

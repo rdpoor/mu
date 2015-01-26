@@ -44,7 +44,10 @@ namespace mu {
     
     bool render(MuTick buffer_start, MuBuffer *buffer);
 
+    std::string get_class_name() { return "DelayStream"; }
+
   protected:
+    void inspect_aux(std::stringstream& ss, int level);
     MuTick delay_;
   };                            // class DelayStream
     

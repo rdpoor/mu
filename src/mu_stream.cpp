@@ -26,5 +26,18 @@
 #include "mu_stream.h"
 
 namespace mu {
-  int dummy;                    // inhibit linker warning
+
+  std::string MuStream::inspect(int level) {
+    std::stringstream ss;
+    inspect_indent(ss, level); 
+    ss << "#<" << get_class_name() << " " << this << ">" << std::endl;
+    inspect_aux(ss, level+1);
+    return ss.str();
+  }
+
+  void MuStream::inspect_indent(std::stringstream& ss, int level) {
+    for (int i=level-1; i>=0; --i) { ss << "| "; }
+  }
+
+
 }                               // namespace mu

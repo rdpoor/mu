@@ -47,7 +47,9 @@ namespace mu {
       source_start_(0), 
       source_end_(44100) {}
       
-    ~LoopStream() {}
+    ~LoopStream() {
+      if (source() != NULL) delete source();
+    }
 
     LoopStream *clone() {
       LoopStream *c = new LoopStream();
@@ -55,7 +57,7 @@ namespace mu {
       c->set_source_start(source_start());
       c->set_source_end(source_end());
       // TODO: can I delegate this to SingleSourceStream?
-      c->set_source(source());
+      c->set_source(source() ? source()->clone() : NULL);
       return c;
     }
 
@@ -70,7 +72,10 @@ namespace mu {
 
     bool render(MuTick buffer_start, MuBuffer *buffer);
 
+    std::string get_class_name() { return "LoopStream"; }
+
   protected:
+    void inspect_aux(std::stringstream& ss, int level);
     MuTick interval_;
     MuTick source_start_;
     MuTick source_end_;

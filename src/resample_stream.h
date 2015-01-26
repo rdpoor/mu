@@ -52,7 +52,11 @@ namespace mu {
 
     bool render(MuTick buffer_start, MuBuffer *buffer);
  
+    std::string get_class_name() { return "ResampleStream"; }
+
   protected:
+    void inspect_aux(std::stringstream& ss, int level);
+
     MuStream *sample_source_;
     MuStream *timing_source_;
     MuBuffer sample_buffer_;

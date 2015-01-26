@@ -48,7 +48,11 @@ namespace mu {
 
     bool render(MuTick buffer_start, MuBuffer *buffer);
 
+    std::string get_class_name() { return "ConstantStream"; }
+
   protected:
+    void inspect_aux(std::stringstream& ss, int level);
+
     MuFloat value_;
   };                            // class ConstantStream
 

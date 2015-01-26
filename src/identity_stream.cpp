@@ -50,4 +50,7 @@ namespace mu {
     return true;
   }
 
+  void IdentityStream::inspect_aux(std::stringstream& ss, int level) {
+  }
+
 }                               // namespace mu

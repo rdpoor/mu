@@ -45,6 +45,7 @@ namespace mu {
       CropStream *c = new CropStream();
       c->set_source_start(source_start());
       c->set_source_end(source_end());
+      c->set_source(source() ? source()->clone() : NULL);
       return c;
     }
     
@@ -56,7 +57,10 @@ namespace mu {
 
     bool render(MuTick buffer_start, MuBuffer *buffer);
 
+    std::string get_class_name() { return "CropStream"; }
+
   protected:
+    void inspect_aux(std::stringstream& ss, int level);
     MuTick source_start_;
     MuTick source_end_;
   };

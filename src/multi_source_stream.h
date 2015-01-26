@@ -38,7 +38,10 @@ namespace mu {
 
   class MultiSourceStream : public MuStream {
   public:
-    
+#if 0
+    virtual ~MultiSourceStream( void );
+#endif
+
     // How does memory-mgmt happen for sources?
     void add_source(MuStream *source) {
       sources_.push_back(source);

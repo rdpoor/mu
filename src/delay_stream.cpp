@@ -35,7 +35,7 @@ namespace mu {
 
   DelayStream *DelayStream::clone( void ) {
     DelayStream *c = new DelayStream();
-    // Should be defined in SingleSourceStream
+    // TODO: Should be defined in SingleSourceStream
     c->set_source(source() ? source()->clone() : NULL);
     c->set_delay(delay());
     return c;
@@ -53,6 +53,15 @@ namespace mu {
       return source_->render(buffer_start - delay_, buffer);
     }
   }
+
+  void DelayStream::inspect_aux(std::stringstream& ss, int level) {
+    inspect_indent(ss, level); 
+    ss << "delay() = " << delay() << std::endl;
+    inspect_indent(ss, level); 
+    ss << "source()" << std::endl;
+    ss << source()->inspect(level+1);
+  }
+  
 
 }                               // namespace mu
 

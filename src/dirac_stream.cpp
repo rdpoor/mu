@@ -50,4 +50,8 @@ namespace mu {
     return true;
   }
 
+  void DiracStream::inspect_aux(std::stringstream& ss, int level) {
+  }
+
+
 }                               // namespace mu

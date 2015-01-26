@@ -47,17 +47,24 @@ namespace mu {
       return tick - buffer_start; 
     }
 
-    MuStream() : sink_(NULL) {}
+    MuStream() {}
     virtual ~MuStream() {};
     virtual MuStream *clone() = 0;
 
-    MuSink *sink() { return sink_; }
-    void set_sink(MuSink *sink) { sink_ = sink; }
-
     virtual bool render(MuTick buffer_start, MuBuffer *buffer) = 0;
 
-  private:
-    MuSink *sink_;
+    // Return a string describing this stream and all of its inputs.
+    std::string inspect(int level = 0);
+
+  protected:
+    // methods to support an 'inspect' method
+    virtual std::string get_class_name() = 0;
+
+    // Each stream subclass must define an inspect_aux method
+    // that prints this node, its state and all of its inputs.
+    virtual void inspect_aux(std::stringstream& ss, int level) = 0;
+    void inspect_indent(std::stringstream& ss, int level);
+
   };                            // class MuStream
 
 }                               // namespace mu

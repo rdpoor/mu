@@ -90,7 +90,11 @@ namespace mu {
     
     bool render(MuTick buffer_start, MuBuffer *buffer);
 
+    std::string get_class_name() { return "SineStream"; }
+
   protected:
+    void inspect_aux(std::stringstream& ss, int level);
+
     double a0_;                  // base amplitude, normally 1.0 max
     double f0_;                  // base frequencey in hz
     double p0_;                  // base phase in radians
