@@ -67,6 +67,8 @@ namespace mu {
     const MuStreamVector& sources() const { return sources_; }
 
   protected:
+    void inspect_aux(int level, std::stringstream *ss);
+
     MuStreamVector sources_;
     MuBuffer tmp_buffer_;
   };                            // class MultuSourceStream

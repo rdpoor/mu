@@ -64,18 +64,19 @@ namespace mu {
     return true;
   }
 
-  void SineStream::inspect_aux(std::stringstream& ss, int level) {
-    inspect_indent(ss, level);
-    ss << "a0() = " << a0() << std::endl;
-    inspect_indent(ss, level);
-    ss << "f0() = " << f0() << std::endl;
-    inspect_indent(ss, level);
-    ss << "p0() = " << p0() << std::endl;
-    inspect_indent(ss, level); 
-    ss << "am_source()" << std::endl;
-    ss << am_source()->inspect(level+1);
-    ss << "pm_source()" << std::endl;
-    ss << pm_source()->inspect(level+1);
+  void SineStream::inspect_aux(int level, std::stringstream *ss) {
+    MuStream::inspect_aux(level, ss);
+    inspect_indent(level, ss);
+    *ss << "a0() = " << a0() << std::endl;
+    inspect_indent(level, ss);
+    *ss << "f0() = " << f0() << std::endl;
+    inspect_indent(level, ss);
+    *ss << "p0() = " << p0() << std::endl;
+    inspect_indent(level, ss); 
+    *ss << "am_source()" << std::endl;
+    am_source()->inspect_aux(level+1, ss);
+    *ss << "pm_source()" << std::endl;
+    pm_source()->inspect_aux(level+1, ss);
   }
 
 

@@ -65,14 +65,14 @@ namespace mu {
 
   }                             // bool CropStream::render()
 
-  void CropStream::inspect_aux(std::stringstream& ss, int level) {
-    inspect_indent(ss, level);
-    ss << "source_start() = " << source_start() << std::endl;
-    inspect_indent(ss, level);
-    ss << "source_end() = " << source_end() << std::endl;
-    inspect_indent(ss, level); 
-    ss << "source()" << std::endl;
-    ss << source()->inspect(level+1);
+  void CropStream::inspect_aux(int level, std::stringstream *ss) {
+    MuStream::inspect_aux(level, ss);
+    inspect_indent(level, ss);
+    *ss << "source_start() = " << source_start() << std::endl;
+    inspect_indent(level, ss);
+    *ss << "source_end() = " << source_end() << std::endl;
+    inspect_indent(level, ss); 
+    SingleSourceStream::inspect_aux(level, ss);
   }
 
 }                               // namespace mu

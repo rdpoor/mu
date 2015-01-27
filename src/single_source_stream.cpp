@@ -26,6 +26,10 @@
 
 namespace mu {
 
-  int dummy;                    // prevent linker warning
+  void SingleSourceStream::inspect_aux(int level, std::stringstream *ss) {
+    inspect_indent(level, ss);
+    *ss << "source()" << std::endl;
+    source()->inspect_aux(level+1, ss);
+  }
 
 }                               // namespace mu

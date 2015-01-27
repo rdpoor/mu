@@ -1,20 +1,31 @@
+// Does calling intermediate method automatically delegate to the base method?
+
 #include <stdio.h>
-#include <unistd.h>
-#include "mu.h"
-#include "stream.h"
-#include "add_stream.h"
-#include "identity_stream.h"
+
+class Base {
+public:
+  virtual void doit() {
+    printf("Base doit()\n");
+  }
+};
+
+class Intermediate : public Base {
+public:
+};
+
+class Leaf : public Intermediate{
+public:
+  virtual void doit() {
+    Intermediate::doit();
+    printf("Leaf doit()\n");
+  }
+};
+
 
 int main() {
-  mu::AddStream add_stream;
-  mu::IdentityStream is1;
-  mu::IdentityStream is2;
+  Leaf x;
 
-  add_stream.addSource(&is1);
-  add_stream.addSource(&is2);
-  std::cout << add_stream.inspect();
-  
+  x.doit();
+
   return 0;
 }
-
-  

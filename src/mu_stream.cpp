@@ -27,16 +27,19 @@
 
 namespace mu {
 
-  std::string MuStream::inspect(int level) {
+  std::string MuStream::inspect() {
     std::stringstream ss;
-    inspect_indent(ss, level); 
-    ss << "#<" << get_class_name() << " " << this << ">" << std::endl;
-    inspect_aux(ss, level+1);
+    inspect_aux(0, &ss);
     return ss.str();
   }
 
-  void MuStream::inspect_indent(std::stringstream& ss, int level) {
-    for (int i=level-1; i>=0; --i) { ss << "| "; }
+  void MuStream::inspect_aux(int level, std::stringstream *ss) {
+    inspect_indent(level, ss);
+    *ss << "#<" << get_class_name() << " " << this << ">" << std::endl;
+  }
+
+  void MuStream::inspect_indent(int level, std::stringstream *ss) {
+    for (int i=level-1; i>=0; --i) { *ss << "| "; }
   }
 
 

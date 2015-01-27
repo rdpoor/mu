@@ -74,12 +74,8 @@ namespace mu {
     return any_modified;
   }
 
-  void SumStream::inspect_aux(std::stringstream& ss, int level) {
-    inspect_indent(ss, level);
-    ss << "sources()" << std::endl;
-    for (int i=sources_.size()-1; i>=0; --i) {
-      ss << sources().at(i)->inspect(level+1);
-    }
+  void SumStream::inspect_aux(int level, std::stringstream *ss) {
+    MultiSourceStream::inspect_aux(level, ss);
   }
 
 }                               // namespace mu

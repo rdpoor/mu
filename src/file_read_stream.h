@@ -57,7 +57,7 @@ namespace mu {
     std::string get_class_name() { return "FileReadStream"; }
 
   protected:
-    void inspect_aux(std::stringstream& ss, int level);
+    void inspect_aux(int level, std::stringstream *ss);
     std::string file_name_;
     stk::FileRead file_read_;
     MuBuffer tmp_buffer_;

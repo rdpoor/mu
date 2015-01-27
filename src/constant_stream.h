@@ -51,7 +51,7 @@ namespace mu {
     std::string get_class_name() { return "ConstantStream"; }
 
   protected:
-    void inspect_aux(std::stringstream& ss, int level);
+    void inspect_aux(int level, std::stringstream *ss);
 
     MuFloat value_;
   };                            // class ConstantStream

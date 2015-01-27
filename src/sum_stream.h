@@ -47,7 +47,7 @@ namespace mu {
     std::string get_class_name() { return "SumStream"; }
 
   protected:
-    void inspect_aux(std::stringstream& ss, int level);
+    void inspect_aux(int level, std::stringstream *ss);
 
   };                            // class SumStream
 

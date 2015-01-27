@@ -47,7 +47,7 @@ namespace mu {
     std::string get_class_name() { return "DelayStream"; }
 
   protected:
-    void inspect_aux(std::stringstream& ss, int level);
+    void inspect_aux(int level, std::stringstream *ss);
     MuTick delay_;
   };                            // class DelayStream
     

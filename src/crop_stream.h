@@ -60,7 +60,7 @@ namespace mu {
     std::string get_class_name() { return "CropStream"; }
 
   protected:
-    void inspect_aux(std::stringstream& ss, int level);
+    void inspect_aux(int level, std::stringstream *ss);
     MuTick source_start_;
     MuTick source_end_;
   };

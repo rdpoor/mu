@@ -26,14 +26,13 @@
 
 namespace mu {
   
-#if 0
-  MultiSourceStream::~MultiSourceStream( void ) {
-    printf("~MultiSourceStream()\n");
+  void MultiSourceStream::inspect_aux(int level, std::stringstream *ss) {
+    MuStream::inspect_aux(level, ss);
+    inspect_indent(level, ss);
+    *ss << "sources()" << std::endl;
     for (int i=sources_.size()-1; i>=0; --i) {
-      MuStream *source = sources_.at(i);
-      if (source != NULL) delete source;
+      sources().at(i)->inspect_aux(level+1, ss);
     }
   }
-#endif
 
 }                               // namespace mu

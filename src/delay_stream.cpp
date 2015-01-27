@@ -54,12 +54,11 @@ namespace mu {
     }
   }
 
-  void DelayStream::inspect_aux(std::stringstream& ss, int level) {
-    inspect_indent(ss, level); 
-    ss << "delay() = " << delay() << std::endl;
-    inspect_indent(ss, level); 
-    ss << "source()" << std::endl;
-    ss << source()->inspect(level+1);
+  void DelayStream::inspect_aux(int level, std::stringstream *ss) {
+    MuStream::inspect_aux(level, ss);
+    inspect_indent(level, ss); 
+    *ss << "delay() = " << delay() << std::endl;
+    SingleSourceStream::inspect_aux(level, ss);
   }
   
 

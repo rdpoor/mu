@@ -46,6 +46,7 @@ namespace mu {
     void set_source(MuStream *source) { source_ = source; }
 
   protected:
+    void inspect_aux(int level, std::stringstream *ss);
     // use std::unique_ptr to ensure proper deletion
     MuStream *source_;
     MuBuffer tmp_buffer_;       // courtesy

@@ -51,8 +51,10 @@ namespace mu {
     return true;
   }
 
-  void ConstantStream::inspect_aux(std::stringstream& ss, int level) {
-    inspect_indent(ss, level); ss << "value() = " << value() << std::endl;
+  void ConstantStream::inspect_aux(int level, std::stringstream *ss) {
+    MuStream::inspect_aux(level, ss);
+    inspect_indent(level, ss); 
+    *ss << "value() = " << value() << std::endl;
   }
 
 

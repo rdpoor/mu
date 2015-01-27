@@ -93,7 +93,7 @@ namespace mu {
     std::string get_class_name() { return "SineStream"; }
 
   protected:
-    void inspect_aux(std::stringstream& ss, int level);
+    void inspect_aux(int level, std::stringstream *ss);
 
     double a0_;                  // base amplitude, normally 1.0 max
     double f0_;                  // base frequencey in hz
