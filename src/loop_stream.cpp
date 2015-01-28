@@ -30,6 +30,9 @@
 namespace mu {
 
   bool LoopStream::render(MuTick buffer_start, MuBuffer *buffer) {
+#ifndef ZERO_BUFFER
+    MuUtils::zero_buffer(buffer);
+#endif
     if (source_ == NULL) { return false; }
 
     MuTick buffer_end = buffer_start + buffer->frames();

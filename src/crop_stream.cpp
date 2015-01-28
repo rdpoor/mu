@@ -29,6 +29,9 @@
 namespace mu {
 
   bool CropStream::render(MuTick buffer_start, MuBuffer *buffer) {
+#ifndef ZERO_BUFFER
+    MuUtils::zero_buffer(buffer);
+#endif
     if (source_ == NULL) { return false; }
 
     MuTick buffer_end = buffer->frames() + buffer_start;

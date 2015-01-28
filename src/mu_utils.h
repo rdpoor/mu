@@ -30,11 +30,15 @@
 #define MU_UTILS_H
 
 #include "mu_types.h"
+#include <math.h>
 
 namespace mu {
 
   class MuUtils {
   public:
+
+    // ================================================================
+    // buffer utilities
 
     // Fill buffer with a constant value
     // 'buffer' should be pointer, after 'value'
@@ -49,7 +53,11 @@ namespace mu {
     
     // Set contents of buffer to all zeroes.
     static void zero_buffer(MuBuffer *buffer) {
+#if 0      
       fill_buffer(buffer, 0.0);
+#elseif
+      bzero(&(buffer[0]), b.frames() * b.channels() * sizeof(MuFloat));
+#endif
     }
 
     // Copy a subset of the contents of src into dst: src[i] is copied into
@@ -71,6 +79,26 @@ namespace mu {
     static void copy_buffer(MuBuffer *src, MuBuffer *dst) {
       copy_buffer_subset(src, dst, 0, src->frames());
     }
+
+    // ================================================================
+    // units conversion
+
+    static MuFloat pitch_to_ratio(MuFloat relative_pitch) {
+      return pow(2.0, relative_pitch/12.0);
+    }
+
+    static MuFloat ratio_to_pitch(MuFloat relative_frequency) {
+      return 12.0 * log2(relative_frequency);
+    }
+
+    static MuFloat db_to_ratio(MuFloat db_gain) {
+      return pow(10.0, db_gain/20.0);
+    }
+
+    static MuFloat ratio_to_db(MuFloat relative_gain) {
+      return 20.0 * log10(relative_gain);
+    }
+
 
   };                            // class MuUtils
 

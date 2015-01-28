@@ -111,3 +111,41 @@ TEST_F(MuUtilsWithSrc, CopyBufferSubset) {
   }
 }
 
+TEST_F(MuUtils, PitchToRatioP) {
+  ASSERT_DOUBLE_EQ(2.0, mu::MuUtils::pitch_to_ratio(12.0));
+}
+TEST_F(MuUtils, PitchToRatioZ) {
+  ASSERT_DOUBLE_EQ(1.0, mu::MuUtils::pitch_to_ratio(0.0));
+}
+TEST_F(MuUtils, PitchToRatioM) {
+  ASSERT_DOUBLE_EQ(0.5, mu::MuUtils::pitch_to_ratio(-12.0));
+}
+TEST_F(MuUtils, RatioToPitchP) {
+  ASSERT_DOUBLE_EQ(12.0, mu::MuUtils::ratio_to_pitch(2.0));
+}
+TEST_F(MuUtils, RatioToPitchZ) {
+  ASSERT_DOUBLE_EQ(0.0, mu::MuUtils::ratio_to_pitch(1.0));
+}
+TEST_F(MuUtils, RatioToPitchM) {
+  ASSERT_DOUBLE_EQ(-12.0, mu::MuUtils::ratio_to_pitch(0.5));
+}
+
+TEST_F(MuUtils, DBToRatioP) {
+  ASSERT_DOUBLE_EQ(10.0, mu::MuUtils::db_to_ratio(20.0));
+}
+TEST_F(MuUtils, DBToRatioZ) {
+  ASSERT_DOUBLE_EQ(1.0, mu::MuUtils::db_to_ratio(0.0));
+}
+TEST_F(MuUtils, DBToRatioM) {
+  ASSERT_DOUBLE_EQ(0.1, mu::MuUtils::db_to_ratio(-20.0));
+}
+TEST_F(MuUtils, RatioToDBP) {
+  ASSERT_DOUBLE_EQ(20.0, mu::MuUtils::ratio_to_db(10.0));
+}
+TEST_F(MuUtils, RatioToDBZ) {
+  ASSERT_DOUBLE_EQ(0.0, mu::MuUtils::ratio_to_db(1.0));
+}
+TEST_F(MuUtils, RatioToDBM) {
+  ASSERT_DOUBLE_EQ(-20.0, mu::MuUtils::ratio_to_db(0.1));
+}
+

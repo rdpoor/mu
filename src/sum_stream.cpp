@@ -23,6 +23,7 @@
   ================================================================
 */
 #include "sum_stream.h"
+#include "mu_utils.h"
 
 namespace mu {
 
@@ -54,6 +55,10 @@ namespace mu {
     bool any_modified = false;
 
     tmp_buffer_.resize(buffer->frames(), buffer->channels());
+#ifndef ZERO_BUFFER
+    MuUtils::zero_buffer(buffer);
+    MuUtils::zero_buffer(&tmp_buffer_);
+#endif
 
     for (int i=sources_.size()-1; i>=0; i--) {
       MuStream *source = sources_.at(i);

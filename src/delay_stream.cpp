@@ -24,6 +24,7 @@
 */
 
 #include "delay_stream.h"
+#include "mu_utils.h"
 
 namespace mu {
 
@@ -42,6 +43,9 @@ namespace mu {
   }
 
   bool DelayStream::render(MuTick buffer_start, MuBuffer *buffer) {
+#ifndef ZERO_BUFFER
+    MuUtils::zero_buffer(buffer);
+#endif
     // can source be NULL in a well-formed stream?  If not, perhaps
     // this should assert-fail?
     //

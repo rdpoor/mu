@@ -29,6 +29,7 @@ SOURCES := \
 # .h files that lack a corresponding .cpp file but should be
 # copied to /usr/include directory
 INCLUDES := \
+	mu.h \
 	mu_types.h
 
 OBJECTS := $(patsubst %.cpp,%.o,$(SOURCES))

@@ -44,11 +44,10 @@ namespace mu {
     return c;
   }
 
-  // Return true if there is an open sound file and its parameters
-  // (data type, sample rate, number of channels) match the frames
-  // object.  TODO: This would be a good candidate for a
-  // "before_playing()" callback.  TODO: return a string describing
-  // the mismatch (if any)
+  // Return true if there is an open sound file and its parameters (data type,
+  // sample rate, number of channels) match the frames object.  TODO: This would
+  // be a good candidate for a "before_playing()" callback.  TODO: return a
+  // string describing the mismatch (if any)
   bool FileReadStream::verify_format(MuBuffer *buffer) {
     // nit-pick: no need for "else" (but takes less vertical space)
     if (!file_read_.isOpen()) {
@@ -63,6 +62,9 @@ namespace mu {
   }
 
   bool FileReadStream::render(MuTick buffer_start, MuBuffer *buffer) {
+#ifndef ZERO_BUFFER
+    MuUtils::zero_buffer(buffer);
+#endif
 
     // check for format mismatch
     if (!verify_format(buffer)) return false;
@@ -70,22 +72,28 @@ namespace mu {
     MuTick file_end = file_read_.fileSize();
     MuTick buffer_end = buffer_start + buffer->frames();
 
-    if (buffer_start >= file_end) {
+    if ((buffer_end <= 0) || (buffer_start >= file_end)) {
       // Nothing to render
       return false;
 
-    } else if (buffer_end <= file_end) {
+    } else if ((buffer_start >= 0) && (buffer_end <= file_end)) {
       // Render directly into buffer
       file_read_.read(*buffer, buffer_start);
       return true;
 
     } else {
       // render partial buffer
-      tmp_buffer_.resize(buffer_end - file_end, buffer->channels());
-      file_read_.read(tmp_buffer_, buffer_start);
+      MuTick lo = std::max((MuTick)0, buffer_start);
+      MuTick hi = std::min(buffer_end, file_end);
+
+      tmp_buffer_.resize(hi-lo, buffer->channels());
+      file_read_.read(tmp_buffer_, lo);
 
       MuUtils::zero_buffer(buffer);
-      MuUtils::copy_buffer(&tmp_buffer_, buffer);
+      MuUtils::copy_buffer_subset(&tmp_buffer_, 
+                                  buffer,
+                                  lo-buffer_start,
+                                  hi-lo);
       return true;
     }
   }

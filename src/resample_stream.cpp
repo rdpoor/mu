@@ -49,11 +49,18 @@ namespace mu {
   }
 
   bool ResampleStream::render(MuTick buffer_start, MuBuffer *buffer) {
+#ifndef ZERO_BUFFER
+    MuUtils::zero_buffer(buffer);
+#endif
+
     if ((sample_source_ == NULL) || (timing_source_ == NULL)) {
       return false;
     }
 
     timing_buffer_.resize(buffer->frames(), buffer->channels());
+#ifndef ZERO_BUFFER
+    MuUtils::zero_buffer(&timing_buffer_);
+#endif
     if (!timing_source_->render(buffer_start, &timing_buffer_)) {
       return false;
     }
@@ -75,6 +82,9 @@ namespace mu {
 
     // Fetch source samples
     sample_buffer_.resize(n_frames, buffer->channels());
+#ifndef ZERO_BUFFER
+    MuUtils::zero_buffer(&sample_buffer_);
+#endif
     if (!sample_source_->render(min_tick, &sample_buffer_)) {
       return false;
     }

@@ -23,6 +23,7 @@
   ================================================================
 */
 #include "product_stream.h"
+#include "mu_utils.h"
 
 namespace mu {
 
@@ -50,26 +51,39 @@ namespace mu {
 
   bool ProductStream::render(MuTick buffer_start, MuBuffer *buffer) {
 
+    int n_frames = buffer->frames();
+    int n_channels = buffer->channels();
     bool any_modified = false;
 
-    tmp_buffer_.resize(buffer->frames(), buffer->channels());
+    tmp_buffer_.resize(n_frames, n_channels);
 
-    for (int i=sources_.size()-1; i>=0; i--) {
+#ifndef ZERO_BUFFER
+    MuUtils::zero_buffer(buffer);
+    MuUtils::zero_buffer(&tmp_buffer_);
+#endif
+
+    // we could optimize the following...
+    MuUtils::fill_buffer(buffer, 1.0);
+
+    for (int i=sources_.size()-1; i>=0; --i) {
       MuStream *source = sources_.at(i);
-      if (any_modified == false) {
-        // render first source directly into buffer
-        any_modified = source->render(buffer_start, buffer);
+      if (source->render(buffer_start, &tmp_buffer_)) {
+        any_modified = true;
+        for (int tick=n_frames-1; tick>=0; --tick) {
+          for (int channel=n_channels-1; channel >=0; --channel) {
+            // (*buffer)(tick, channel) *= tmp_buffer_(tick, channel);
+            MuFloat v1 = (*buffer)(tick, channel);
+            MuFloat v2 = tmp_buffer_(tick, channel);
+            // printf("%ld: %f * %f = %f\n", tick + buffer_start, v1, v2, v1 * v2);
+            (*buffer)(tick, channel) = v1 * v2;
+          }
+        }
       } else {
-        // render subsequet sources into temp buffer and multiply into buffer
-        if (source->render(buffer_start, &tmp_buffer_)) {
-          for (int tick=buffer->frames()-1; tick >= 0; tick--) {
-            for (int ch=buffer->channels()-1; ch>=0; ch--) {
-              (*buffer)(tick, ch) *= tmp_buffer_(tick, ch);
-            } // for ch
-          }   // for tick
-        }     // if (source->)
-      }       // else
-    }         // for i
+        // BUG: Shouldn't have to do this.
+        MuUtils::zero_buffer(buffer);
+      }
+    }
+
     return any_modified;
   }
 
