@@ -141,17 +141,15 @@ private:
 
   mu::MuStream *insert_pitch_shift(mu::MuStream *s, double pitch_shift) {
     if (pitch_shift == 0.0) return s;
-    mu::ConstantStream *constant_stream = new mu::ConstantStream();
     mu::IdentityStream *identity_stream = new mu::IdentityStream();
-    mu::ProductStream *product_stream = new mu::ProductStream();
+    mu::GainStream *gain_stream = new mu::GainStream();
     mu::ResampleStream *resample_stream = new mu::ResampleStream();
 
     double relative_frequency = mu::MuUtils::pitch_to_ratio(pitch_shift);
 
-    constant_stream->set_value(relative_frequency);
-    product_stream->add_source(constant_stream);
-    product_stream->add_source(identity_stream);
-    resample_stream->set_timing_source(product_stream);
+    gain_stream->set_gain(relative_frequency);
+    gain_stream->set_signal_source(identity_stream);
+    resample_stream->set_timing_source(gain_stream);
     resample_stream->set_sample_source(s);
 
     return resample_stream;
@@ -159,17 +157,15 @@ private:
 
   mu::MuStream *insert_gain(mu::MuStream *s, double db_gain) {
     if (db_gain == 0.0) return s;
-    mu::ConstantStream *constant_stream = new mu::ConstantStream();
-    mu::ProductStream *product_stream = new mu::ProductStream();
+    mu::GainStream *gain_stream = new mu::GainStream();
   
     double relative_gain = mu::MuUtils::db_to_ratio(db_gain);
 
-    constant_stream->set_value(relative_gain);
-    product_stream->add_source(constant_stream);
-    product_stream->add_source(s);
+    gain_stream->set_gain(relative_gain);
+    gain_stream->set_signal_source(s);
 
-    // std::cout << product_stream->inspect();
-    return product_stream;
+    // std::cout << gain_stream->inspect();
+    return gain_stream;
   }
 
 };                              // class EchoPlus
@@ -224,17 +220,26 @@ int main() {
   // file_read_stream->set_file_name(EXAMPLE_DIRECTORY "purple.wav");
 
   loop_stream->set_source(main_mix);
-  loop_stream->set_interval(kTicsPerBeat * 11);
+  loop_stream->set_interval(kTicsPerBeat * 5);
   loop_stream->set_source_start(0);
-  // BUG: source_end > interval leads to artifacts.  Sounds like non-initialized buffer?
-  // loop_stream->set_source_end(kTicsPerBeat * 9);
-  loop_stream->set_source_end(loop_stream->interval());
+  loop_stream->set_source_end(kTicsPerBeat * 35);
 
   transport.set_source(loop_stream);
   transport.set_player(&player_rt);
+  
+  int rpts = 20;
 
-  main_mix->add_source(create_echo_plus(file_read_stream, 0, 5, 50, -0.3, 36, -12, -30, -3));
-  main_mix->add_source(create_echo_plus(file_read_stream, 5, 5, 50, 0.3, -12, 36, -3, -25));
+  // repeat rpts times in 5 beats
+  main_mix->add_source(create_echo_plus(file_read_stream, 0, 5, rpts, 0.0, 0.0, 0.0, -3, -3));
+  // arpeggio from 1 octave down to one octave up and back
+  main_mix->add_source(create_echo_plus(file_read_stream, 5, 5, rpts, 0.0, -12.0, 12.0, -3, -3));
+  main_mix->add_source(create_echo_plus(file_read_stream, 10, 5, rpts, 0.0, 12.0, 0.0, -3, -3));
+  // decrescendo from -3db to -30db and back
+  main_mix->add_source(create_echo_plus(file_read_stream, 15, 5, rpts, 0.0, 0.0, 0.0, -3, -30));
+  main_mix->add_source(create_echo_plus(file_read_stream, 20, 5, rpts, 0.0, 0.0, 0.0, -30, -3));
+  // accelerando and back...
+  main_mix->add_source(create_echo_plus(file_read_stream, 25, 5, rpts, 0.3, 0.0, 0.0, -3, -3));
+  main_mix->add_source(create_echo_plus(file_read_stream, 30, 5, rpts, -0.25, 0.0, 0.0, -3, -3));
 
   transport.run();
   wait_for_input();

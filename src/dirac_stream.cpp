@@ -30,6 +30,7 @@ namespace mu {
   }
   
   DiracStream::~DiracStream() {
+    // printf("~DiracStream()\n");
   }
   
   DiracStream *DiracStream::clone() {

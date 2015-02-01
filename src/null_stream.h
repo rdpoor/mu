@@ -40,8 +40,8 @@ namespace mu {
   public:
 
     NullStream( void );
-    ~NullStream( void );
-    NullStream *clone( void );
+    virtual ~NullStream( void );
+    virtual NullStream *clone( void );
 
     bool render(MuTick buffer_start, MuBuffer *buffer);
 

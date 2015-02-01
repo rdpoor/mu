@@ -27,6 +27,13 @@
 
 namespace mu {
 
+  MuStream::MuStream() {
+  }
+
+  MuStream::~MuStream() {
+    // printf("~MuStream()\n");
+  }
+    
   std::string MuStream::inspect() {
     std::stringstream ss;
     inspect_aux(0, &ss);

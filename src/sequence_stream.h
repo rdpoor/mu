@@ -22,38 +22,40 @@
 
   ================================================================
 */
-#include "multi_source_stream.h"
+
+/*
+ * SequenceStream mixes N sources together.
+ */
+
+#ifndef MU_SEQUENCE_STREAM_H
+#define MU_SEQUENCE_STREAM_H
+
+#include "mu_types.h"
+#include "sum_stream.h"
 
 namespace mu {
-  
-  MultiSourceStream::MultiSourceStream() {
-  }
 
-  MultiSourceStream::~MultiSourceStream() {
-    // printf("~MultiSourceStream()\n");
-    for (int i=sources_.size()-1; i>=0; --i) {
-      MuStream *source = sources_.at(i);
-      if (source != NULL) delete source;
-    }
-  }
+  class SequenceStream : public SumStream {
+  public:
+    
+    SequenceStream( void );
+    virtual ~SequenceStream( void );
+    virtual SequenceStream *clone( void );
+    
+    void add_source(MuStream *source, MuTick delay, MuFloat gain);
 
-#if 0
-  MultiSourceStream *MultiSourceStream::clone() {
-    MultiSourceStream *c = new MultiSourceStream();
-    for (int i=sources_.size()-1; i>=0; --i) {
-      MuStream *source = sources_.at(i);
-      c->add_source(source ? source->clone() : source);
-    }
-  }
-#endif
+    bool render(MuTick buffer_start, MuBuffer *buffer);
+    
+    std::string get_class_name() { return "SequenceStream"; }
 
-  void MultiSourceStream::inspect_aux(int level, std::stringstream *ss) {
-    MuStream::inspect_aux(level, ss);
-    inspect_indent(level, ss);
-    *ss << "sources()" << std::endl;
-    for (int i=sources_.size()-1; i>=0; --i) {
-      sources().at(i)->inspect_aux(level+1, ss);
-    }
-  }
+  protected:
+
+  };                            // class SequenceStream
 
 }                               // namespace mu
+
+#endif
+
+// Local Variables:
+// mode: c++
+// End:

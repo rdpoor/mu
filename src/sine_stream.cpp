@@ -23,10 +23,35 @@
    ================================================================ 
 */
 
+#include "mu_utils.h"
 #include "sine_stream.h"
 #include <math.h>
 
 namespace mu {
+
+  SineStream::SineStream()
+    : a0_(default_a0()),
+      f0_(default_f0()),
+      p0_(default_p0()),
+      am_source_(NULL),
+      pm_source_(NULL) {
+  }
+
+  SineStream::~SineStream() {
+    // printf("~SineStream()\n");
+    if (am_source_) { delete am_source_; }
+    if (pm_source_) { delete pm_source_; }
+    }
+
+  SineStream *SineStream::clone() {
+      SineStream *c = new SineStream();
+      c->set_a0(a0());
+      c->set_f0(f0());
+      c->set_p0(p0());
+      if (am_source_ != NULL) c->set_am_source(am_source()->clone());
+      if (pm_source_ != NULL) c->set_pm_source(pm_source()->clone());
+      return c;
+    }
 
   bool SineStream::render(MuTick buffer_start, MuBuffer *buffer) {
     int n_frames = buffer->frames();
@@ -38,10 +63,12 @@ namespace mu {
 
     if (am_source_) {
       am_buffer_.resize(n_frames, n_channels);
+      MuUtils::zero_buffer(&am_buffer_);
       am_source_->render(buffer_start, &am_buffer_);
     }
     if (pm_source_) {
       pm_buffer_.resize(n_frames, n_channels);
+      MuUtils::zero_buffer(&pm_buffer_);
       pm_source_->render(buffer_start, &pm_buffer_);
     }
 

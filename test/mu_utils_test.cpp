@@ -148,4 +148,10 @@ TEST_F(MuUtils, RatioToDBZ) {
 TEST_F(MuUtils, RatioToDBM) {
   ASSERT_DOUBLE_EQ(-20.0, mu::MuUtils::ratio_to_db(0.1));
 }
-
+TEST_F(MuUtils, MidiPitchToFrequency) {
+  ASSERT_DOUBLE_EQ(220.0, mu::MuUtils::midi_pitch_to_frequency(69.0 - 12.0));
+}
+TEST_F(MuUtils, FrequencyToMidiPitch) {
+  ASSERT_DOUBLE_EQ(69.0 + 12.0, mu::MuUtils::frequency_to_midi_pitch(440.0 * 2.0));
+}
+  

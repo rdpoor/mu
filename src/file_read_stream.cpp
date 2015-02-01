@@ -36,6 +36,7 @@ namespace mu {
   }
 
   FileReadStream::~FileReadStream() {
+    // printf("~FileReadStream()\n");
   }
 
   FileReadStream *FileReadStream::clone() {
@@ -62,22 +63,26 @@ namespace mu {
   }
 
   bool FileReadStream::render(MuTick buffer_start, MuBuffer *buffer) {
-#ifndef ZERO_BUFFER
-    MuUtils::zero_buffer(buffer);
-#endif
+
+    // MuUtils::assert_empty(buffer);
 
     // check for format mismatch
-    if (!verify_format(buffer)) return false;
+    if (!verify_format(buffer)) {
+      // printf("!"); fflush(stdout);
+      return false;
+    }
 
     MuTick file_end = file_read_.fileSize();
     MuTick buffer_end = buffer_start + buffer->frames();
 
     if ((buffer_end <= 0) || (buffer_start >= file_end)) {
       // Nothing to render
+      // printf("o"); fflush(stdout);
       return false;
 
     } else if ((buffer_start >= 0) && (buffer_end <= file_end)) {
       // Render directly into buffer
+      // printf("b"); fflush(stdout);
       file_read_.read(*buffer, buffer_start);
       return true;
 
@@ -86,10 +91,11 @@ namespace mu {
       MuTick lo = std::max((MuTick)0, buffer_start);
       MuTick hi = std::min(buffer_end, file_end);
 
+      // printf("%ld", hi-lo); fflush(stdout);
       tmp_buffer_.resize(hi-lo, buffer->channels());
+      MuUtils::zero_buffer(&tmp_buffer_);
       file_read_.read(tmp_buffer_, lo);
 
-      MuUtils::zero_buffer(buffer);
       MuUtils::copy_buffer_subset(&tmp_buffer_, 
                                   buffer,
                                   lo-buffer_start,

@@ -28,10 +28,12 @@
 
 namespace mu {
 
-  DelayStream::DelayStream( void ) : delay_(0) {}
+  DelayStream::DelayStream( void ) 
+    : delay_(0) {
+  }
 
   DelayStream::~DelayStream( void ) {
-    if (source_ != NULL) delete source_;
+    // printf("~DelayStream()\n");
   }
 
   DelayStream *DelayStream::clone( void ) {
@@ -43,9 +45,6 @@ namespace mu {
   }
 
   bool DelayStream::render(MuTick buffer_start, MuBuffer *buffer) {
-#ifndef ZERO_BUFFER
-    MuUtils::zero_buffer(buffer);
-#endif
     // can source be NULL in a well-formed stream?  If not, perhaps
     // this should assert-fail?
     //

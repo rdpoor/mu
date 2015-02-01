@@ -32,11 +32,7 @@ namespace mu {
   }
 
   SumStream::~SumStream() {
-    // TODO: should be in MultiSourceStream::clone() (but how to call it?)
-    for (int i=sources_.size()-1; i>=0; --i) {
-      MuStream *source = sources_.at(i);
-      if (source != NULL) delete source;
-    }
+    // printf("~SumStream()\n");
   }
 
   SumStream *SumStream::clone() {
@@ -55,10 +51,6 @@ namespace mu {
     bool any_modified = false;
 
     tmp_buffer_.resize(buffer->frames(), buffer->channels());
-#ifndef ZERO_BUFFER
-    MuUtils::zero_buffer(buffer);
-    MuUtils::zero_buffer(&tmp_buffer_);
-#endif
 
     for (int i=sources_.size()-1; i>=0; i--) {
       MuStream *source = sources_.at(i);
@@ -67,6 +59,7 @@ namespace mu {
         any_modified = source->render(buffer_start, buffer);
       } else {
         // render source into temp buffer and sum into buffer
+        MuUtils::zero_buffer(&tmp_buffer_);
         if (source->render(buffer_start, &tmp_buffer_)) {
           for (int tick=buffer->frames()-1; tick >= 0; tick--) {
             for (int ch=buffer->channels()-1; ch>=0; ch--) {

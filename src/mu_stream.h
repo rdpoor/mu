@@ -47,8 +47,8 @@ namespace mu {
       return tick - buffer_start; 
     }
 
-    MuStream() {}
-    virtual ~MuStream() {};
+    MuStream();
+    virtual ~MuStream();
     virtual MuStream *clone() = 0;
 
     virtual bool render(MuTick buffer_start, MuBuffer *buffer) = 0;

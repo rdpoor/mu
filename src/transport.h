@@ -41,7 +41,7 @@ namespace mu {
   public:
 
     Transport();
-    ~Transport();
+    virtual ~Transport();
 
     // Get/Set the Player.  The Player's contract is to request buffers of
     // sample data by calling the Transport's Render() method.

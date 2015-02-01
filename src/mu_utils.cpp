@@ -28,4 +28,19 @@
 namespace mu {
   int dummy;                    // inhibit linker warning
 
+  bool MuUtils::assert_empty(MuBuffer *src) {
+    int n_frames = src->frames();
+    int n_channels = src->channels();
+    for (int frame = n_frames-1; frame >= 0; --frame) {
+      for (int channel = n_channels-1; channel >= 0; --channel) {
+        MuFloat v = (*src)(frame, channel);
+        if (v != 0.0) {
+          printf(" [%d,%d]==%f", frame, channel, v); fflush(stdout);
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+  
 }                               // namespace mu

@@ -40,8 +40,8 @@ namespace mu {
   public:
 
     DiracStream( void );
-    ~DiracStream( void );
-    DiracStream *clone( void );
+    virtual ~DiracStream( void );
+    virtual DiracStream *clone( void );
 
     bool render(MuTick buffer_start, MuBuffer *buffer);
 

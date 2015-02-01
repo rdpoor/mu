@@ -42,24 +42,9 @@ namespace mu {
   class LoopStream : public SingleSourceStream {
   public:
 
-    LoopStream() :
-      interval_(44100),
-      source_start_(0), 
-      source_end_(44100) {}
-      
-    ~LoopStream() {
-      if (source() != NULL) delete source();
-    }
-
-    LoopStream *clone() {
-      LoopStream *c = new LoopStream();
-      c->set_interval(interval());
-      c->set_source_start(source_start());
-      c->set_source_end(source_end());
-      // TODO: can I delegate this to SingleSourceStream?
-      c->set_source(source() ? source()->clone() : NULL);
-      return c;
-    }
+    LoopStream();
+    virtual ~LoopStream();
+    virtual LoopStream *clone();
 
     MuTick interval() { return interval_; }
     void set_interval(MuTick interval) { interval_ = interval; }

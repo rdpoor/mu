@@ -32,11 +32,7 @@ namespace mu {
   }
 
   ProductStream::~ProductStream() {
-    // TODO: should be in MultiSourceStream::clone() (but how to call it?)
-    for (int i=sources_.size()-1; i>=0; --i) {
-      MuStream *source = sources_.at(i);
-      if (source != NULL) delete source;
-    }
+    // printf("~ProductStream()\n");
   }
 
   ProductStream *ProductStream::clone() {
@@ -53,38 +49,63 @@ namespace mu {
 
     int n_frames = buffer->frames();
     int n_channels = buffer->channels();
-    bool any_modified = false;
+    bool any_written = false;
 
     tmp_buffer_.resize(n_frames, n_channels);
 
-#ifndef ZERO_BUFFER
-    MuUtils::zero_buffer(buffer);
-    MuUtils::zero_buffer(&tmp_buffer_);
-#endif
-
-    // we could optimize the following...
-    MuUtils::fill_buffer(buffer, 1.0);
-
+#if 0
     for (int i=sources_.size()-1; i>=0; --i) {
       MuStream *source = sources_.at(i);
+      if (any_written == false) {
+        // first source can render directly into the buffer
+        if (source->render(buffer_start, buffer)) {
+          any_written = true;
+        }
+      } else {
+        // subsequent sources are rendered into tmp_buffer_
+        MuUtils::zero_buffer(&tmp_buffer_);
+        if (source->render(buffer_start, &tmp_buffer_)) {
+          for (int tick=n_frames-1; tick>=0; --tick) {
+            for (int channel=n_channels-1; channel >=0; --channel) {
+              MuFloat v1 = (*buffer)(tick, channel);
+              MuFloat v2 = tmp_buffer_(tick, channel);
+              // printf("%ld: %f * %f = %f\n", tick + buffer_start, v1, v2, v1 * v2);
+              (*buffer)(tick, channel) = v1 * v2;
+            }
+          }
+        } else {
+          // source produced no samples.  Zero the result and quit now...
+          MuUtils::zero_buffer(buffer);
+          break;
+        }
+      }
+    }                                       // for
+#else
+    MuUtils::fill_buffer(buffer, 1.0);
+    for (int i=sources_.size()-1; i>=0; --i) {
+      MuStream *source = sources_.at(i);
+      MuUtils::zero_buffer(&tmp_buffer_);
       if (source->render(buffer_start, &tmp_buffer_)) {
-        any_modified = true;
         for (int tick=n_frames-1; tick>=0; --tick) {
           for (int channel=n_channels-1; channel >=0; --channel) {
-            // (*buffer)(tick, channel) *= tmp_buffer_(tick, channel);
             MuFloat v1 = (*buffer)(tick, channel);
             MuFloat v2 = tmp_buffer_(tick, channel);
             // printf("%ld: %f * %f = %f\n", tick + buffer_start, v1, v2, v1 * v2);
             (*buffer)(tick, channel) = v1 * v2;
           }
         }
+        any_written = true;
       } else {
-        // BUG: Shouldn't have to do this.
-        MuUtils::zero_buffer(buffer);
+        any_written = false;
+        break;
       }
     }
+    
+    if (any_written == false) { MuUtils::zero_buffer(buffer); }
+#endif
 
-    return any_modified;
+
+    return any_written;
   }
 
   void ProductStream::inspect_aux(int level, std::stringstream *ss) {

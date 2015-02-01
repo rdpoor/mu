@@ -31,6 +31,7 @@ namespace mu {
   }
   
   NullStream::~NullStream() {
+    // printf("~NullStream()\n");
   }
 
   NullStream *NullStream::clone() {

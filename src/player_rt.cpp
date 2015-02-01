@@ -24,6 +24,7 @@
 */
 
 #include "player_rt.h"
+#include "mu_utils.h"
 
 namespace mu {
 
@@ -100,6 +101,9 @@ namespace mu {
 
     // grow the stkFrames buffer as needed
     stk_frames_.resize(frame_count, channel_count_);
+    MuUtils::zero_buffer(&stk_frames_);
+
+    // MuUtils::assert_empty(&stk_frames_);
 
     // ask the source to generate samples
     transport_->render(&stk_frames_);

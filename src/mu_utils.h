@@ -31,6 +31,7 @@
 
 #include "mu_types.h"
 #include <math.h>
+#include <strings.h>
 
 namespace mu {
 
@@ -53,12 +54,13 @@ namespace mu {
     
     // Set contents of buffer to all zeroes.
     static void zero_buffer(MuBuffer *buffer) {
-#if 0      
-      fill_buffer(buffer, 0.0);
-#elseif
-      bzero(&(buffer[0]), b.frames() * b.channels() * sizeof(MuFloat));
+#if 0
+    fill_buffer(buffer, 0.0);
+#else
+    memset(&((*buffer)(0,0)), 0, buffer->frames() * buffer->channels() * sizeof(MuFloat));
 #endif
-    }
+  }
+
 
     // Copy a subset of the contents of src into dst: src[i] is copied into
     // dst[i+offset] for count frames.  Assumes that the channel counts match.
@@ -80,6 +82,9 @@ namespace mu {
       copy_buffer_subset(src, dst, 0, src->frames());
     }
 
+    // Diagnostics to verify a buffer is empty.
+    static bool assert_empty(MuBuffer *src);
+
     // ================================================================
     // units conversion
 
@@ -99,6 +104,15 @@ namespace mu {
       return 20.0 * log10(relative_gain);
     }
 
+    // midi pitch 69 = 440 Hz
+    static MuFloat midi_pitch_to_frequency(double midi_pitch ) {
+      return 440.0 * pitch_to_ratio(midi_pitch - 69.0);
+    }
+
+    // A 440 = midi pitch 69
+    static MuFloat frequency_to_midi_pitch(double frequency) {
+      return 69.0 + ratio_to_pitch(frequency / 440.0);
+    }
 
   };                            // class MuUtils
 

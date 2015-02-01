@@ -26,6 +26,23 @@
 
 namespace mu {
 
+  SingleSourceStream::SingleSourceStream() 
+    : source_(NULL) {
+  }
+
+  SingleSourceStream::~SingleSourceStream() {
+    // printf("~SingleSourceStream()\n");
+    if (source_) delete source_;
+  }
+
+#if 0
+  SingleSourceStream *SingleSourceStream::clone() {
+    SingleSourceStream *c = new SingleSourceStream();
+    c->set_source(source_ ? source_->clone() : source_);
+    return c;
+  }
+#endif
+     
   void SingleSourceStream::inspect_aux(int level, std::stringstream *ss) {
     inspect_indent(level, ss);
     *ss << "source()" << std::endl;

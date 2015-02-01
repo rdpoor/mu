@@ -39,8 +39,8 @@ namespace mu {
   public:
     
     ProductStream();
-    ~ProductStream( void );
-    ProductStream *clone( void );
+    virtual ~ProductStream( void );
+    virtual ProductStream *clone( void );
 
     bool render(MuTick buffer_start, MuBuffer *buffer);
     

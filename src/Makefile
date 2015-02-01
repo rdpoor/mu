@@ -10,7 +10,9 @@ SOURCES := \
 	delay_stream.cpp \
 	dirac_stream.cpp \
 	file_read_stream.cpp \
+	file_write_stream.cpp \
 	identity_stream.cpp \
+	gain_stream.cpp \
 	loop_stream.cpp \
 	mu_sink.cpp \
 	mu_stream.cpp \
@@ -21,6 +23,7 @@ SOURCES := \
 	player_rt.cpp \
 	product_stream.cpp \
 	resample_stream.cpp \
+	sequence_stream.cpp \
 	sine_stream.cpp \
 	single_source_stream.cpp \
 	sum_stream.cpp \

@@ -40,8 +40,8 @@ namespace mu {
   public:
 
     ConstantStream( void );
-    ~ConstantStream( void );
-    ConstantStream *clone( void );
+    virtual ~ConstantStream( void );
+    virtual ConstantStream *clone( void );
 
     MuFloat value() { return value_; }
     void set_value(MuFloat value) { value_ = value; }

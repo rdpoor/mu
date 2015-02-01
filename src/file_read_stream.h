@@ -36,8 +36,8 @@ namespace mu {
   public:
 
     FileReadStream();
-    ~FileReadStream( void );
-    FileReadStream *clone();
+    virtual ~FileReadStream( void );
+    virtual FileReadStream *clone();
 
     // Get/set the file name of the sound file.
     std::string file_name(void) { return file_name_; }

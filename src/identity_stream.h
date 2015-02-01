@@ -40,8 +40,8 @@ namespace mu {
   public:
 
     IdentityStream( void );
-    ~IdentityStream( void );
-    IdentityStream *clone();
+    virtual ~IdentityStream( void );
+    virtual IdentityStream *clone( void );
 
     bool render(MuTick buffer_start, MuBuffer *buffer);
 

@@ -28,10 +28,24 @@
 
 namespace mu {
 
+  CropStream::CropStream() : 
+    source_start_(kUndefined), 
+    source_end_(kUndefined) {
+  }
+
+  CropStream::~CropStream() {
+    // printf("~CropStream()\n");
+  }
+
+  CropStream *CropStream::clone() {
+      CropStream *c = new CropStream();
+      c->set_source_start(source_start());
+      c->set_source_end(source_end());
+      c->set_source(source() ? source()->clone() : NULL);
+      return c;
+    }
+    
   bool CropStream::render(MuTick buffer_start, MuBuffer *buffer) {
-#ifndef ZERO_BUFFER
-    MuUtils::zero_buffer(buffer);
-#endif
     if (source_ == NULL) { return false; }
 
     MuTick buffer_end = buffer->frames() + buffer_start;
@@ -55,9 +69,9 @@ namespace mu {
     } else {
       // get samples between earliest and latest
       tmp_buffer_.resize(latest-earliest, buffer->channels());
+      MuUtils::zero_buffer(&tmp_buffer_);
       bool any_written = source_->render(earliest, &tmp_buffer_);
       if (any_written) {
-        MuUtils::zero_buffer(buffer);
         MuUtils::copy_buffer_subset(&tmp_buffer_, 
                                     buffer, 
                                     earliest-buffer_start,

@@ -18,43 +18,57 @@
   AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-  SOFTWARE.  
-
+  SOFTWARE.
   ================================================================
 */
 
-/*
- * SingleSourceStream is an abstract superclass for streams that take a
- * single source.
- */
-
-#ifndef MU_SINGLE_SOURCE_STREAM_H
-#define MU_SINGLE_SOURCE_STREAM_H
+#ifndef MU_FILE_WRITE_STREAM_H
+#define MU_FILE_WRITE_STREAM_H
 
 #include "mu_stream.h"
 #include "mu_types.h"
+#include "single_source_stream.h"
+#include <FileWrite.h>
 
 namespace mu {
 
-  class SingleSourceStream : public MuStream {
+  class FileWriteStream : public SingleSourceStream {
   public:
-    
-    SingleSourceStream();
-    virtual ~SingleSourceStream();
-#if 0
-    virtual SingleSourceStream *clone();
-#endif
 
-    MuStream *source() { return source_; }
-    void set_source(MuStream *source) { source_ = source; }
+    static const stk::FileWrite::FILE_TYPE default_file_type() {
+      return stk::FileWrite::FILE_WAV;
+    }
+
+    static const stk::FileWrite::StkFormat default_file_format() {
+      return stk::Stk::STK_SINT16;
+    }
+
+    FileWriteStream();
+    virtual ~FileWriteStream( void );
+    virtual FileWriteStream *clone();
+
+    std::string get_class_name() { return "FileWriteStream"; }
+
+    std::string file_name( void ) { return file_name_; }
+    void set_file_name(std::string file_name) { file_name_ = file_name; }
+
+    stk::FileWrite::FILE_TYPE file_type( void ) { return file_type_; }
+    void set_file_type(stk::FileWrite::FILE_TYPE file_type) { file_type_ = file_type; }
+
+    stk::FileWrite::StkFormat file_format( void ) { return file_format_; }
+    void set_file_format(stk::FileWrite::StkFormat file_format) { file_format_ = file_format; }
+
+    bool render(MuTick buffer_start, MuBuffer *buffer);
 
   protected:
     void inspect_aux(int level, std::stringstream *ss);
-    // use std::unique_ptr to ensure proper deletion
-    MuStream *source_;
-    MuBuffer tmp_buffer_;       // courtesy
 
-  };                            // class SingleSourceStream
+    std::string file_name_;
+    stk::FileWrite::FILE_TYPE file_type_;
+    stk::Stk::StkFormat file_format_;
+    stk::FileWrite file_write_;
+
+  };                            // class FileWriteStream
 
 }                               // namespace mu
 

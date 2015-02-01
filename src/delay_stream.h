@@ -36,8 +36,8 @@ namespace mu {
   public:
     
     DelayStream( void );
-    ~DelayStream( void );
-    DelayStream *clone( void );
+    virtual ~DelayStream( void );
+    virtual DelayStream *clone( void );
 
     MuTick delay() { return delay_; }
     void set_delay(MuTick delay) { delay_ = delay; }

@@ -30,6 +30,7 @@ namespace mu {
   }
   
   ConstantStream::~ConstantStream() {
+    // printf("~ConstantStream()\n");
   }
   
   ConstantStream *ConstantStream::clone() {

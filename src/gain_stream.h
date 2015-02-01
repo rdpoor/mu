@@ -23,61 +23,55 @@
    ================================================================ 
 */
 
-// File: player_rt.h
-// Defines an audio player that uses the RtAudio package for platform
-// independent realtime playback.
+// File: gain_stream.h
+// GainStream applies a gain to a signal.  If there is a gain_source specified,
+// then the signal is multiplied times that.  Otherwise, gain is determined by
+// the fixed gain parameter.
 
-#ifndef MU_PLAYER_RT_H
-#define MU_PLAYER_RT_H
+#ifndef MU_GAIN_STREAM_H
+#define MU_GAIN_STREAM_H
 
-#include "RtAudio.h"
-#include "Stk.h"
-#include "mu_types.h"
-#include "player.h"
+#include "mu_stream.h"
 
 namespace mu {
-
-  class PlayerRt : public Player {
-
+  class GainStream : public MuStream {
   public:
-
-    PlayerRt( void );
-    virtual ~PlayerRt( void );
-
-    static const int default_device_number() {
-      return 0;
-    }
-
-    int device_number() { 
-      return device_number_;
-    }
-
-    void set_device_number(int device_number) {
-      device_number_ = device_number;
-    }
-
-    // these need to be marked override.
-    void start();
-    void stop();
-
-    enum RtAudioDirective { 
-      kContinue = 0, 
-      kStopAndDrain = 1, 
-      kStopImmediately = 2 };
     
-    // callback method for RtAudio
-    RtAudioDirective processBuffer(void *buffer, 
-                                     unsigned int frame_count, 
-                                     double stream_time);
+    static MuFloat default_gain() {
+      return 1.0;
+    }
     
+    GainStream( void );
+    virtual ~GainStream( void );
+    virtual GainStream *clone( void );
+
+    double gain() { return gain_; }
+    void set_gain(double gain) { gain_ = gain; }
+
+    MuStream *signal_source() { return signal_source_; }
+    void set_signal_source(MuStream *signal_source) {
+      signal_source_ = signal_source;
+    }
+
+    MuStream *gain_source() { return gain_source_; }
+    void set_gain_source(MuStream *gain_source) {
+      gain_source_ = gain_source;
+    }
+
+    bool render(MuTick buffer_start, MuBuffer *buffer);
+
+    std::string get_class_name() { return "GainStream"; }
+
   protected:
-    int device_number_;
-    RtAudio dac_;
-    stk::StkFrames stk_frames_;
-    
-  };                            // class PlayerRt
+    void inspect_aux(int level, std::stringstream *ss);
 
-}                               // namespace mu
+    double gain_;                // base gain, normally 1.0 max
+    MuStream *signal_source_;    // source of signal
+    MuStream *gain_source_;      // source of gain
+    MuBuffer gain_buffer_;       // temp buffer
+  };                             // class GainStream
+    
+} // namespace mu
 
 #endif
 

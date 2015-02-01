@@ -41,8 +41,8 @@ namespace mu {
   class ResampleStream : public MuStream {
   public:
     ResampleStream( void );
-    ~ResampleStream( void );
-    ResampleStream *clone( void );
+    virtual ~ResampleStream( void );
+    virtual ResampleStream *clone( void );
 
     MuStream *sample_source( void ) { return sample_source_; }
     void set_sample_source(MuStream *source) { sample_source_ = source; }

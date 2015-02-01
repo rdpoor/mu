@@ -38,8 +38,10 @@ namespace mu {
 
   class MultiSourceStream : public MuStream {
   public:
-#if 0
+    MultiSourceStream( void );
     virtual ~MultiSourceStream( void );
+#if 0
+    virtual MultiSourceStream *clone( void );
 #endif
 
     // How does memory-mgmt happen for sources?
@@ -48,7 +50,7 @@ namespace mu {
     }
   
     void remove_source(MuStream *source) {
-      for (int i=0; i<sources_.size(); i++) {
+      for (long i = sources_.size() - 1; i >= 0; --i) {
         if (sources_.at(i) == source) {
           sources_.erase(sources_.begin()+i);
           break;

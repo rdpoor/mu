@@ -18,42 +18,53 @@
   AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-  SOFTWARE.
+  SOFTWARE.  
 
   ================================================================
 */
-#include "multi_source_stream.h"
+#include "delay_stream.h"
+#include "gain_stream.h"
+#include "sequence_stream.h"
+#include "mu_utils.h"
 
 namespace mu {
-  
-  MultiSourceStream::MultiSourceStream() {
+
+  SequenceStream::SequenceStream() {
   }
 
-  MultiSourceStream::~MultiSourceStream() {
-    // printf("~MultiSourceStream()\n");
+  SequenceStream::~SequenceStream() {
+    // printf("~SequenceStream()\n");
+  }
+
+  SequenceStream *SequenceStream::clone() {
+    SequenceStream *c = new SequenceStream();
+    // TODO: this should be in SumStream::clone() (but how do I call it?)
     for (int i=sources_.size()-1; i>=0; --i) {
       MuStream *source = sources_.at(i);
-      if (source != NULL) delete source;
+      c->SumStream::add_source((source == NULL) ? source : source->clone());
     }
+    return c;
   }
 
-#if 0
-  MultiSourceStream *MultiSourceStream::clone() {
-    MultiSourceStream *c = new MultiSourceStream();
-    for (int i=sources_.size()-1; i>=0; --i) {
-      MuStream *source = sources_.at(i);
-      c->add_source(source ? source->clone() : source);
+  void SequenceStream::add_source(MuStream *source, MuTick delay, MuFloat gain) {
+    MuStream *s = source;
+    if (delay != 0) {
+      DelayStream *delay_stream = new DelayStream();
+      delay_stream->set_delay(delay);
+      delay_stream->set_source(s);
+      s = delay_stream;
     }
+    if (gain != 1.0) {
+      GainStream *gain_stream = new GainStream();
+      gain_stream->set_gain(gain);
+      gain_stream->set_signal_source(s);
+      s = gain_stream;
+    }
+    SumStream::add_source(s);
   }
-#endif
 
-  void MultiSourceStream::inspect_aux(int level, std::stringstream *ss) {
-    MuStream::inspect_aux(level, ss);
-    inspect_indent(level, ss);
-    *ss << "sources()" << std::endl;
-    for (int i=sources_.size()-1; i>=0; --i) {
-      sources().at(i)->inspect_aux(level+1, ss);
-    }
+  bool SequenceStream::render(MuTick buffer_start, MuBuffer *buffer) {
+    return SumStream::render(buffer_start, buffer);
   }
 
 }                               // namespace mu

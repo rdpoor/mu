@@ -30,6 +30,7 @@ namespace mu {
   }
   
   IdentityStream::~IdentityStream() {
+    // printf("~IdentityStream()\n");
   }
   
   IdentityStream *IdentityStream::clone() {

@@ -18,7 +18,7 @@
    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-   SOFTWARE.  
+   SOFTWARE.
 
    ================================================================ 
 */
@@ -84,12 +84,14 @@ namespace mu {
     }
   }
 
-  void Transport::render(MuBuffer *frames) {
+  void Transport::render(MuBuffer *buffer) {
     // printf("."); fflush(stdout);
-    MuUtils::zero_buffer(frames);
+
+    // MuUtils::assert_empty(buffer);
+
     if ((source_ != NULL) && (state_ == kRunning)) {
-      MuTick buffer_end = tick_ + frames->frames();
-      if (source_->render(tick_, frames)) {
+      MuTick buffer_end = tick_ + buffer->frames();
+      if (source_->render(tick_, buffer)) {
         // something got rendered
       } else {
         // nothing got rendered
