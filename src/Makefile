@@ -22,6 +22,7 @@ SOURCES := \
 	player.cpp \
 	player_rt.cpp \
 	product_stream.cpp \
+	random_select_stream.cpp \
 	resample_stream.cpp \
 	sequence_stream.cpp \
 	sine_stream.cpp \

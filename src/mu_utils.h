@@ -29,6 +29,7 @@
 #ifndef MU_UTILS_H
 #define MU_UTILS_H
 
+#include "mu_stream.h"
 #include "mu_types.h"
 #include <math.h>
 #include <strings.h>
@@ -84,6 +85,13 @@ namespace mu {
 
     // Diagnostics to verify a buffer is empty.
     static bool assert_empty(MuBuffer *src);
+
+    // ================================================================
+    // stream utilities
+
+    static MuStream *clone_stream(MuStream *stream) {
+      return (stream == NULL) ? NULL : stream->clone();
+    }
 
     // ================================================================
     // units conversion
