@@ -24,34 +24,58 @@
 */
 
 /*
- * SequenceStream mixes N sources together, each with its own start
- * time and fixed gain.
+ * StepStream(t) provides linearly interpolated values between
+ * user-provided breakpoints.  If t is less than the time of the first
+ * breakpoint, the value of the first breakpoint is returned.  If t is equal to
+ * or greater than the time of the last breakpoint, the value of the last
+ * breakpoint is returned.
  */
 
-#ifndef MU_SEQUENCE_STREAM_H
-#define MU_SEQUENCE_STREAM_H
+#ifndef MU_STEP_STREAM_H
+#define MU_STEP_STREAM_H
 
+#include "mu_stream.h"
 #include "mu_types.h"
-#include "sum_stream.h"
 
 namespace mu {
 
-  class SequenceStream : public SumStream {
+  class StepStream : public MuStream {
   public:
-    
-    SequenceStream( void );
-    virtual ~SequenceStream( void );
-    virtual SequenceStream *clone( void );
-    
-    void add_source(MuStream *source, MuTick delay, MuFloat gain);
+
+    StepStream( void );
+    virtual ~StepStream( void );
+    virtual StepStream *clone( void );
+
+    void add_breakpoint(MuTick tick, MuFloat value);
 
     bool render(MuTick buffer_start, MuBuffer *buffer);
-    
-    std::string get_class_name() { return "SequenceStream"; }
+
+    std::string get_class_name() { return "StepStream"; }
 
   protected:
+    void inspect_aux(int level, std::stringstream *ss);
+    MuBreakpoints breakpoints_;
+    
+  private:
+    // TODO: can I put this in the .cpp file and make it inline?
+    // It would be nice to keep the .h file visually simple.
+    MuFloat compute_sample(MuTick frame) {
+      if (frame <= breakpoints_.begin()->first) {
+        return breakpoints_.begin()->second;
+      }
 
-  };                            // class SequenceStream
+      if (frame >= breakpoints_.rbegin()->first) {
+        return breakpoints_.rbegin()->second;
+      } 
+
+      // frame lies within two breakpoints
+      MuBreakpoints::const_iterator cursor = breakpoints_.upper_bound(frame);
+      --cursor;
+      MuFloat y0 = cursor->second;
+      return y0;
+    }
+
+  };                            // class StepStream
 
 }                               // namespace mu
 

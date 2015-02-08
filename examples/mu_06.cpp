@@ -220,7 +220,7 @@ int main() {
   // file_read_stream->set_file_name(EXAMPLE_DIRECTORY "purple.wav");
 
   loop_stream->set_source(main_mix);
-  loop_stream->set_interval(kTicsPerBeat * 5);
+  loop_stream->set_interval(kTicsPerBeat * 35);
   loop_stream->set_source_start(0);
   loop_stream->set_source_end(kTicsPerBeat * 35);
 

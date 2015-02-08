@@ -29,8 +29,24 @@
 
 namespace mu {
 
+  stk::FileRead *FileReadStream::lookup(std::string file_name) {
+    SoundLibrary::const_iterator iterator;
+
+    if ((iterator = library_.find(file_name)) == library_.end()) {
+        // printf("reading '%s' from disk\n", file_name.c_str());
+        stk::FileRead *file_read = new stk::FileRead();
+        file_read->open(file_name);
+        library_[file_name] = file_read;
+        return file_read;
+      } else {
+        // printf("fetching '%s' from cache\n", file_name.c_str());
+        return iterator->second;
+    }
+  }
+
   FileReadStream::FileReadStream()
-    : file_name_("") {
+    : file_read_(NULL),
+      file_name_("") {
     tmp_buffer_.resize(Player::default_frame_size(), 
                        Player::default_channel_count());
   }
@@ -51,11 +67,11 @@ namespace mu {
   // string describing the mismatch (if any)
   bool FileReadStream::verify_format(MuBuffer *buffer) {
     // nit-pick: no need for "else" (but takes less vertical space)
-    if (!file_read_.isOpen()) {
+    if (!file_read_->isOpen()) {
       return false;
-    } else if (file_read_.channels() != buffer->channels()) {
+    } else if (file_read_->channels() != buffer->channels()) {
       return false;
-    } else if (file_read_.fileRate() != buffer->dataRate()) {
+    } else if (file_read_->fileRate() != buffer->dataRate()) {
       return false;
     } else {
       return true;
@@ -72,7 +88,7 @@ namespace mu {
       return false;
     }
 
-    MuTick file_end = file_read_.fileSize();
+    MuTick file_end = file_read_->fileSize();
     MuTick buffer_end = buffer_start + buffer->frames();
 
     if ((buffer_end <= 0) || (buffer_start >= file_end)) {
@@ -83,7 +99,7 @@ namespace mu {
     } else if ((buffer_start >= 0) && (buffer_end <= file_end)) {
       // Render directly into buffer
       // printf("b"); fflush(stdout);
-      file_read_.read(*buffer, buffer_start);
+      file_read_->read(*buffer, buffer_start);
       return true;
 
     } else {
@@ -94,7 +110,7 @@ namespace mu {
       // printf("%ld", hi-lo); fflush(stdout);
       tmp_buffer_.resize(hi-lo, buffer->channels());
       MuUtils::zero_buffer(&tmp_buffer_);
-      file_read_.read(tmp_buffer_, lo);
+      file_read_->read(tmp_buffer_, lo);
 
       MuUtils::copy_buffer_subset(&tmp_buffer_, 
                                   buffer,
@@ -109,6 +125,11 @@ namespace mu {
     inspect_indent(level, ss);
     *ss << "file_name() = " << file_name() << std::endl;
   }
+
+  // globally available...
+
+  FileReadStream::SoundLibrary FileReadStream::library_;
+
 
 }                               // namespace mu
 

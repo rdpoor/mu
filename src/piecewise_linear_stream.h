@@ -24,34 +24,42 @@
 */
 
 /*
- * SequenceStream mixes N sources together, each with its own start
- * time and fixed gain.
+ * PiecewiseLinearStream(t) provides linearly interpolated values between
+ * user-provided breakpoints.  If t is less than the time of the first
+ * breakpoint, the value of the first breakpoint is returned.  If t is equal to
+ * or greater than the time of the last breakpoint, the value of the last
+ * breakpoint is returned.
  */
 
-#ifndef MU_SEQUENCE_STREAM_H
-#define MU_SEQUENCE_STREAM_H
+#ifndef MU_PIECEWISE_LINEAR_STREAM_H
+#define MU_PIECEWISE_LINEAR_STREAM_H
 
+#include "mu_stream.h"
 #include "mu_types.h"
-#include "sum_stream.h"
 
 namespace mu {
 
-  class SequenceStream : public SumStream {
+  class PiecewiseLinearStream : public MuStream {
   public:
-    
-    SequenceStream( void );
-    virtual ~SequenceStream( void );
-    virtual SequenceStream *clone( void );
-    
-    void add_source(MuStream *source, MuTick delay, MuFloat gain);
+
+    PiecewiseLinearStream( void );
+    virtual ~PiecewiseLinearStream( void );
+    virtual PiecewiseLinearStream *clone( void );
+
+    void add_breakpoint(MuTick tick, MuFloat value);
 
     bool render(MuTick buffer_start, MuBuffer *buffer);
-    
-    std::string get_class_name() { return "SequenceStream"; }
+
+    std::string get_class_name() { return "PiecewiseLinearStream"; }
 
   protected:
+    void inspect_aux(int level, std::stringstream *ss);
+    MuBreakpoints breakpoints_;
+    
+  private:
+    MuFloat lerp(MuTick frame);
 
-  };                            // class SequenceStream
+  };                            // class PiecewiseLinearStream
 
 }                               // namespace mu
 

@@ -1,4 +1,5 @@
-// Demonstrate file_write_stream.
+// Demonstrate RandomSelectStream: in a loop, play "thump" 75% of the time and
+// "purple" 25% of the time.
 
 #include "mu.h"
 

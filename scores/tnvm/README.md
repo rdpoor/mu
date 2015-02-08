@@ -1,3 +1,16 @@
+== Music notes
+
+Opening notes: F# B E C# unprocessed on uke, with a little "thump" and "swish"
+(also unprocessed). The thump and swish morph into the rhythm part, the pitched
+notes get octave shifted, stretched (in time) and compressed (in dynamics).
+Then mutiple comb filters are applied to create F#, B, E, C# chords.
+
+Therefore need:
+* pitch shifting (PsiStream would be good)
+* log/exp ramp (like LinSegStream)
+* dynamic compression (need EnvelopeFollowerStream and DynamicCompressionStream)
+* comb filter (CombFilterStream)
+
 == Code/Composition Overview
 
 Each instrument has a .h and a .cpp file.  The .h file defines one

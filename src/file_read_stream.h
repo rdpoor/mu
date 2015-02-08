@@ -28,6 +28,7 @@
 
 #include "mu_stream.h"
 #include "mu_types.h"
+#include "sound_library.h"
 #include <FileRead.h>
 
 namespace mu {
@@ -35,21 +36,26 @@ namespace mu {
   class FileReadStream : public MuStream {
   public:
 
+    typedef std::unordered_map<std::string, stk::FileRead *> SoundLibrary;
+
+    // Return a FileRead object, possibly cached.
+    // TODO: could be private
+    static stk::FileRead *lookup( std::string file_name );
+
     FileReadStream();
     virtual ~FileReadStream( void );
     virtual FileReadStream *clone();
 
     // Get/set the file name of the sound file.
     std::string file_name(void) { return file_name_; }
-    // const&
     void set_file_name(std::string file_name) { 
       file_name_ = file_name;
-      file_read_.open(file_name_);
+      file_read_ = FileReadStream::lookup(file_name_);
     }
 
     // Return the duration of the sound file, or kUndefined if not set.
     MuTick duration( void ) {
-      return (file_read_.isOpen()) ? file_read_.fileSize() : kUndefined;
+      return (file_read_->isOpen()) ? file_read_->fileSize() : kUndefined;
     }
 
     bool render(MuTick buffer_start, MuBuffer *buffer);
@@ -58,8 +64,11 @@ namespace mu {
 
   protected:
     void inspect_aux(int level, std::stringstream *ss);
+
+    static SoundLibrary library_;
+
+    stk::FileRead *file_read_;
     std::string file_name_;
-    stk::FileRead file_read_;
     MuBuffer tmp_buffer_;
 
   private:

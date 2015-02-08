@@ -37,7 +37,6 @@ namespace mu {
   //
   // A .psi is the source waveform, precomputed to contain:
   // - the original waveform, reduced to a single channel
-  // - the finite difference between samples of the original waveform
   // - the period measured around each sample
 
   void PsiFileGenerator::analyzeFile(std::string wav_file_name, 
@@ -98,7 +97,7 @@ namespace mu {
       return;
     }
     fprintf(ofd, 
-            "# PSI v1.0, %f, \"%s\"\n", 
+            "# PSI v1.1, %f, \"%s\"\n", 
             estimated_period_, 
             wav_file_name_.c_str());
 
@@ -108,9 +107,8 @@ namespace mu {
 
     for (long int frame = 0; frame < n_frames; frame++) {
       fprintf(ofd, 
-              "%la, %la, %la\n",
+              "%f, %.4f\n",
               sample_buffer_[frame],
-              dsample_buffer_[frame],
               period_buffer_[frame]);
     }
     fprintf(stderr, 
@@ -236,7 +234,7 @@ void usage(int ac, char *av[]) {
  * 
  * ./psi_file_generator wav_file_name psi_file_name estimated_period
  * Create psi_file as a .csv file with:
- *   sample, dsample/dt, period
+ *   sample, period
  * for each sample.  (Warning: these files get large!)
  *
  * ./psi_file_generator wav_file_name - estimated_period

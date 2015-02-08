@@ -20,30 +20,52 @@
    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
    SOFTWARE.  
 
-   ================================================================ 
+   ================================================================
 */
 
-// File: mu_types.h
-// Defines the basic data types used throughout the mu system.
+// File: sound_library.h
+// Shared resource to map sound file names into stk::FileRead objects.
 
-#ifndef MU_TYPES_H
-#define MU_TYPES_H
+#ifndef MU_SOUND_LIBRARY_H
+#define MU_SOUND_LIBRARY_H
 
-#include <Stk.h>
-#include <limits.h>
-#include <map>
+#include <FileRead.h>
+#include <unordered_map>
 
 namespace mu {
 
-  class MuStream;               // resolve fwd reference
+  class SoundLibrary {
+  public:
 
-  typedef long int MuTick;
-  typedef double MuFloat;
-  typedef stk::StkFrames MuBuffer;
-  typedef std::vector<MuStream *> MuStreamVector;
-  typedef std::map<MuTick, MuFloat> MuBreakpoints;
+    typedef std::unordered_map<std::string, stk::FileRead *> Repository;
 
-  static const MuTick kUndefined = LONG_MIN;
+    SoundLibrary() {
+    }
+
+    ~SoundLibrary() {
+      for (Repository::const_iterator it = map_.begin(); it != map_.end(); ++it ) {
+        delete it->second;
+      }
+    }
+
+    stk::FileRead *lookup(std::string file_name) {
+      Repository::const_iterator got = map_.find(file_name);
+      if (got == map_.end()) {
+        // printf("reading '%s' from disk\n", file_name.c_str());
+        stk::FileRead *file_read = new stk::FileRead();
+        file_read->open(file_name);
+        map_[file_name] = file_read;
+        return file_read;
+      } else {
+        // printf("fetching '%s' from cache\n", file_name.c_str());
+        return got->second;
+      }
+    }
+
+  protected:
+    Repository map_;
+
+  };                            // class SoundLibrary
 
 }                               // namespace mu
 

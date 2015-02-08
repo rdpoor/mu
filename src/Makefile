@@ -19,14 +19,19 @@ SOURCES := \
 	mu_utils.cpp \
 	multi_source_stream.cpp \
 	null_stream.cpp \
+	piecewise_linear_stream.cpp \
 	player.cpp \
 	player_rt.cpp \
 	product_stream.cpp \
+	psi_stream.cpp \
+	psi_waveform.cpp \
 	random_select_stream.cpp \
 	resample_stream.cpp \
 	sequence_stream.cpp \
 	sine_stream.cpp \
 	single_source_stream.cpp \
+	sound_library.cpp \
+	step_stream.cpp \
 	sum_stream.cpp \
 	transport.cpp
 

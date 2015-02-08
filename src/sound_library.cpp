@@ -23,32 +23,8 @@
    ================================================================ 
 */
 
-// File: mu_types.h
-// Defines the basic data types used throughout the mu system.
-
-#ifndef MU_TYPES_H
-#define MU_TYPES_H
-
-#include <Stk.h>
-#include <limits.h>
-#include <map>
+#include "sound_library.h"
 
 namespace mu {
-
-  class MuStream;               // resolve fwd reference
-
-  typedef long int MuTick;
-  typedef double MuFloat;
-  typedef stk::StkFrames MuBuffer;
-  typedef std::vector<MuStream *> MuStreamVector;
-  typedef std::map<MuTick, MuFloat> MuBreakpoints;
-
-  static const MuTick kUndefined = LONG_MIN;
-
+  int dummy;                    // inhibit linker warning
 }                               // namespace mu
-
-#endif
-
-// Local Variables:
-// mode: c++
-// End:
