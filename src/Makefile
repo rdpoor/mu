@@ -14,6 +14,7 @@ SOURCES := \
 	identity_stream.cpp \
 	gain_stream.cpp \
 	loop_stream.cpp \
+	map_stream.cpp \
 	mu_sink.cpp \
 	mu_stream.cpp \
 	mu_utils.cpp \

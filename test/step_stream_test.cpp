@@ -80,11 +80,11 @@ TEST_F(StepStream, ThreeBreakpoints) {
   step_stream_->add_breakpoint(x1, y1);
   step_stream_->add_breakpoint(x2, y2);
 
-  printf("%s\n", step_stream_->inspect().c_str());
-
   ASSERT_TRUE(step_stream_->render(buffer_start, &buffer_));
 
 #if 0
+  printf("%s\n", step_stream_->inspect().c_str());
+
   int n_frames = buffer_.frames();
   for (int frame = 0; frame < n_frames; ++frame) {
     printf("%2d %lf\n", frame, buffer_(frame, 0));

@@ -10,6 +10,7 @@
 #include "gain_stream.h"
 #include "identity_stream.h"
 #include "loop_stream.h"
+#include "map_stream.h"
 #include "mu_sink.h"
 #include "mu_stream.h"
 #include "mu_types.h"
