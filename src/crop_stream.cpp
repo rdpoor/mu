@@ -88,7 +88,6 @@ namespace mu {
     *ss << "source_start() = " << source_start() << std::endl;
     inspect_indent(level, ss);
     *ss << "source_end() = " << source_end() << std::endl;
-    inspect_indent(level, ss); 
     SingleSourceStream::inspect_aux(level, ss);
   }
 

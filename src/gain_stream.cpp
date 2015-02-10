@@ -92,20 +92,15 @@ namespace mu {
     MuStream::inspect_aux(level, ss);
     inspect_indent(level, ss);
     *ss << "gain() = " << gain() << std::endl;
-    inspect_indent(level, ss); 
-    *ss << "signal_source()" << std::endl;
     if (signal_source()) {
+      inspect_indent(level, ss); 
+      *ss << "signal_source()" << std::endl;
       signal_source()->inspect_aux(level+1, ss);
-    } else {
-      inspect_indent(level, ss+1); 
-      *ss << "NULL" << std::endl;
     }
-    *ss << "gain_source()" << std::endl;
     if (gain_source()) {
+      inspect_indent(level, ss); 
+      *ss << "gain_source()" << std::endl;
       gain_source()->inspect_aux(level+1, ss);
-    } else {
-      inspect_indent(level, ss+1); 
-      *ss << "NULL" << std::endl;
     }
   }
 

@@ -82,44 +82,99 @@ namespace mu {
 
     // MuUtils::assert_empty(buffer);
 
+#if 0
     // check for format mismatch
     if (!verify_format(buffer)) {
       // printf("!"); fflush(stdout);
       return false;
     }
+#endif
 
-    MuTick file_end = file_read_->fileSize();
-    MuTick buffer_end = buffer_start + buffer->frames();
+    MuTick n_src_frames = file_read_->fileSize();
+    int n_src_channels = file_read_->channels();
+    MuTick file_end = n_src_frames;
+
+    MuTick n_dst_frames = buffer->frames();
+    int n_dst_channels = buffer->channels();
+    MuTick buffer_end = n_dst_frames + buffer_start;
 
     if ((buffer_end <= 0) || (buffer_start >= file_end)) {
       // Nothing to render
-      // printf("o"); fflush(stdout);
       return false;
+    }
 
-    } else if ((buffer_start >= 0) && (buffer_end <= file_end)) {
-      // Render directly into buffer
-      // printf("b"); fflush(stdout);
-      file_read_->read(*buffer, buffer_start);
-      return true;
+    if ((buffer_start >= 0) && (buffer_end <= file_end)) {
+      // Render complete buffer
+      if (n_src_channels == n_dst_channels) {
+        // common case can be rendered directly
+        file_read_->read(*buffer, buffer_start);
+        return true;
+
+      } else {
+        return copy_samples(buffer_start, buffer_end, buffer_start, buffer);
+      }
 
     } else {
-      // render partial buffer
+      // Render partial buffer
       MuTick lo = std::max((MuTick)0, buffer_start);
       MuTick hi = std::min(buffer_end, file_end);
 
-      // printf("%ld", hi-lo); fflush(stdout);
-      tmp_buffer_.resize(hi-lo, buffer->channels());
-      MuUtils::zero_buffer(&tmp_buffer_);
-      file_read_->read(tmp_buffer_, lo);
-
-      MuUtils::copy_buffer_subset(&tmp_buffer_, 
-                                  buffer,
-                                  lo-buffer_start,
-                                  hi-lo);
-      return true;
+      return copy_samples(lo, hi, buffer_start, buffer);
     }
   }
 
+  // Fetch frames (lo...hi] from sound file, copy them into buffer with
+  // appropriate offset.  Also handles mixing or spreading to match number of
+  // channels in buffer->channels();
+  bool FileReadStream::copy_samples(MuTick lo, MuTick hi, MuTick buffer_start, MuBuffer *buffer) {
+    MuTick n_frames = hi - lo;
+
+    if (n_frames <= 0) {
+      // zero length file?
+      return false;
+    }
+
+    int n_src_channels = file_read_->channels();
+    int n_dst_channels = buffer->channels();
+
+    // prepare to mix or spread samples
+    tmp_buffer_.resize(n_frames, n_src_channels);
+    MuUtils::zero_buffer(&tmp_buffer_);
+    file_read_->read(tmp_buffer_, lo);
+    
+    if ((n_src_channels == 1) && (n_dst_channels == 2)) {
+      // spread from one src to two dst
+      // TODO: optimize indexing
+      for (MuTick tick = lo; tick < hi; ++tick) {
+        MuFloat sample = tmp_buffer_(tick - lo, 0);
+        (* buffer)(tick - buffer_start, 0) = sample;
+        (* buffer)(tick - buffer_start, 1) = sample;
+      }
+      
+    } else if ((n_src_channels == 2) && (n_dst_channels == 1)) {
+      // mix two src to one dst
+      for (MuTick tick = lo; tick < hi; ++tick) {
+        MuFloat sample = (tmp_buffer_(tick - lo, 0) + tmp_buffer_(tick - lo, 1)) * 0.5;
+        (* buffer)(tick - buffer_start, 0) = sample;
+      }
+      
+    } else {
+      // combine all src and spread to all dst
+      for (MuTick tick = lo; tick < hi; ++tick) {
+        MuFloat sample = 0.0;
+        for (int channel = n_src_channels-1; channel >= 0; --channel) {
+          sample += tmp_buffer_(tick - lo, channel);
+        }
+        sample = sample / (double)n_src_channels;
+        for (int channel = n_dst_channels-1; channel >= 0; --channel) {
+          (* buffer)(tick - buffer_start, channel) = sample;
+        }
+      }
+    }
+    return true;
+    
+  }
+  
   void FileReadStream::inspect_aux(int level, std::stringstream *ss) {
     MuStream::inspect_aux(level, ss);
     inspect_indent(level, ss);

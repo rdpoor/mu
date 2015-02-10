@@ -53,6 +53,11 @@ namespace mu {
       file_read_ = FileReadStream::lookup(file_name_);
     }
 
+    // Return the number of channels in the sound file or 0 if not set.
+    int channel_count( void ) {
+      return (file_read_->isOpen()) ? file_read_->channels() : 0;
+    }
+
     // Return the duration of the sound file, or kUndefined if not set.
     MuTick duration( void ) {
       return (file_read_->isOpen()) ? file_read_->fileSize() : kUndefined;
@@ -73,6 +78,7 @@ namespace mu {
 
   private:
     bool verify_format(MuBuffer *buffer);
+    bool copy_samples(MuTick lo, MuTick hi, MuTick buffer_start, MuBuffer *buffer);
 
   };                            // class FileReadStream
 
