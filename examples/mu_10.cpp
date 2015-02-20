@@ -1,7 +1,6 @@
-// Demonstrate file_write_stream.
+// Demonstrate SequenceStream
 
 #include "mu.h"
-
 #include <string>
 #include <iostream>
 
@@ -28,11 +27,21 @@ int main() {
 
   mu::SequenceStream *sequence_stream = new mu::SequenceStream();
 
-  sequence_stream->add_source(file_read_stream->clone(), beat_to_tick(0.001), mu::MuUtils::db_to_ratio(-3.0));
-  sequence_stream->add_source(file_read_stream->clone(), beat_to_tick(1.0), mu::MuUtils::db_to_ratio(-3.0));
-  sequence_stream->add_source(file_read_stream->clone(), beat_to_tick(2.0), mu::MuUtils::db_to_ratio(-3.0));
-  sequence_stream->add_source(file_read_stream->clone(), beat_to_tick(3.0), mu::MuUtils::db_to_ratio(-3.0));
-  sequence_stream->add_source(file_read_stream->clone(), beat_to_tick(3.5), mu::MuUtils::db_to_ratio(-10.0));
+  sequence_stream->add_source(file_read_stream->clone(), 
+                              beat_to_tick(0.001), 
+                              mu::MuUtils::db_to_ratio(-3.0));
+  sequence_stream->add_source(file_read_stream->clone(), 
+                              beat_to_tick(1.0), 
+                              mu::MuUtils::db_to_ratio(-3.0));
+  sequence_stream->add_source(file_read_stream->clone(), 
+                              beat_to_tick(2.0), 
+                              mu::MuUtils::db_to_ratio(-3.0));
+  sequence_stream->add_source(file_read_stream->clone(), 
+                              beat_to_tick(3.0), 
+                              mu::MuUtils::db_to_ratio(-3.0));
+  sequence_stream->add_source(file_read_stream->clone(), 
+                              beat_to_tick(3.5), 
+                              mu::MuUtils::db_to_ratio(-10.0));
 
   mu::LoopStream *loop_stream = new mu::LoopStream();
   loop_stream->set_interval(beat_to_tick(4.0));

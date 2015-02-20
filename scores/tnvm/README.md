@@ -1,4 +1,38 @@
-== Music notes
+== Instruments 
+
+* drums
+** Kick
+* Snare Proxy ("pshhhhhht")
+** Tom Toms (with lots of reverb)
+** shaker 1
+** shaker 2
+* percussion / accents
+** cres/decres percussion
+** martian breedles
+** room tone
+* pitched
+** alto pluck
+** strums
+** fuzz
+** bass
+** vowcals
+** "something organ like"
+
+== Production
+* stereo spatialization
+* reverb(s)
+* sweepable filters
+* dynamics
+* splicers
+
+== File organization
+* One file per instrument class: inst_xxx.cpp
+* One *stream() per instrument
+* One file per instrument notes: xxx_notes.cpp
+* One file for instrument effects/production: xxx_fx.cpp
+* One file for effects automation: xxx_fxmoves.cpp
+
+== Music ideas
 
 Opening notes: F# B E C# unprocessed on uke, with a little "thump" and "swish"
 (also unprocessed). The thump and swish morph into the rhythm part, the pitched

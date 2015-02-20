@@ -7,6 +7,7 @@
 #include "dirac_stream.h"
 #include "file_read_stream.h"
 #include "file_write_stream.h"
+#include "fuzz_stream.h"
 #include "gain_stream.h"
 #include "identity_stream.h"
 #include "loop_stream.h"

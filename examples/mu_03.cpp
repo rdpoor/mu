@@ -1,10 +1,6 @@
 // Play a sound file
 
-#include "mu_types.h"
-#include "file_read_stream.h"
-#include "player_rt.h"
-#include "transport.h"
-
+#include "mu.h"
 #include <string>
 #include <iostream>
 #include <cmath>

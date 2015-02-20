@@ -11,6 +11,7 @@ SOURCES := \
 	dirac_stream.cpp \
 	file_read_stream.cpp \
 	file_write_stream.cpp \
+	fuzz_stream.cpp \
 	identity_stream.cpp \
 	gain_stream.cpp \
 	loop_stream.cpp \

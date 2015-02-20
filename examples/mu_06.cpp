@@ -1,7 +1,6 @@
-// A funny echo that repeats N times while changing rate, pitch and gain.
+// An "echo" that repeats N times while changing rate, pitch and gain.
 
 #include "mu.h"
-
 #include <string>
 #include <iostream>
 #include <cmath>
@@ -178,7 +177,14 @@ void wait_for_input() {
 
 #define EXAMPLE_DIRECTORY "/Users/r/Projects/Mu/examples/"
 
-static const mu::MuTick kTicsPerBeat = 22050;
+mu::MuFloat beats_per_minute() {
+  return 160.0;
+}
+
+mu::MuTick beat_to_tick(mu::MuFloat beat) {
+  mu::MuFloat tics_per_beat = 44100 * 60.0 / beats_per_minute();
+  return beat * tics_per_beat;
+}
 
 mu::MuStream *create_echo_plus(mu::MuStream *source,
                                double start_beat,
@@ -191,7 +197,7 @@ mu::MuStream *create_echo_plus(mu::MuStream *source,
                                double db_gain_end) {
   EchoPlus *echo_plus = new EchoPlus();
   echo_plus->set_source(source);
-  echo_plus->set_duration(duration * kTicsPerBeat);
+  echo_plus->set_duration(beat_to_tick(duration));
   echo_plus->set_repeat_count(repeat_count);
   echo_plus->set_warp(warp);
   echo_plus->set_pitch_start(pitch_start);
@@ -202,7 +208,7 @@ mu::MuStream *create_echo_plus(mu::MuStream *source,
 
   mu::DelayStream *delay_stream = new mu::DelayStream();
   delay_stream->set_source(echo_plus->sink());
-  delay_stream->set_delay(start_beat * kTicsPerBeat);
+  delay_stream->set_delay(beat_to_tick(start_beat));
 
   // std::cout << delay_stream->inspect();
 
@@ -220,9 +226,9 @@ int main() {
   // file_read_stream->set_file_name(EXAMPLE_DIRECTORY "purple.wav");
 
   loop_stream->set_source(main_mix);
-  loop_stream->set_interval(kTicsPerBeat * 35);
+  loop_stream->set_interval(beat_to_tick(35));
   loop_stream->set_source_start(0);
-  loop_stream->set_source_end(kTicsPerBeat * 35);
+  loop_stream->set_source_end(beat_to_tick(35));
 
   transport.set_source(loop_stream);
   transport.set_player(&player_rt);
@@ -230,16 +236,23 @@ int main() {
   int rpts = 20;
 
   // repeat rpts times in 5 beats
-  main_mix->add_source(create_echo_plus(file_read_stream, 0, 5, rpts, 0.0, 0.0, 0.0, -3, -3));
+  main_mix->add_source(create_echo_plus(file_read_stream, 
+                                        0, 5, rpts, 0.0, 0.0, 0.0, -3, -3));
   // arpeggio from 1 octave down to one octave up and back
-  main_mix->add_source(create_echo_plus(file_read_stream, 5, 5, rpts, 0.0, -12.0, 12.0, -3, -3));
-  main_mix->add_source(create_echo_plus(file_read_stream, 10, 5, rpts, 0.0, 12.0, 0.0, -3, -3));
+  main_mix->add_source(create_echo_plus(file_read_stream, 
+                                        5, 5, rpts, 0.0, -12.0, 12.0, -3, -3));
+  main_mix->add_source(create_echo_plus(file_read_stream, 
+                                        10, 5, rpts, 0.0, 12.0, 0.0, -3, -3));
   // decrescendo from -3db to -30db and back
-  main_mix->add_source(create_echo_plus(file_read_stream, 15, 5, rpts, 0.0, 0.0, 0.0, -3, -30));
-  main_mix->add_source(create_echo_plus(file_read_stream, 20, 5, rpts, 0.0, 0.0, 0.0, -30, -3));
+  main_mix->add_source(create_echo_plus(file_read_stream, 
+                                        15, 5, rpts, 0.0, 0.0, 0.0, -3, -30));
+  main_mix->add_source(create_echo_plus(file_read_stream, 
+                                        20, 5, rpts, 0.0, 0.0, 0.0, -30, -3));
   // accelerando and back...
-  main_mix->add_source(create_echo_plus(file_read_stream, 25, 5, rpts, 0.3, 0.0, 0.0, -3, -3));
-  main_mix->add_source(create_echo_plus(file_read_stream, 30, 5, rpts, -0.25, 0.0, 0.0, -3, -3));
+  main_mix->add_source(create_echo_plus(file_read_stream, 
+                                        25, 5, rpts, 0.3, 0.0, 0.0, -3, -3));
+  main_mix->add_source(create_echo_plus(file_read_stream, 
+                                        30, 5, rpts, -0.25, 0.0, 0.0, -3, -3));
 
   transport.run();
   wait_for_input();

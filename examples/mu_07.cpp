@@ -1,7 +1,6 @@
 // Mostly test out LoopStream with self-overlapping source
 
 #include "mu.h"
-
 #include <string>
 #include <iostream>
 #include <cmath>

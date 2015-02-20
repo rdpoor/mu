@@ -2,7 +2,6 @@
 // identical results to mu_07.
 
 #include "mu.h"
-
 #include <string>
 #include <iostream>
 #include <cmath>

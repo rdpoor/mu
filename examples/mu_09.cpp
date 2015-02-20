@@ -1,7 +1,6 @@
 // Demonstrate file_write_stream.
 
 #include "mu.h"
-
 #include <string>
 #include <iostream>
 #include <cmath>

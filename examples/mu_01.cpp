@@ -1,10 +1,6 @@
 // Play a sine tone.
 
-#include "mu_types.h"
-#include "sine_stream.h"
-#include "player_rt.h"
-#include "transport.h"
-
+#include "mu.h"
 #include <string>
 #include <iostream>
 

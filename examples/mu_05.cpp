@@ -1,18 +1,6 @@
-// Play a thump repeatedly while shifting down in pitch
+// Play a thump repeatedly while shifting pitch
 
-#include "constant_stream.h"
-#include "crop_stream.h"
-#include "delay_stream.h"
-#include "file_read_stream.h"
-#include "identity_stream.h"
-#include "loop_stream.h"
-#include "mu_types.h"
-#include "player_rt.h"
-#include "product_stream.h"
-#include "resample_stream.h"
-#include "sum_stream.h"
-#include "transport.h"
-
+#include "mu.h"
 #include <string>
 #include <iostream>
 #include <cmath>
@@ -61,28 +49,6 @@ PitchShifter::PitchShifter() {
   resample_stream_->set_timing_source(product_stream_);
 }
 
-// ================================================================
-// 
-class Sequencer {
-public:
-  Sequencer() {
-    sum_stream_ = new mu::SumStream();
-  }
-
-  void add_source(mu::MuStream *stream, mu::MuTick delay) {
-    mu::DelayStream *delay_stream = new mu::DelayStream();
-    delay_stream->set_source(stream);
-    delay_stream->set_delay(delay);
-    sum_stream_->add_source(delay_stream);
-  }
-  mu::MuStream *stream() {
-    return sum_stream_;
-  }
-protected:
-  mu::SumStream *sum_stream_;
-};
-
-
 void wait_for_input() {
   std::cout << "Hit return to quit: ";
   std::string s;
@@ -97,7 +63,7 @@ int main() {
   mu::FileReadStream *file_read_stream = new mu::FileReadStream();
   mu::CropStream *crop_stream = new mu::CropStream();
   mu::LoopStream *loop_stream = new mu::LoopStream();
-  Sequencer sequencer;
+  mu::SequenceStream *sequence_stream = new mu::SequenceStream();
 
   file_read_stream->set_file_name(EXAMPLE_DIRECTORY "thump.wav");
   mu::MuTick n_frames = file_read_stream->duration();
@@ -118,15 +84,16 @@ int main() {
     mu::CropStream *c2 = crop_stream->clone();
     printf("=== crop_stream_copy = %p, crop_stream_copy->source() = %p\n", c2, c2->source());
     pitch_shifter->set_source(c2);
-    sequencer.add_source(pitch_shifter->stream(), i * ticks_per_beat);
+    sequence_stream->add_source(pitch_shifter->stream(),
+                                i * ticks_per_beat,
+                                1.0);
   }
     
 
   loop_stream->set_source_start(0);
   loop_stream->set_source_end(12 * ticks_per_beat);
   loop_stream->set_interval(12 * ticks_per_beat);
-
-  loop_stream->set_source(sequencer.stream());
+  loop_stream->set_source(sequence_stream);
 
   std::cout << loop_stream->inspect() << std::endl;
 
