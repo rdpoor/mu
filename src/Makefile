@@ -24,6 +24,7 @@ SOURCES := \
 	piecewise_linear_stream.cpp \
 	player.cpp \
 	player_rt.cpp \
+	pluck_inst.cpp \
 	product_stream.cpp \
 	psi_stream.cpp \
 	psi_waveform.cpp \
@@ -41,6 +42,7 @@ SOURCES := \
 # copied to /usr/include directory
 INCLUDES := \
 	mu.h \
+	mu_inst.h \
 	mu_types.h
 
 OBJECTS := $(patsubst %.cpp,%.o,$(SOURCES))

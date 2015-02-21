@@ -174,21 +174,6 @@ protected:
 };
 
 // ================================================================
-class Metronome {
-public:
-  Metronome() {
-    thump_ = new mu::FileReadStream();
-    thump_->set_file_name(THUMPS_AND_SCRATCHES_DIRECTORY "s12.wav");
-  }
-  mu::MuStream *stream() {
-    return thump_;
-  }
-protected:
-  mu::FileReadStream *thump_;
-};                              // class Metronome
-  
-//================================================================
-// ================================================================
 class RoomTone {
 public:
   RoomTone() {
@@ -210,158 +195,30 @@ protected:
 };                              // class RoomTone
 
 // ================================================================
-// pluck, hammer on / off, mute a note.  The "note" is a stream, but
-// usually a plucked string sound file.  Note that a final dampen()
-// must be called to flush the final note.
-class PString {
-public:
-  PString() {
-    sequence_stream_ = new mu::SequenceStream();
-    prev_note_ = NULL;
-  }
-  ~PString() {
-    delete sequence_stream_;
-    if (prev_note_ != NULL) delete prev_note_;
-  }
-
-  // start playing a note
-  void pluck(mu::MuStream *source, mu::MuTick start, mu::MuFloat gain = 1.0) {
-    mu::MuTick elapsed = start - prev_start_;
-    flush_prev(elapsed);
-    prev_note_ = source;
-    prev_start_ = start;
-    prev_gain_ = gain;
-  }
-
-  // truncate the previous note, start the new note 'd' seconds after its
-  // start, where 'd' is the time elapsed between previous note and this.
-  void hammer(mu::MuStream *source, mu::MuTick start, mu::MuFloat gain = 1.0) {
-    if (prev_note_ == NULL) {
-      pluck(source, start, gain);
-    } else {
-      mu::MuTick elapsed = start - prev_start_;
-      mu::CropStream *c = new mu::CropStream();
-      c->set_source(source);
-      c->set_source_start(elapsed);
-      flush_prev(elapsed);
-      prev_note_ = c;
-      // prev_start_ = prev_start_;
-      prev_gain_ = gain;
-    }
-  }
-
-  // stop playing the current note.  In actuality, this emits the previous
-  // note, and you must call dampen() to cause the final note to be emitted.
-  void dampen(mu::MuTick start) {
-    mu::MuTick elapsed = start - prev_start_;
-    flush_prev(elapsed);
-  }
-
-  // return the stream with the collection of plucked, hammered and dampened
-  // notes.
-  mu::MuStream *stream() {
-    return sequence_stream_;
-  }
-protected:
-  mu::MuStream *prev_note_;
-  mu::MuTick prev_start_;
-  mu::MuFloat prev_gain_;
-  mu::SequenceStream *sequence_stream_;
-  void flush_prev(mu::MuTick start) {
-    if (prev_note_ != NULL) {
-      mu::CropStream *c = new mu::CropStream();
-      c->set_source(prev_note_);
-      c->set_source_end(start);
-      sequence_stream_->add_source(c, prev_start_, prev_gain_);
-      prev_note_ = NULL;
-    }
-  }
-};
-
-// ================================================================
 class Plucker {
 public:
   Plucker() {
-    pstring_ = new PString();
+    pluck_inst_ = new mu::PluckInst();
   };
   ~Plucker() {};
   void pluck(mu::MuFloat t, 
              std::string name, 
-             mu::MuFloat gain) {
-    pstring_->pluck(frs(name), beat_to_tick(t), gain);
+             mu::MuFloat gain_db) {
+    pluck_inst_->pluck(beat_to_tick(t), frs(name), gain_db);
   }
   void hammer(mu::MuFloat t, 
               std::string name, 
-              mu::MuFloat gain) {
-    pstring_->hammer(frs(name), beat_to_tick(t), gain);
+              mu::MuFloat gain_db) {
+    pluck_inst_->hammer(beat_to_tick(t), frs(name), gain_db);
   }
   void dampen(mu::MuFloat t) {
-    pstring_->dampen(beat_to_tick(t));
+    pluck_inst_->dampen(beat_to_tick(t));
   }
   mu::MuStream *stream() {
-    return pstring_->stream();
+    return pluck_inst_->stream();
   }
 protected:
-  PString *pstring_;
-
-  mu::FileReadStream *frs(std::string name) {
-    mu::FileReadStream *s = new mu::FileReadStream();
-    s->set_file_name(PLUCKED_NOTE_DIRECTORY + name);
-    return s;
-  }
-
-};
-
-// ================================================================
-class Plucks2 {
-public:
-  mu::MuStream *setup() {
-    PString *p = new PString();
-    p->pluck(frs("67.wav"), beat_to_tick(0.00), 0.44);
-    p->pluck(frs("67.wav"), beat_to_tick(0.75), 0.44);
-    p->pluck(frs("72.wav"), beat_to_tick(1.50), 0.44);
-    p->hammer(frs("74.wav"), beat_to_tick(1.65), 0.44);
-    p->pluck(frs("72.wav"), beat_to_tick(2.50), 0.44);
-    p->pluck(frs("72.wav"), beat_to_tick(3.00), 0.44);
-    p->pluck(frs("72.wav"), beat_to_tick(4.00), 0.44);
-    p->hammer(frs("74.wav"), beat_to_tick(4.15), 0.44);
-    p->pluck(frs("72.wav"), beat_to_tick(4.75), 0.44);
-    p->pluck(frs("74.wav"), beat_to_tick(5.50), 0.44);
-    p->pluck(frs("74.wav"), beat_to_tick(6.50), 0.44);
-    p->pluck(frs("74.wav"), beat_to_tick(7.00), 0.44);
-    p->dampen(beat_to_tick(8.00));
-
-    PString *q = new PString();
-    q->pluck(frs("60.wav"), beat_to_tick(3.50), 0.44);
-    q->dampen(beat_to_tick(5.50));
-
-    mu::SumStream *sstream = new mu::SumStream();
-    sstream->add_source(p->stream());
-    sstream->add_source(q->stream());
-
-    return sstream;
-  }
-
-  mu::FileReadStream *frs(std::string name) {
-    mu::FileReadStream *s = new mu::FileReadStream();
-    s->set_file_name(PLUCKED_NOTE_DIRECTORY + name);
-    return s;
-  }
-
-};
-
-class Plucks3 {
-public:
-  mu::MuStream *setup() {
-    PString *p = new PString();
-    p->pluck(frs("31.wav"), beat_to_tick(0.00), 0.5);
-    p->pluck(frs("36.wav"), beat_to_tick(1.50), 0.5);
-    p->pluck(frs("29.wav"), beat_to_tick(4.00), 0.5);
-    p->pluck(frs("38.wav"), beat_to_tick(5.50), 0.5);
-    p->dampen(beat_to_tick(8.00));
-
-    return p->stream();
-  }
+  mu::PluckInst *pluck_inst_;
 
   mu::FileReadStream *frs(std::string name) {
     mu::FileReadStream *s = new mu::FileReadStream();
@@ -376,7 +233,6 @@ public:
 int main() {
   mu::PlayerRt player_rt;
   mu::Transport transport;
-  Metronome *metronome = new Metronome();
   Basic *basic = new Basic();
   Swish *swish = new Swish();
   RoomTone *room_tone = new RoomTone();
@@ -392,8 +248,8 @@ int main() {
 #define CLICK1_GAIN 0.30
 #define CLICK2_GAIN 0.30
 #define BUMP_GAIN 0.30
-#define ALTO_GAIN 0.25
-#define BASS_GAIN 0.35
+#define ALTO_GAIN_DB mu::MuUtils::ratio_to_db(0.25)
+#define BASS_GAIN_DB mu::MuUtils::ratio_to_db(0.35)
 
   basic->add(0.00, "thump.wav", KICK_GAIN, -24.0);
   basic->add(1.50, "thump.wav", KICK_GAIN, -24.0);
@@ -447,31 +303,30 @@ int main() {
   swish->add(7.50, "s14.wav", 0.67, BUMP_GAIN);
 
   // alto part
-  plucker_alto->pluck(0.00, "67.wav", ALTO_GAIN);
-  plucker_alto->pluck(0.75, "67.wav", ALTO_GAIN);
-  plucker_alto->pluck(1.50, "72.wav", ALTO_GAIN);
-  plucker_alto->hammer(1.65, "74.wav", ALTO_GAIN);
-  plucker_alto->pluck(2.50, "72.wav", ALTO_GAIN);
-  plucker_alto->pluck(3.00, "72.wav", ALTO_GAIN);
-  plucker_alto->pluck(4.00, "72.wav", ALTO_GAIN);
-  plucker_alto->hammer(4.15, "74.wav", ALTO_GAIN);
-  plucker_alto->pluck(4.75, "72.wav", ALTO_GAIN);
-  plucker_alto->pluck(5.50, "74.wav", ALTO_GAIN);
-  plucker_alto->pluck(6.50, "74.wav", ALTO_GAIN);
-  plucker_alto->pluck(7.00, "74.wav", ALTO_GAIN);
+  plucker_alto->pluck(0.00, "67.wav", ALTO_GAIN_DB);
+  plucker_alto->pluck(0.75, "67.wav", ALTO_GAIN_DB);
+  plucker_alto->pluck(1.50, "72.wav", ALTO_GAIN_DB);
+  plucker_alto->hammer(1.65, "74.wav", ALTO_GAIN_DB);
+  plucker_alto->pluck(2.50, "72.wav", ALTO_GAIN_DB);
+  plucker_alto->pluck(3.00, "72.wav", ALTO_GAIN_DB);
+  plucker_alto->pluck(4.00, "72.wav", ALTO_GAIN_DB);
+  plucker_alto->hammer(4.15, "74.wav", ALTO_GAIN_DB);
+  plucker_alto->pluck(4.75, "72.wav", ALTO_GAIN_DB);
+  plucker_alto->pluck(5.50, "74.wav", ALTO_GAIN_DB);
+  plucker_alto->pluck(6.50, "74.wav", ALTO_GAIN_DB);
+  plucker_alto->pluck(7.00, "74.wav", ALTO_GAIN_DB);
   plucker_alto->dampen(8.00);
 
-  plucker_alto2->pluck(3.50, "60.wav", ALTO_GAIN);
+  plucker_alto2->pluck(3.50, "60.wav", ALTO_GAIN_DB);
   plucker_alto2->dampen(5.50);
 
   // bass part
-  plucker_bass->pluck(0.00, "31.wav", BASS_GAIN);
-  plucker_bass->pluck(1.50, "36.wav", BASS_GAIN);
-  plucker_bass->pluck(4.00, "29.wav", BASS_GAIN);
-  plucker_bass->pluck(5.50, "38.wav", BASS_GAIN);
+  plucker_bass->pluck(0.00, "31.wav", BASS_GAIN_DB);
+  plucker_bass->pluck(1.50, "36.wav", BASS_GAIN_DB);
+  plucker_bass->pluck(4.00, "29.wav", BASS_GAIN_DB);
+  plucker_bass->pluck(5.50, "38.wav", BASS_GAIN_DB);
   plucker_bass->dampen(8.00);
 
-  // mix->add_source(metronome->stream());
   mix->add_source(basic->stream());
   mix->add_source(swish->stream());
   mix->add_source(room_tone->stream());

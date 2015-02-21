@@ -21,6 +21,7 @@
 #include "piecewise_linear_stream.h"
 #include "player.h"
 #include "player_rt.h"
+#include "pluck_inst.h"
 #include "product_stream.h"
 #include "psi_stream.h"
 #include "random_select_stream.h"
