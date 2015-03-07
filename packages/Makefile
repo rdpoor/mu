@@ -49,7 +49,9 @@ GMOCK-DISTRO := https://googlemock.googlecode.com/files/gmock-1.7.0.zip
 # ================================================================
 # standard targets
 
-all:  wget gsl stk fftw hiredis jansson gmock
+all:  wget gsl stk fftw hiredis jansson
+
+# all:  wget gsl stk fftw hiredis jansson gmock
 
 # remove build artifacts, but keep tarballs
 clean:
@@ -101,6 +103,11 @@ $(GSL-TARBALL) : | wget
 
 # ================================================================
 # stk: synthesis tool kit
+# 
+# BUG: As written, fails with:
+# install -m 644 libstk.dylib.4.4.4 /Users/r/Projects/Mu/usr/lib
+# install: libstk.dylib.4.4.4: No such file or directory
+# (should be install -m libstk.4.4.4.dylib /Users/r/Projects/Mu/usr/lib)
 
 stk : 	$(STK-TARGET)
 
@@ -108,14 +115,13 @@ stk : 	$(STK-TARGET)
 # monkey patch the Makefile after creating it to create an absolute path in the dylib
 $(STK-TARGET) : $(STK-SOURCES) | $(MU_ROOT)
 	(cd $(<) && ./configure --prefix=$(MU_ROOT) --enable-debug)
-	(cd $(STK-SOURCES)/src && cp -p Makefile Makefile.orig && sed -f ../../patch-stk-src-makefile.sed Makefile.orig > Makefile )
+	# (cd $(STK-SOURCES)/src && cp -p Makefile Makefile.orig && sed -f ../../patch-stk-src-makefile.sed Makefile.orig > Makefile )
 	(cd $(<) && make && make install && make clean && touch -c $(STK-TARGET))
 
 # monkey patch configure.ac to get the right name in the .dylib file
 $(STK-SOURCES) : $(STK-TARBALL)
 	$(TAR) xf $(STK-TARBALL)
-	cd $(STK-SOURCES) && cp -p configure.ac configure.ac.orig && sed -f ../patch-stk-configure.sed configure.ac.orig > configure.ac
-	cd $(STK-SOURCES) && autoconf
+	# cd $(STK-SOURCES) && cp -p configure.ac configure.ac.orig && sed -f ../patch-stk-configure.sed configure.ac.orig > configure.ac
 
 $(STK-TARBALL) : | wget
 	wget -O $(STK-TARBALL) $(STK-DISTRO)
@@ -185,6 +191,9 @@ $(CMAKE-TARBALL) : | wget
 # ================================================================
 # GMOCK Google Test unit test framework
 
+# BUG: Fails as written with 
+# clang: error: no such file or directory: '/Users/r/Projects/Mu/Packages/gtest-1.7.0/src/gtest-all.cc'
+#
 # Slightly nonstandard.  Ends up creating:
 #   $(MU_ROOT)/lib/libgmock.a
 #   $(MU_ROOT)/lib/gmock_main.a

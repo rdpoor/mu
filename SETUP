@@ -7,7 +7,7 @@ export SANDBOX_NAME='Mu'
 export MU_ROOT=/Users/r/Projects/Mu/usr
 
 # keep GTEST in the packages dir to avoid potential name clashses
-export GTEST_DIR=/Users/r/Projects/Mu/packages/gtest-1.7.0
+export GTEST_DIR=/Users/r/Projects/Mu/Packages/gtest-1.7.0
 # ================================================================
 # set the paths
 export PATH=${MU_ROOT}/bin:${PATH}
