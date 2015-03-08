@@ -15,7 +15,7 @@ TARGETS := $(patsubst %.cpp, %, $(SOURCES))
 OBJECTS := $(patsubst %.cpp, %.o, $(SOURCES))
 
 CPPFLAGS += -isystem $(MU_ROOT)/include
-CXXFLAGS += -g -Wall -Wextra -pthread
+CXXFLAGS += -g -Wall -Wextra -pthread -std=c++11
 IFLAGS   += -I$(MU_ROOT)/include/mu -I$(MU_ROOT)/include/stk 
 LFLAGS   += -L$(MU_ROOT)/lib
 

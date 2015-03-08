@@ -5,9 +5,9 @@ TARGETS := $(patsubst %.cpp,%,$(SOURCES))
 
 CC       = g++
 ifdef MU_DEBUG
-CFLAGS   = -O0 -g -Wall
+CFLAGS   = -O0 -g -Wall -std=c++11
 else
-CFLAGS   = -O3 -Wall
+CFLAGS   = -O3 -Wall -std=c++11
 endif
 
 DEFS     = 

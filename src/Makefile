@@ -16,8 +16,10 @@ SOURCES := \
 	gain_stream.cpp \
 	loop_stream.cpp \
 	map_stream.cpp \
+	mu_scheduler.cpp \
 	mu_sink.cpp \
 	mu_stream.cpp \
+	mu_timed_event.cpp \
 	mu_utils.cpp \
 	multi_source_stream.cpp \
 	null_stream.cpp \
@@ -30,6 +32,7 @@ SOURCES := \
 	psi_waveform.cpp \
 	random_select_stream.cpp \
 	resample_stream.cpp \
+	scheduled_stream.cpp \
 	sequence_stream.cpp \
 	sine_stream.cpp \
 	single_source_stream.cpp \

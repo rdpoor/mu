@@ -49,9 +49,7 @@ GMOCK-DISTRO := https://googlemock.googlecode.com/files/gmock-1.7.0.zip
 # ================================================================
 # standard targets
 
-all:  wget gsl stk fftw hiredis jansson
-
-# all:  wget gsl stk fftw hiredis jansson gmock
+all:  wget gsl stk fftw hiredis jansson gmock
 
 # remove build artifacts, but keep tarballs
 clean:
@@ -191,9 +189,6 @@ $(CMAKE-TARBALL) : | wget
 # ================================================================
 # GMOCK Google Test unit test framework
 
-# BUG: Fails as written with 
-# clang: error: no such file or directory: '/Users/r/Projects/Mu/Packages/gtest-1.7.0/src/gtest-all.cc'
-#
 # Slightly nonstandard.  Ends up creating:
 #   $(MU_ROOT)/lib/libgmock.a
 #   $(MU_ROOT)/lib/gmock_main.a
@@ -226,18 +221,4 @@ $(GMOCK-MAIN-TARGET) : $(GMOCK-SOURCES) | $(MU_ROOT)
 	g++ -isystem $(GTEST_DIR)/include -I$(GTEST_DIR) -isystem $(GMOCK_DIR)/include -I$(GMOCK_DIR) \
 		-pthread -c $(GMOCK_DIR)/src/gmock_main.cc -o /tmp/gmock_main.o
 	ar -rv $@ /tmp/gmock_main.o
-
-# ================================================================
-# GTEST Google Test unit test framework
-
-gtest : 	$(GTEST-TARGET)
-
-$(GTEST-TARGET) : $(GTEST-SOURCES) | $(MU_ROOT)
-	(cd $< && g++ -isystem $(GTEST_DIR)/include -I$(GTEST_DIR) -pthread -c $(GTEST_DIR)/src/gtest-all.cc && ar -rv libgtest.a gtest-all.o)
-
-$(GTEST-SOURCES) : $(GTEST-TARBALL)
-	$(TAR) xf $(GTEST-TARBALL)
-
-$(GTEST-TARBALL) : | wget
-	wget -O $(GTEST-TARBALL) $(GTEST-DISTRO)
 

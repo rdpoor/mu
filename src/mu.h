@@ -26,6 +26,7 @@
 #include "psi_stream.h"
 #include "random_select_stream.h"
 #include "resample_stream.h"
+#include "scheduled_stream.h"
 #include "sequence_stream.h"
 #include "sine_stream.h"
 #include "single_source_stream.h"
