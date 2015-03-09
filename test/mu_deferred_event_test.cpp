@@ -19,37 +19,53 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
    SOFTWARE.  
-
-   ================================================================ 
+   ================================================================
 */
 
-#include "mu_scheduler.h"
-#include <algorithm>
+// File: mu_deferred_event_test.cpp
+// Unit tests for MuDeferredEvent
 
-namespace mu {
+#include "gtest/gtest.h"
+#include "mu_types.h"
+#include "mu_deferred_event.h"
 
-  bool deferredEventComparison(MuDeferredEvent *de0, MuDeferredEvent *de1) {
-    return de0->time() > de1->time();
-  }
+TEST(MuDeferredEvent, Constructor) {
+  mu::MuDeferredEvent de;
 
-  MuScheduler::~MuScheduler() {
-    // printf("~MuScheduler()\n");
-  }
+  ASSERT_DOUBLE_EQ(mu::kUndefined, de.time());
+  // ASSERT_EQ(NULL, de.action());
+}
 
-  void MuScheduler::schedule_event(MuTick time, DeferredAction action) {
-    MuDeferredEvent *deferred_event = new MuDeferredEvent();
-    deferred_event->set_time(time);
-    deferred_event->set_action(action);
-    std::vector<MuDeferredEvent *>::iterator low;
+TEST(MuDeferredEvent, NullCall) {
+  mu::MuDeferredEvent de;
 
-    mutex_.lock();
-    low = std::lower_bound(queue_.begin(), 
-			   queue_.end(), 
-			   deferred_event, 
-			   deferredEventComparison);
-    queue_.insert(low, deferred_event);
-    mutex_.unlock();
-  }
-    
+  ASSERT_NO_THROW(de.call());
+}
 
-}                               // namespace mu
+TEST(MuDeferredEvent, SimpleCall) {
+  mu::MuDeferredEvent de;
+  int captured = 0;
+
+  de.set_action([&]() { captured = 1; });
+  ASSERT_EQ(0, captured);
+  de.call();
+  ASSERT_EQ(1, captured);
+}
+
+class Bloop {
+public:
+  Bloop() : value_(0) {}
+  int value() { return value_; }
+  void set_value(int value) { value_ = value; }
+protected:
+  int value_;
+};
+
+TEST(MuDeferredEvent, MethodCall) {
+  mu::MuDeferredEvent de;
+  Bloop bloop;
+  de.set_action([&]() { bloop.set_value(22); });
+  ASSERT_EQ(0, bloop.value());
+  de.call();
+  ASSERT_EQ(22, bloop.value());
+}

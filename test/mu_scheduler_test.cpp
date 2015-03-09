@@ -27,7 +27,7 @@
 
 #include "gtest/gtest.h"
 #include "mu_scheduler.h"
-#include "mu_timed_event.h"
+#include "mu_deferred_event.h"
 #include "mu_types.h"
 
 TEST(MuScheduler, Constructor) {
@@ -38,20 +38,14 @@ TEST(MuScheduler, Constructor) {
 
 TEST(MuScheduler, ScheduleEvent) {
   mu::MuScheduler s;
-  mu::MuTimedEvent *te = new mu::MuTimedEvent();
-
-  te->set_time(0);
-  s.schedule_event(te);
+  s.schedule_event(0, NULL);
 
   ASSERT_EQ(1, s.event_count());
 }
   
 TEST(MuScheduler, ClearAllEvents) {
   mu::MuScheduler s;
-  mu::MuTimedEvent *te = new mu::MuTimedEvent();
-
-  te->set_time(0);
-  s.schedule_event(te);
+  s.schedule_event(0, NULL);
 
   ASSERT_EQ(1, s.event_count());
   s.clear_all_events();
@@ -68,31 +62,17 @@ TEST(MuScheduler, NextEvent1) {
   
 TEST(MuScheduler, NextEvent2) {
   mu::MuScheduler s;
-  mu::MuTimedEvent *te1 = new mu::MuTimedEvent();
-  mu::MuTimedEvent *te2 = new mu::MuTimedEvent();
+  s.schedule_event(1, NULL);
+  s.schedule_event(2, NULL);
 
-  te1->set_time(1);
-  te2->set_time(2);
-
-  s.schedule_event(te1);
-  s.schedule_event(te2);
-
-  ASSERT_EQ(te1, s.next_event());
   ASSERT_EQ(1, s.next_event_time());
 }
   
 TEST(MuScheduler, NextEvent3) {
   mu::MuScheduler s;
-  mu::MuTimedEvent *te1 = new mu::MuTimedEvent();
-  mu::MuTimedEvent *te2 = new mu::MuTimedEvent();
+  s.schedule_event(2, NULL);
+  s.schedule_event(1, NULL);
 
-  te1->set_time(1);
-  te2->set_time(2);
-
-  s.schedule_event(te2);
-  s.schedule_event(te1);
-
-  ASSERT_EQ(te1, s.next_event());
   ASSERT_EQ(1, s.next_event_time());
 }
   
@@ -110,19 +90,15 @@ class Stepper {
 public:
   void step(mu::MuScheduler *s) {
     ASSERT_EQ(0, s->event_count());
-    ASSERT_EQ((mu::MuTimedEvent *)NULL, s->next_event());
-    ASSERT_NE((mu::MuTimedEvent *)NULL, s->current_event());
+    ASSERT_EQ((mu::MuDeferredEvent *)NULL, s->next_event());
+    ASSERT_NE((mu::MuDeferredEvent *)NULL, s->current_event());
     ASSERT_EQ(1, s->current_event_time());
   }
 };
 
 TEST(MuScheduler, Step3) {
   mu::MuScheduler s;
-  mu::MuTimedEvent *te = new mu::MuTimedEvent();
   Stepper stepper;
-  te->set_time(1);
-  te->set_action([&]() { stepper.step(&s); });
-
-  s.schedule_event(te);
+  s.schedule_event(1, [&]() { stepper.step(&s); });
   ASSERT_EQ(true, s.step());
 }

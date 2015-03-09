@@ -23,33 +23,45 @@
    ================================================================ 
 */
 
-#include "mu_scheduler.h"
-#include <algorithm>
+// File: mu_deferred_event.h
+//
+// MuTimedEvent encapsulates a deferred action to be performed at a
+// specific time.
+
+#ifndef MU_DEFERRED_EVENT_H
+#define MU_DEFERRED_EVENT_H
+
+#include "mu_types.h"
 
 namespace mu {
 
-  bool deferredEventComparison(MuDeferredEvent *de0, MuDeferredEvent *de1) {
-    return de0->time() > de1->time();
-  }
+  typedef std::function<void ( void )> DeferredAction;
 
-  MuScheduler::~MuScheduler() {
-    // printf("~MuScheduler()\n");
-  }
+  class MuDeferredEvent {
 
-  void MuScheduler::schedule_event(MuTick time, DeferredAction action) {
-    MuDeferredEvent *deferred_event = new MuDeferredEvent();
-    deferred_event->set_time(time);
-    deferred_event->set_action(action);
-    std::vector<MuDeferredEvent *>::iterator low;
+  public:
+    MuDeferredEvent( void ) : time_(kUndefined), action_(NULL) {}
 
-    mutex_.lock();
-    low = std::lower_bound(queue_.begin(), 
-			   queue_.end(), 
-			   deferred_event, 
-			   deferredEventComparison);
-    queue_.insert(low, deferred_event);
-    mutex_.unlock();
-  }
-    
+    MuTick time() { return time_; }
+    void set_time(MuTick time) { time_ = time; }
+
+    DeferredAction action( void ) { return action_; }
+    void set_action(DeferredAction action) { action_ = action; }
+
+    // perform the deferred action now
+    void call() {
+      if (action_) action_();
+    }
+
+  protected:
+    MuTick time_;
+    DeferredAction action_;
+  };                            // class MuEvent
 
 }                               // namespace mu
+
+#endif
+
+// Local Variables:
+// mode: c++
+// End:

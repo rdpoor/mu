@@ -16,10 +16,10 @@ SOURCES := \
 	gain_stream.cpp \
 	loop_stream.cpp \
 	map_stream.cpp \
+	mu_deferred_event.cpp \
 	mu_scheduler.cpp \
 	mu_sink.cpp \
 	mu_stream.cpp \
-	mu_timed_event.cpp \
 	mu_utils.cpp \
 	multi_source_stream.cpp \
 	null_stream.cpp \

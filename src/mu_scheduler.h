@@ -25,13 +25,13 @@
 
 // File: mu_scheduler.h
 //
-// MuScheduler holds MuTimedEvent objects and calls their underlying
+// MuScheduler holds MuDeferredEvent objects and calls their underlying
 // actions at the appropriate time.
 
 #ifndef MU_SCHEDULER_H
 #define MU_SCHEDULER_H
 
-#include "mu_timed_event.h"
+#include "mu_deferred_event.h"
 #include "mu_types.h"
 #include <mutex>
 #include <stdlib.h>
@@ -51,7 +51,7 @@ namespace mu {
     }
 
     // Add a timed event to the queue.
-    void schedule_event(MuTimedEvent *event);
+    void schedule_event(MuTick time, DeferredAction action);
 
     // Remove all the events from the queue.
     void clear_all_events( void ) {
@@ -64,7 +64,7 @@ namespace mu {
     // Return the event currently being processed (i.e. within the
     // scope of a call to step()), or NULL if there is no current
     // event.
-    MuTimedEvent *current_event() {
+    MuDeferredEvent *current_event() {
       return current_event_;
     }
 
@@ -76,15 +76,15 @@ namespace mu {
 
     // Return the next event in the queue, or NULL if there are no
     // more events.
-    MuTimedEvent *next_event() {
+    MuDeferredEvent *next_event() {
       return get_next_event(false);
     }
 
     // Return the time of the next event in the queue, or kUndefined
     // if there are no more events.
     MuTick next_event_time() {
-      MuTimedEvent *te = next_event();
-      return (te == NULL) ? kUndefined : te->time();
+      MuDeferredEvent *deferred_event = next_event();
+      return (deferred_event == NULL) ? kUndefined : deferred_event->time();
     }
 
     // Remove and process the next event in the queue.  Returns false
@@ -105,20 +105,20 @@ namespace mu {
 
   protected:
 
-    MuTimedEvent *get_next_event(bool remove) {
-      MuTimedEvent *te = NULL;
+    MuDeferredEvent *get_next_event(bool remove) {
+      MuDeferredEvent *deferred_event = NULL;
       mutex_.lock();
       if (event_count() > 0) {
-	te = queue_.back();
+	deferred_event = queue_.back();
 	if (remove) queue_.pop_back();
       }
       mutex_.unlock();
-      return te;
+      return deferred_event;
     }
 
-    std::vector<MuTimedEvent *> queue_;
+    std::vector<MuDeferredEvent *> queue_;
     std::mutex mutex_;
-    MuTimedEvent *current_event_;
+    MuDeferredEvent *current_event_;
 
   };                            // class MuScheduler
 

@@ -23,33 +23,8 @@
    ================================================================ 
 */
 
-#include "mu_scheduler.h"
-#include <algorithm>
+#include "mu_deferred_event.h"
 
 namespace mu {
-
-  bool deferredEventComparison(MuDeferredEvent *de0, MuDeferredEvent *de1) {
-    return de0->time() > de1->time();
-  }
-
-  MuScheduler::~MuScheduler() {
-    // printf("~MuScheduler()\n");
-  }
-
-  void MuScheduler::schedule_event(MuTick time, DeferredAction action) {
-    MuDeferredEvent *deferred_event = new MuDeferredEvent();
-    deferred_event->set_time(time);
-    deferred_event->set_action(action);
-    std::vector<MuDeferredEvent *>::iterator low;
-
-    mutex_.lock();
-    low = std::lower_bound(queue_.begin(), 
-			   queue_.end(), 
-			   deferred_event, 
-			   deferredEventComparison);
-    queue_.insert(low, deferred_event);
-    mutex_.unlock();
-  }
-    
-
+  int dummy;                    // inhibit linker warning
 }                               // namespace mu

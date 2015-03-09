@@ -51,7 +51,7 @@ namespace mu {
       // no source attached
       return false;
 
-    } else if ((scheduler_.event_count() == 0) || (scheduler_.next_time() >= buffer_end)) {
+    } else if ((scheduler_.event_count() == 0) || (scheduler_.next_event_time() >= buffer_end)) {
       // no pending event that will affect this buffer
       return source_->render(buffer_start, buffer);
 
@@ -59,8 +59,8 @@ namespace mu {
       MuTick t0 = buffer_start;
       bool any_rendered = false;
 
-      while ((scheduler_.event_count() > 0) && (scheduler_.next_time() < buffer_end)) {
-	MuTick t1 = scheduler_.next_time();
+      while ((scheduler_.event_count() > 0) && (scheduler_.next_event_time() < buffer_end)) {
+	MuTick t1 = scheduler_.next_event_time();
 
 	// render frames prior to the next event (if any)
 	int n_frames = t1 - t0;
