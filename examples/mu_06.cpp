@@ -5,6 +5,8 @@
 #include <iostream>
 #include <cmath>
 
+#define EXAMPLE_DIRECTORY "/Users/r/Projects/Mu/examples/sounds/"
+
 class EchoPlus {
 public:
   EchoPlus() :
@@ -174,8 +176,6 @@ void wait_for_input() {
   std::string s;
   std::getline(std::cin, s);
 }
-
-#define EXAMPLE_DIRECTORY "/Users/r/Projects/Mu/examples/"
 
 mu::MuFloat beats_per_minute() {
   return 160.0;

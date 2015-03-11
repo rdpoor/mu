@@ -11,7 +11,7 @@ void wait_for_input() {
   std::getline(std::cin, s);
 }
 
-#define EXAMPLE_DIRECTORY "/Users/r/Projects/Mu/examples/"
+#define EXAMPLE_DIRECTORY "/Users/r/Projects/Mu/examples/sounds/"
 
 int main() {
   mu::Transport transport;

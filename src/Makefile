@@ -16,7 +16,6 @@ SOURCES := \
 	gain_stream.cpp \
 	loop_stream.cpp \
 	map_stream.cpp \
-	mu_deferred_event.cpp \
 	mu_scheduler.cpp \
 	mu_sink.cpp \
 	mu_stream.cpp \

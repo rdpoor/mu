@@ -4,15 +4,16 @@
 #include <string>
 #include <iostream>
 
+#define EXAMPLES_DIRECTORY "/Users/r/Projects/Mu/examples/sounds/"
+// #define THUMPS_AND_SCRATCHES_DIRECTORY "/Users/r/Projects/Mu/SoundSets/TAS/"
+// #define PLUCKED_NOTE_DIRECTORY "/Users/r/Projects/Mu/SoundSets/A/"
+
 void wait_for_input() {
   std::cout << "Hit return to quit: ";
   std::string s;
   std::getline(std::cin, s);
 }
 
-#define THUMPS_AND_SCRATCHES_DIRECTORY "/Users/r/Projects/Mu/SoundSets/TAS/"
-#define PLUCKED_NOTE_DIRECTORY "/Users/r/Projects/Mu/SoundSets/A/"
-#define EXAMPLES_DIRECTORY "/Users/r/Projects/Mu/examples/"
 
 mu::MuFloat beats_per_minute() {
   return 100.0;
@@ -169,7 +170,7 @@ public:
   }
   void add(mu::MuFloat t, std::string name, mu::MuFloat p, mu::MuFloat gain) {
     mu::FileReadStream *frs = new mu::FileReadStream();
-    frs->set_file_name(THUMPS_AND_SCRATCHES_DIRECTORY + name);
+    frs->set_file_name(EXAMPLES_DIRECTORY + name);
     ProbabilityStream *ps = new ProbabilityStream();
     ps->set_source(frs);
     ps->set_probability(p);
@@ -209,7 +210,7 @@ protected:
 int main() {
   mu::PlayerRt player_rt;
   mu::Transport transport;
-  Metronome *metronome = new Metronome();
+  // Metronome *metronome = new Metronome();
   Basic *basic = new Basic();
   Swish *swish = new Swish();
   mu::SumStream *mix = new mu::SumStream();

@@ -28,26 +28,24 @@
 
 namespace mu {
 
-  bool deferredEventComparison(MuDeferredEvent *de0, MuDeferredEvent *de1) {
-    return de0->time() > de1->time();
+  bool deferredEventComparison(MuScheduler::Event *e0,
+			       MuScheduler::Event *e1) {
+    return e0->time() > e1->time();
   }
 
   MuScheduler::~MuScheduler() {
-    // printf("~MuScheduler()\n");
   }
 
   void MuScheduler::schedule_event(MuTick time, DeferredAction action) {
-    MuDeferredEvent *deferred_event = new MuDeferredEvent();
-    deferred_event->set_time(time);
-    deferred_event->set_action(action);
-    std::vector<MuDeferredEvent *>::iterator low;
+    MuScheduler::Event *event = new MuScheduler::Event(time, action);
+    std::vector<MuScheduler::Event *>::iterator low;
 
     mutex_.lock();
     low = std::lower_bound(queue_.begin(), 
 			   queue_.end(), 
-			   deferred_event, 
+			   event, 
 			   deferredEventComparison);
-    queue_.insert(low, deferred_event);
+    queue_.insert(low, event);
     mutex_.unlock();
   }
     

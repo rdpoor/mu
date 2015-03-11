@@ -4,16 +4,13 @@
 #include <string>
 #include <iostream>
 
+#define EXAMPLES_DIRECTORY "/Users/r/Projects/Mu/examples/sounds/"
+
 void wait_for_input() {
   std::cout << "Hit return to quit: ";
   std::string s;
   std::getline(std::cin, s);
 }
-
-#define EXAMPLES_DIRECTORY "/Users/r/Projects/Mu/examples/"
-
-// #define THUMPS_AND_SCRATCHES_DIRECTORY "/Users/r/Projects/Mu/SoundSets/TAS/"
-// #define PLUCKED_NOTE_DIRECTORY "/Users/r/Projects/Mu/SoundSets/A/"
 
 mu::MuFloat beats_per_minute() {
   return 100.0;

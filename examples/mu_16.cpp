@@ -4,15 +4,15 @@
 #include <string>
 #include <iostream>
 
+#define EXAMPLES_DIRECTORY "/Users/r/Projects/Mu/examples/sounds/"
+// #define THUMPS_AND_SCRATCHES_DIRECTORY "/Users/r/Projects/Mu/SoundSets/TAS/"
+// #define PLUCKED_NOTE_DIRECTORY "/Users/r/Projects/Mu/SoundSets/A/"
+
 void wait_for_input() {
   std::cout << "Hit return to quit: ";
   std::string s;
   std::getline(std::cin, s);
 }
-
-#define THUMPS_AND_SCRATCHES_DIRECTORY "/Users/r/Projects/Mu/SoundSets/TAS/"
-#define PLUCKED_NOTE_DIRECTORY "/Users/r/Projects/Mu/SoundSets/A/"
-#define EXAMPLES_DIRECTORY "/Users/r/Projects/Mu/examples/"
 
 mu::MuFloat beats_per_minute() {
   return 100.0;
@@ -159,7 +159,7 @@ public:
   }
   void add(mu::MuFloat t, std::string name, mu::MuFloat p, mu::MuFloat gain) {
     mu::FileReadStream *frs = new mu::FileReadStream();
-    frs->set_file_name(THUMPS_AND_SCRATCHES_DIRECTORY + name);
+    frs->set_file_name(EXAMPLES_DIRECTORY + name);
     ProbabilityStream *ps = new ProbabilityStream();
     ps->set_source(frs);
     ps->set_probability(p);
@@ -179,7 +179,7 @@ public:
   RoomTone() {
     room_ = new mu::FileReadStream();
     loop_ = new mu::LoopStream();
-    room_->set_file_name(THUMPS_AND_SCRATCHES_DIRECTORY "room_tone.wav");
+    room_->set_file_name(EXAMPLES_DIRECTORY "room_tone.wav");
     loop_->set_source(room_);
     loop_->set_interval(room_->duration());
     loop_->set_source_end(room_->duration());
@@ -222,7 +222,7 @@ protected:
 
   mu::FileReadStream *frs(std::string name) {
     mu::FileReadStream *s = new mu::FileReadStream();
-    s->set_file_name(PLUCKED_NOTE_DIRECTORY + name);
+    s->set_file_name(EXAMPLES_DIRECTORY + name);
     return s;
   }
 

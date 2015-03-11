@@ -4,13 +4,13 @@
 #include <string>
 #include <iostream>
 
+#define EXAMPLE_DIRECTORY "/Users/r/Projects/Mu/examples/sounds/"
+
 void wait_for_input() {
   std::cout << "Hit return to quit: ";
   std::string s;
   std::getline(std::cin, s);
 }
-
-#define EXAMPLE_DIRECTORY "/Users/r/Projects/Mu/examples/"
 
 const mu::MuTick kTicsPerBeat = 44100/2;
 

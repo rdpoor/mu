@@ -5,6 +5,8 @@
 #include <iostream>
 #include <cmath>
 
+#define EXAMPLE_DIRECTORY "/Users/r/Projects/Mu/examples/sounds/"
+
 // ================================================================
 // An example of composing a number of processing elements into a single object.
 
@@ -54,8 +56,6 @@ void wait_for_input() {
   std::string s;
   std::getline(std::cin, s);
 }
-
-#define EXAMPLE_DIRECTORY "/Users/r/Projects/Mu/examples/"
 
 int main() {
   mu::Transport transport;

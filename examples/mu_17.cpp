@@ -11,16 +11,14 @@ public:
   EventStream() : time_(0) {}
 
   void schedule_event(mu::MuScheduler *scheduler) {
-    printf("schedule_event = %p\n", scheduler);
 
-    scheduler->schedule_event(time_, [&](mu::MuScheduler *) {
+    scheduler->schedule_event(time_, [=](mu::MuScheduler *) {
 	perform_event(scheduler);
       });
   }
 
   void perform_event(mu::MuScheduler *scheduler) {
-    printf("perform_event = %p\n", scheduler);
-    printf("Ping at time = %ld\n", time_);
+    printf("EventStream#perform_event(%p): time=%ld\n", scheduler, time_);
     time_ += 1;
     if (time_ < 5) {
       schedule_event(scheduler);

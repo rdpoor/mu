@@ -4,7 +4,7 @@ struct SICPStream;
 
 typedef std::function<SICPStream *()> Deferred;
 
-#define DEFER(form) ([&]() -> SICPStream* { return (form); })
+#define DEFER(form) ([=]() -> SICPStream* { return (form); })
 #define FORCE(deferred_form) ((deferred_form)())
 
 #define PAIR(value, rest) (new SICPStream(value, DEFER(rest)))
@@ -13,15 +13,8 @@ typedef std::function<SICPStream *()> Deferred;
 
 struct SICPStream {
 public:
-  // This doesn't work: generates 1 2 2 2 ...
-  // SICPStream(int first, Deferred rest) : first_(first), rest_(rest) {}
+  SICPStream(int first, Deferred rest) : first_(first), rest_(rest) {}
 
-  // This works: generates 1 2 3 4 ...
-  SICPStream(int first, Deferred rest) {
-    printf("constructor: first = %d\n", first);
-    first_ = first;
-    rest_ = rest;
-  }
   int first_;
   Deferred rest_;
 };
@@ -38,8 +31,7 @@ int main() {
   for (int i=5; i>=0; --i) {
     printf("%p, %d\n", s, FIRST(s));
     SICPStream *s1 = REST(s);
-    // deleting s generates 1, 2, 32768, 32768, 32768, ...
-    // delete s;
+    delete s;
     s = s1;
   }
   

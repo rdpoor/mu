@@ -25,21 +25,39 @@
 
 // File: mu_scheduler.h
 //
-// MuScheduler holds MuDeferredEvent objects and calls their underlying
-// actions at the appropriate time.
+// MuScheduler holds Event objects and calls their underlying actions
+// at the appropriate time.
 
 #ifndef MU_SCHEDULER_H
 #define MU_SCHEDULER_H
 
-#include "mu_deferred_event.h"
 #include "mu_types.h"
+#include <functional>
 #include <mutex>
 #include <stdlib.h>
 #include <vector>
 
 namespace mu {
 
+  class MuScheduler;
+  
+  typedef std::function<void (MuScheduler *)> DeferredAction;
+
   class MuScheduler {
+
+  public:
+    class Event {
+    public:
+      Event(MuTick time, DeferredAction action) {
+	time_ = time;
+	action_ = action;
+      }
+      MuTick time() { return time_; }
+      void call(MuScheduler *scheduler) { action_(scheduler); }
+    protected:
+      MuTick time_;
+      DeferredAction action_;
+    };
 
   public:
     MuScheduler( void ) : current_event_(NULL) {}
@@ -64,7 +82,7 @@ namespace mu {
     // Return the event currently being processed (i.e. within the
     // scope of a call to step()), or NULL if there is no current
     // event.
-    MuDeferredEvent *current_event() {
+    Event *current_event() {
       return current_event_;
     }
 
@@ -76,14 +94,14 @@ namespace mu {
 
     // Return the next event in the queue, or NULL if there are no
     // more events.
-    MuDeferredEvent *next_event() {
+    Event *next_event() {
       return get_next_event(false);
     }
 
     // Return the time of the next event in the queue, or kUndefined
     // if there are no more events.
     MuTick next_event_time() {
-      MuDeferredEvent *deferred_event = next_event();
+      Event *deferred_event = next_event();
       return (deferred_event == NULL) ? kUndefined : deferred_event->time();
     }
 
@@ -96,7 +114,6 @@ namespace mu {
       if (current_event_ == NULL) {
 	return false;
       } else {
-	printf("mu_scheduler step = %p\n", this);
 	current_event_->call(this);
 	delete current_event_;
 	current_event_ = NULL;
@@ -106,8 +123,8 @@ namespace mu {
 
   protected:
 
-    MuDeferredEvent *get_next_event(bool remove) {
-      MuDeferredEvent *deferred_event = NULL;
+    Event *get_next_event(bool remove) {
+      Event *deferred_event = NULL;
       mutex_.lock();
       if (event_count() > 0) {
 	deferred_event = queue_.back();
@@ -117,9 +134,9 @@ namespace mu {
       return deferred_event;
     }
 
-    std::vector<MuDeferredEvent *> queue_;
+    std::vector<Event *> queue_;
     std::mutex mutex_;
-    MuDeferredEvent *current_event_;
+    Event *current_event_;
 
   };                            // class MuScheduler
 

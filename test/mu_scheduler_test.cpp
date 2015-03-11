@@ -27,7 +27,6 @@
 
 #include "gtest/gtest.h"
 #include "mu_scheduler.h"
-#include "mu_deferred_event.h"
 #include "mu_types.h"
 
 TEST(MuScheduler, Constructor) {
@@ -90,8 +89,8 @@ class Stepper {
 public:
   void step(mu::MuScheduler *s) {
     ASSERT_EQ(0, s->event_count());
-    ASSERT_EQ((mu::MuDeferredEvent *)NULL, s->next_event());
-    ASSERT_NE((mu::MuDeferredEvent *)NULL, s->current_event());
+    ASSERT_EQ((mu::MuScheduler::Event *)NULL, s->next_event());
+    ASSERT_NE((mu::MuScheduler::Event *)NULL, s->current_event());
     ASSERT_EQ(1, s->current_event_time());
   }
 };
