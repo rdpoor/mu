@@ -45,13 +45,13 @@ namespace mu {
 
   bool ScheduledStream::render(MuTick buffer_start, MuBuffer *buffer) {
     MuTick buffer_end = buffer_start + buffer->frames();
-    int n_channels = buffer->channels();
 
     if (source_ == NULL) {
       // no source attached
       return false;
 
-    } else if ((scheduler_.event_count() == 0) || (scheduler_.next_event_time() >= buffer_end)) {
+    } else if ((scheduler_.event_count() == 0) ||
+	       (scheduler_.next_event_time() >= buffer_end)) {
       // no pending event that will affect this buffer
       return source_->render(buffer_start, buffer);
 
@@ -59,37 +59,52 @@ namespace mu {
       MuTick t0 = buffer_start;
       bool any_rendered = false;
 
-      while ((scheduler_.event_count() > 0) && (scheduler_.next_event_time() < buffer_end)) {
+      while ((scheduler_.event_count() > 0) &&
+	     (scheduler_.next_event_time() < buffer_end)) {
 	MuTick t1 = scheduler_.next_event_time();
 
 	// render frames prior to the next event (if any)
-	int n_frames = t1 - t0;
-	if (n_frames > 0) {
-	  tmp_buffer_.resize(n_frames, n_channels);
-	  MuUtils::zero_buffer(&tmp_buffer_);
-	  if (source_->render(t0, &tmp_buffer_)) any_rendered = true;
-	}	  
-
+	if (render_snippet(buffer_start, buffer, t0, t1)) {
+	  any_rendered = true;
+	}
+	
 	// perform the event
 	scheduler_.step();
 
 	// advance t0
-	if (n_frames > 0) {
+	if (t1 > t0) {
 	  t0 = t1;
 	}
       }
 
       // render any remaining frames between t0 and end of buffer
-      if (t0 < buffer_end) {
-	tmp_buffer_.resize(buffer_end - t0, n_channels);
-	MuUtils::zero_buffer(&tmp_buffer_);
-	if (source_->render(t0, &tmp_buffer_)) any_rendered = true;
+      if (render_snippet(buffer_start, buffer, t0, buffer_end)) {
+	any_rendered = true;
       }
 
       return any_rendered;
     }
   }
 
+  bool ScheduledStream::render_snippet(MuTick buffer_start,
+				       MuBuffer *buffer,
+				       MuTick t0,
+				       MuTick t1) {
+    MuTick n_frames = t1 - t0;
+    if (n_frames <= 0) return false;
+
+    tmp_buffer_.resize(n_frames, buffer->channels());
+    if (source_->render(t0, &tmp_buffer_)) {
+      MuUtils::copy_buffer_subset(&tmp_buffer_,
+				  buffer,
+				  t0 - buffer_start,
+				  n_frames);
+      return true;
+    } else {
+      return false;
+    }
+  }
+				       
   void ScheduledStream::inspect_aux(int level, std::stringstream *ss) {
     MuStream::inspect_aux(level, ss);
     inspect_indent(level, ss); 

@@ -49,6 +49,13 @@ namespace mu {
   protected:
     void inspect_aux(int level, std::stringstream *ss);
     MuScheduler scheduler_;
+
+  private:
+    bool render_snippet(MuTick buffer_start,
+			MuBuffer *buffer,
+			MuTick t0,
+			MuTick t1);
+    
   };                            // class ScheduledStream
     
 }                               // namespace mu
