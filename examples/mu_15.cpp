@@ -190,7 +190,7 @@ class Metronome {
 public:
   Metronome() {
     thump_ = new mu::FileReadStream();
-    thump_->set_file_name(THUMPS_AND_SCRATCHES_DIRECTORY "s12.wav");
+    thump_->set_file_name(EXAMPLES_DIRECTORY "tick.wav");
     // loop_stream_ = new mu::LoopStream();
     // loop_stream_->set_source(thump_);
     // loop_stream_->set_interval(beat_to_tick(1.0));

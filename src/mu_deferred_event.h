@@ -35,7 +35,9 @@
 
 namespace mu {
 
-  typedef std::function<void ( void )> DeferredAction;
+  class MuScheduler;		// resolve fwd reference
+  
+  typedef std::function<void (MuScheduler *)> DeferredAction;
 
   class MuDeferredEvent {
 
@@ -49,8 +51,9 @@ namespace mu {
     void set_action(DeferredAction action) { action_ = action; }
 
     // perform the deferred action now
-    void call() {
-      if (action_) action_();
+    void call(MuScheduler *scheduler) {
+      printf("mu_deferred_event scheduler = %p\n", scheduler);
+      if (action_) action_(scheduler);
     }
 
   protected:

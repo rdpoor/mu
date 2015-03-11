@@ -96,7 +96,8 @@ namespace mu {
       if (current_event_ == NULL) {
 	return false;
       } else {
-	current_event_->call();
+	printf("mu_scheduler step = %p\n", this);
+	current_event_->call(this);
 	delete current_event_;
 	current_event_ = NULL;
 	return true;

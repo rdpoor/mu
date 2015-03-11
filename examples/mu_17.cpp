@@ -10,26 +10,24 @@ class EventStream {
 public:
   EventStream() : time_(0) {}
 
-  void set_scheduler(mu::MuScheduler *scheduler) {
-    scheduler_ = scheduler;
-  }
+  void schedule_event(mu::MuScheduler *scheduler) {
+    printf("schedule_event = %p\n", scheduler);
 
-  void schedule_event() {
-    scheduler_->schedule_event(time_, [&]() {
-	perform_event();
+    scheduler->schedule_event(time_, [&](mu::MuScheduler *) {
+	perform_event(scheduler);
       });
   }
 
-  void perform_event() {
+  void perform_event(mu::MuScheduler *scheduler) {
+    printf("perform_event = %p\n", scheduler);
     printf("Ping at time = %ld\n", time_);
+    time_ += 1;
     if (time_ < 5) {
-      time_ += 1;
-      schedule_event();
+      schedule_event(scheduler);
     }
   }
 
 protected:
-  mu::MuScheduler *scheduler_;
   mu::MuTick time_;
 };
 
@@ -40,8 +38,9 @@ int main() {
   mu::MuScheduler scheduler;
   EventStream event_stream;
 
-  event_stream.set_scheduler(&scheduler);
-  event_stream.schedule_event();
+  printf("scheduler = %p\n", &scheduler);
+  
+  event_stream.schedule_event(&scheduler);
 
   while (scheduler.event_count() > 0) {
     scheduler.step();

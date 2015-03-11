@@ -10,8 +10,10 @@ void wait_for_input() {
   std::getline(std::cin, s);
 }
 
-#define THUMPS_AND_SCRATCHES_DIRECTORY "/Users/r/Projects/Mu/SoundSets/TAS/"
-#define PLUCKED_NOTE_DIRECTORY "/Users/r/Projects/Mu/SoundSets/A/"
+#define EXAMPLES_DIRECTORY "/Users/r/Projects/Mu/examples/"
+
+// #define THUMPS_AND_SCRATCHES_DIRECTORY "/Users/r/Projects/Mu/SoundSets/TAS/"
+// #define PLUCKED_NOTE_DIRECTORY "/Users/r/Projects/Mu/SoundSets/A/"
 
 mu::MuFloat beats_per_minute() {
   return 100.0;
@@ -33,7 +35,7 @@ public:
   RoomTone() {
     room_ = new mu::FileReadStream();
     loop_ = new mu::LoopStream();
-    room_->set_file_name(THUMPS_AND_SCRATCHES_DIRECTORY "room_tone.wav");
+    room_->set_file_name(EXAMPLES_DIRECTORY "room_tone.wav");
     loop_->set_source(room_);
     loop_->set_interval(room_->duration());
     loop_->set_source_end(room_->duration());
@@ -54,7 +56,7 @@ public:
   Metronome() {
     thump_ = new mu::FileReadStream();
     loop_stream_ = new mu::LoopStream();
-    thump_->set_file_name(THUMPS_AND_SCRATCHES_DIRECTORY "s12.wav");
+    thump_->set_file_name(EXAMPLES_DIRECTORY "tick.wav");
     loop_stream_->set_source(thump_);
     loop_stream_->set_interval(beat_to_tick(1.0));
     loop_stream_->set_source_end(beat_to_tick(1.0));
@@ -173,7 +175,7 @@ public:
 
   mu::FileReadStream *frs(std::string name) {
     mu::FileReadStream *s = new mu::FileReadStream();
-    s->set_file_name(PLUCKED_NOTE_DIRECTORY + name);
+    s->set_file_name(EXAMPLES_DIRECTORY + name);
     return s;
   }
 
@@ -199,7 +201,7 @@ public:
 
   mu::FileReadStream *frs(std::string name) {
     mu::FileReadStream *s = new mu::FileReadStream();
-    s->set_file_name(PLUCKED_NOTE_DIRECTORY + name);
+    s->set_file_name(EXAMPLES_DIRECTORY + name);
     return s;
   }
 

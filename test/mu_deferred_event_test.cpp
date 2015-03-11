@@ -39,16 +39,16 @@ TEST(MuDeferredEvent, Constructor) {
 TEST(MuDeferredEvent, NullCall) {
   mu::MuDeferredEvent de;
 
-  ASSERT_NO_THROW(de.call());
+  ASSERT_NO_THROW(de.call(NULL));
 }
 
 TEST(MuDeferredEvent, SimpleCall) {
   mu::MuDeferredEvent de;
   int captured = 0;
 
-  de.set_action([&]() { captured = 1; });
+  de.set_action([&](mu::MuScheduler *) { captured = 1; });
   ASSERT_EQ(0, captured);
-  de.call();
+  de.call(NULL);
   ASSERT_EQ(1, captured);
 }
 
@@ -64,8 +64,8 @@ protected:
 TEST(MuDeferredEvent, MethodCall) {
   mu::MuDeferredEvent de;
   Bloop bloop;
-  de.set_action([&]() { bloop.set_value(22); });
+  de.set_action([&](mu::MuScheduler *) { bloop.set_value(22); });
   ASSERT_EQ(0, bloop.value());
-  de.call();
+  de.call(NULL);
   ASSERT_EQ(22, bloop.value());
 }

@@ -99,6 +99,6 @@ public:
 TEST(MuScheduler, Step3) {
   mu::MuScheduler s;
   Stepper stepper;
-  s.schedule_event(1, [&]() { stepper.step(&s); });
+  s.schedule_event(1, [&](mu::MuScheduler *) { stepper.step(&s); });
   ASSERT_EQ(true, s.step());
 }
