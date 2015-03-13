@@ -5,8 +5,8 @@
  * - support variable # of stream arguments.
  */
 
-#include <stdio.h>
-#include <vector>
+// #include <stdio.h>
+// #include <vector>
 #include <string>
 
 #define NULL_ESTREAM(T) ((EStream<T> *)0)
