@@ -46,6 +46,12 @@ GMOCK-SOURCES := ./gmock-1.7.0
 GMOCK-TARBALL := ./gmock-1.7.0.zip
 GMOCK-DISTRO := https://googlemock.googlecode.com/files/gmock-1.7.0.zip
 
+BOOST-ROOT := $(MU_ROOT)/boost_1_57_0
+BOOST-TARGET := $(BOOST-ROOT)/stage/lib
+BOOST-SOURCES := ./boost_1_57_0
+BOOST-TARBALL := ./boost_1_57_0.tar.gz
+BOOST-DISTRO := http://downloads.sourceforge.net/project/boost/boost/1.57.0/boost_1_57_0.tar.gz
+
 # ================================================================
 # standard targets
 
@@ -58,6 +64,7 @@ clean:
 	(test -e $(STK-SOURCES) && cd $(STK-SOURCES) && make clean)
 	(test -e $(FFTW-SOURCES) && cd $(FFTW-SOURCES) && make clean)
 	(test -e $(GMOCK-SOURCES) && cd $(GMOCK-SOURCES) && make clean)
+	(test -e $(BOOST-SOURCES) && cd $(BOOST-SOURCES) && make clean)
 
 # reset everything.
 scour:
@@ -221,4 +228,25 @@ $(GMOCK-MAIN-TARGET) : $(GMOCK-SOURCES) | $(MU_ROOT)
 	g++ -isystem $(GTEST_DIR)/include -I$(GTEST_DIR) -isystem $(GMOCK_DIR)/include -I$(GMOCK_DIR) \
 		-pthread -c $(GMOCK_DIR)/src/gmock_main.cc -o /tmp/gmock_main.o
 	ar -rv $@ /tmp/gmock_main.o
+
+# ================================================================
+# C++ Boost libraries
+#
+# The following directory should be added to compiler include paths:
+#    /Users/r/Projects/Mu/usr/boost_1_57_0
+# The following directory should be added to linker library paths:
+#    /Users/r/Projects/Mu/usr/boost_1_57_0/stage/lib
+
+boost : 	$(BOOST-TARGET)
+
+$(BOOST-TARGET) : $(BOOST-ROOT)
+	(cd $(BOOST-ROOT) && \
+	 ./bootstrap.sh --prefix=$(MU_ROOT) && \
+	 ./b2)
+
+$(BOOST-ROOT) : $(BOOST-TARBALL) | $(MU_ROOT)
+	$(TAR) xf $(BOOST-TARBALL) && mv $(BOOST-SOURCES) $(BOOST-ROOT)
+
+$(BOOST-TARBALL) : | wget
+	wget -O $(BOOST-TARBALL) $(BOOST-DISTRO)
 
