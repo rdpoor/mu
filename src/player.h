@@ -1,80 +1,111 @@
-/*
-  ================================================================
-  Copyright (C) 2014 Robert D. Poor
+/* 
+   ================================================================
+   Copyright (C) 2014-2015 Robert D. Poor
   
-  Permission is hereby granted, free of charge, to any person obtaining
-  a copy of this software and associated documentation files (the
-  "Software"), to deal in the Software without restriction, including
-  without limitation the rights to use, copy, modify, merge, publish,
-  distribute, sublicense, and/or sell copies of the Software, and to
-  permit persons to whom the Software is furnished to do so, subject to
-  the following conditions:
-  
-  The above copyright notice and this permission notice shall be
-  included in all copies or substantial portions of the Software.
-  
-  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-  MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
-  LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-  OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-  ================================================================
+   Permission is hereby granted, free of charge, to any person obtaining a copy
+   of this software and associated documentation files (the "Software"), to deal
+   in the Software without restriction, including without limitation the rights
+   to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+   copies of the Software, and to permit persons to whom the Software is
+   furnished to do so, subject to the following conditions:
+   
+   The above copyright notice and this permission notice shall be included in
+   all copies or substantial portions of the Software.
+   
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+   AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+   SOFTWARE.  
+
+   ================================================================ 
 */
+
+// File: player.h
+// Player defines a virtual real-time playback device.  Its primary contract is
+// to request buffers of data from a Transport object to be played.
 
 #ifndef MU_PLAYER_H
 #define MU_PLAYER_H
 
-#include "mu.h"
-#include "tick_utils.h"
-#include <math.h>
+#include "mu_types.h"
+#include "transport.h"
 
 namespace mu {
 
+  class Transport;              // resolve circular dependency
+
+  // Should you be disallowing copying?
+  //
+  // http://stackoverflow.com/questions/6077143/disable-copy-constructor
   class Player {
   public:
-    static const unsigned int kDefaultChannelCount = 2u;
-    static const unsigned int kDefaultFrameRate = 44100u;
-    static const unsigned int kDefaultFrameSize = 512u;
+    Player();
+    virtual ~Player() {};
 
-    // setters and getters
-    unsigned int getChannelCount() const;
-    Player& setChannelCount(unsigned int channel_count);
+    // defaults and getters and setters
 
-    stk::StkFloat getFrameRate() const;
-    Player& setFrameRate(stk::StkFloat frame_rate);
+    static unsigned int default_channel_count() {
+      return 2u;
+    }
 
-    unsigned int getFrameSize() const;
-    Player& setFrameSize(unsigned int frame_size);
+    unsigned int channel_count() const {
+      return channel_count_;
+    }
 
-    SampleProcessor *getSource() const;
-    Player& setSource(SampleProcessor *source);
+    void set_channel_count(unsigned int channel_count) {
+      channel_count_ = channel_count;
+    }
 
-    Tick getTick() const;
-    Player& setTick(Tick tick);
+    static MuFloat default_frame_rate() {
+      return 44100.0;
+    }
 
-    // Start the player if not already running.  Does not rewind
-    // before starting.
-    virtual Player& start() = 0;
+    MuFloat frame_rate() const {
+      return frame_rate_;
+    }
 
-    // Stop the player if not already stopped. If \c immediately is
-    // true, immediately stops the player, otherwise gives time for
-    // already queued samples to finish.
-    virtual Player& stop(bool immediately = false) = 0;
+    void set_frame_rate(MuFloat frame_rate) {
+      frame_rate_ = frame_rate;
+    }
+
+    static unsigned int default_frame_size() {
+      return 512u;
+    }
+
+    unsigned int frame_size() const {
+      return frame_size_;
+    }
+
+    void set_frame_size(unsigned int frame_size) {
+      frame_size_ = frame_size;
+    }
+
+    Transport *transport() const {
+      return transport_;
+    }
+    
+    void set_transport(Transport *transport) {
+    transport_ = transport;
+    }
+
+    // Start the player if not already running.  Starts passing
+    // buffers to Transport::render() in a dedicated thread.
+    virtual void start() = 0;
+
+    // Stop the player if not already stopped.
+    virtual void stop() = 0;
 
   protected:
-    Player& init();
-
     unsigned int channel_count_;
-    stk::StkFloat frame_rate_;
+    MuFloat frame_rate_;
     unsigned int frame_size_;
-    SampleProcessor *source_;
-    Tick tick_;
-
+    Transport *transport_;
   };                            // class Player
 
-} // namespace mu
+}                               // namespace mu
 #endif
 
 // Local Variables:

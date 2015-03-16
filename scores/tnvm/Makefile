@@ -17,14 +17,14 @@ LIBRARY  = -lpthread -framework CoreAudio -framework CoreFoundation -framework C
 
 .PHONY:	clean
 
-all :	tnvm
+all :	tnvm2
 
 clean :
-	rm -f tnvm $(OBJECTS)
+	rm -f tnvm2 $(OBJECTS)
 	rm -rf *.dSYM
 
-%.o : %.cpp tnvm.h
+%.o : %.cpp tnvm2.h
 	$(CC) $(CFLAGS) $(IFLAGS) $(INCLUDES) -c $(<) -o $@
 
-tnvm : $(OBJECTS)
+tnvm2 : $(OBJECTS)
 	$(CC) $(CFLAGS) $(LFLAGS) $(DEFS) $(INCLUDES) -o $(@) $(OBJECTS) $(LIBRARY)

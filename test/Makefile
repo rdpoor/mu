@@ -1,33 +1,39 @@
-MU_ROOT := ../usr
+# Unit Test Driver
+# To make all tests:
+#   $ make tests
+# To run all tests:
+#   $ ./tests
+# To run a subset of tests:
+#   $ ./tests --gtest_filter=LoopRS*
+#
+# Test files must be named *_test.cpp in order to be recognized.
 
-SOURCES := $(wildcard *.cpp)
-TARGETS := $(patsubst %.cpp,%,$(SOURCES))
+MU_ROOT ?= /Users/r/Projects/Mu/usr
 
-CC       = g++
-ifdef MU_DEBUG
-CFLAGS   = -O0 -g -Wall
-else
-CFLAGS   = -O3 -Wall
-endif
+SOURCES := $(wildcard *_test.cpp)
+TARGETS := $(patsubst %.cpp, %, $(SOURCES))
+OBJECTS := $(patsubst %.cpp, %.o, $(SOURCES))
 
-LFLAGS   = -L$(MU_ROOT)/lib
-DEFS     = 
-INCLUDES = -I$(MU_ROOT)/include/mu -I$(MU_ROOT)/include/stk
-LIBRARY  = -lpthread -framework CoreAudio -framework CoreFoundation -framework CoreMidi -lm -lgsl -lstk -lmu
+CPPFLAGS += -isystem $(MU_ROOT)/include
+CXXFLAGS += -g -Wall -Wextra -pthread -std=c++11
+IFLAGS   += -I$(MU_ROOT)/include/mu -I$(MU_ROOT)/include/stk 
+LFLAGS   += -L$(MU_ROOT)/lib
 
-.PHONY:	clean
+install : tests
 
-all :	$(TARGETS)
+all : tests
+
+objects : $(OBJECTS)
 
 clean :
-	rm -f $(TARGETS)
-	rm -rf *.dSYM
+	rm -rf tests $(TARGETS) *.dSYM $(OBJECTS)
 
-$(TARGETS) : %:%.cpp assert.o
-	$(CC) $(CFLAGS) $(LFLAGS) $(DEFS) $(INCLUDES) -o $(@) $(<) assert.o $(LIBRARY)
+# $< is name of prerequisite and $@ is the name of the target
+# Note that gmock_main.a needs to be linked in order to define _main();
 
-run-tests : $(TARGETS)
-	for x in $(TARGETS); do echo ======== $$x; ./$$x; done
+%.o : %.cpp $(MU_ROOT)/lib
+	$(CXX) $(IFLAGS) $(CPPFLAGS) $(CXXFLAGS) -c $(<) -o $(@)
 
-unit-tests :	$(UNIT_TEST_TARGETS)
-
+tests : $(OBJECTS)
+	$(CXX) $(LFLAGS) $(OBJECTS) \
+		-lpthread -lgmock -lmu -lstk $(MU_ROOT)/lib/gmock_main.a -o $@

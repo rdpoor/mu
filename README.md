@@ -1,183 +1,141 @@
 # mu
 
-An experiment in blurring the lines between music composition and sound synthesis
+mu is an experiment in blurring the lines between music composition and sound
+synthesis.  It comprises a software library of digital audio processing modules
+and the means to render audio in real time to a computer's sound card or to a
+file.
+
+Each digital audio processing module (called a "stream") exposes a method `bool
+render(MuBuffer buffer, MuTick buffer_start)`, whose contract is to fill the
+`buffer` with audio samples, whose first sample is at time `buffer_start`.
+
+Many streams take other streams as inputs in order to process or modify the
+samples.  Ultimately, the streams are connected in a "processing graph",
+specifically a directed acyclic graph in which audio samples are computed on
+demand by calls to `render()` at the root stream.
+
+In a typical configuration, a Transport object connects to the root stream.  The
+Transport's contract is to wait for buffer requests from the computer's sound
+driver, then call render() on the root stream to generate the requested samples.
+
+## Processing Streams
+
+mu defines the following streaming audio classes.
+
+### CropStream
+
+Limits an input stream to a starting and ending time.
+
+### DelayStream
+
+Delays its input stream by `delay` samples.
+
+### DiracStream
+
+Produces a sample value of 1.0 for sample number 0, 0.0 otherwise.
+
+### FileReadStream
+
+Produces samples from a sound file.
+
+### FileWriteStream
+
+Writes sample data to a sound file.
+
+### IdentityStream
+
+Produces sample value t for sample number t.
+
+### LoopStream
+
+Generates a loop from an input stream.
+
+### ProductStream
+
+Generates the product of all of its inputs.
+
+### SineStream
+
+Generates a sine wave with optional inputs for amplitude and phase modulation.
+
+### SumStream
+
+Generates the sum of all of its inputs.  
 
 ## todo 
 
+* Clean up usr/include: put fftw* into a fftw directory and jansson*
+  into a jansson directory.
+
+* ZeroMQ vs Redis?  http://zeromq.org/intro:read-the-manual and
+  https://github.com/imatix/zguide/blob/master/examples/C/asyncsrv.c
+
+* Sprint: create framework for a Redis interface.  See
+  https://github.com/redis/hiredis and
+  https://github.com/luca3m/redis3m
+
+* Adopt a unit test library (and coverage tests)
+
 * create EventStream (or briefly ES) with first() and next() methods.
+
 * scores/tnvm/percussion.cpp (and mune21) show a technique for
-generating percussion parts with variation.  Another (perhaps more
-satisfying) approach would be to have a fixed pattern, but randomize
-the dynamics, e.g. with a LinsegStream or StepStream.
-* Some stream elements -- e.g. MultiplyStream, SineStream -- would
-benefit from a constant input and a stream input.  (Look for examples
-that have used ConstantStream.)
+  generating percussion parts with variation.  Another (perhaps more
+  satisfying) approach would be to have a fixed pattern, but randomize
+  the dynamics, e.g. with a LinsegStream or StepStream.
+
+* Many stream elements -- e.g. MultiplyStream, SineStream -- would
+  benefit from a constant input and a stream input.  (Look for examples
+  that have used ConstantStream.)
+
 * Slide guitar
+
 * Add has_errors and get_errors methods to Stream objects.
+
 * Add doxygen comments
+
 * Add 'make docs' to Makefile
+
 * Make it easy to run unit tests with libgmalloc turned on.  
+
 * Write unit test for FileWriteStream.
+
 * Stop Player when tick >= source.getEnd().  Clean up implementations.
+
 * Optimize a few inner loops (copy buffer, zero part of buffer...)
+
 * Can we (should we?) change Tick to Seconds?
+
 * Beef up assert.c=>assert.cpp Create a tester object that can print
-out context, print on error only, print always, etc.  Better, find
-an existing test package.
+  out context, print on error only, print always, etc.  Better, find
+  an existing test package.
+
 * Create F(t)Stream and test file.
+
 * setSource() and related should check for compatible frameRate(), channelCount()
+
 * setSource() and related should check for circular loops.
+
 * Write a generalized graph traversal method for inspect and loop detection.
+
 * Think about automatic conversion from mono to stereo -- what happens
   when you connect a mono source to a stereo stream object?  Should that
   be an error or expand automatically?
+
 * When do we release resources?  Do we need a Transport.pause() method
   distinct from Transport.stop()?
+
 * Add command line parsing such as argp.h
+
 * Create mechanisms for panning and localization.
 
-## changelog 
+* Create a fuzzbox
 
-* 2014-06-09: Partway though major refactor: "make install" installs
-library files and headers in ./usr/lib and ./usr/include
-(respectively), eventually will be able to rebuild everything from
-scratch.  tests, examples, sketches each have their own directory (and
-makefile).
-* 2014-05-17: Rename: XFadeStream => FadeStream. Stream::copy_buffer =>
-Stream::copyBuffer.  Stream::zero_buffer => Stream::ZeroBuffer.
-* 2014-05-17: wrote and tested XFadeStream.  Need a sound example
-that uses it.
-* 2014-05-15: cleaned up SpliceStream (i.e. fixed it).  mune23 is a
-sketch for "strumming" using SpliceStream.  It works, but there's a
-lot of crackling due to non-zero splice points.  Need to work on a
-cross-fade version.
-* 2014-05-14: Wrote inspect() method for streams.  mune23 uses
-SpliceStream, to emulate strumming, but there's still a problem with
-damping a string.  Use inspect() to debug.
-* Wrote SpliceStreams that acts like SequenceStream, but stops output
-of the previous stream when the next stream starts.
-* 2014-05-09: test/test_rt_player runs a bare-bones RtPlayer in order
-to look for memory leaks.  Ran it for 6 hours.  None detected.
-* 2014-05-08: modified mune20 run run in non-real-time (i.e. as fast
-as possible) to look for memory leaks.  Ran for 30 minutes of CPU time,
-no leaks detected.
-* 2014-05-08: mune21 generatess output identical to mune20, but using
-library defined mu::ProbabilityStream
-* 2014-05-08: mune20 assigns random probability of playing a source
-stream at each b/n beats, where b is beats per measure and n is the
-number of elements in the probability vector.  Starting to sound fun.
-Found and stomped two bugs in LoopStream, not shadowing getStart() and
-getEnd() and not honoring null source stream.  
-* 2014-05-06: Clean up test/Makefile: any muneXX.cpp is an integration
-  test, ut_xxx.cpp is a unit test.
-* 2014-05-06: Created mune19 to test fade in/out using LinsegStream
-and MultiplyStream.
-* 2014-05-05: Created mune18 which connects to stk::PitShift (or
-LentPitShift) and does real-time pitch shifting.
-* 2014-05-05: Created mune17, identical to mune12 to play an
-arpeggiated chord, but using SequenceStream.  Very short.
-* 2014-05-05: Created LinsegStream that generates interpolated line
-segments as a function of tick time.
-* 2014-05-04: Created library class RandomSelectStream that does
-exactly what mune14 does: when tick counter decreases, randomly
-chooses an input stream to start playing.  Created mune15 based on the
-library function.  Created SequenceStream, subclass of AddStream, that
-interposes a DelayStream on each input.  Replicated mune13; plays
-identical melody, but (by design) doesn't crop each note to stop when
-the next one starts (though that would be a possible extention to the
-design of SequenceStream).
-* 2014-05-04: Created mune14: when tick counter decreases (e.g. at a
-loop point), randomly choose an input stream to start playing.
-* 2014-05-03: Created mune11, mune12 to play arpeggiated chords.
-Created mune13 to play a melody.
-* 2014-05-02: Beefed up ASSERT macro to report filename and line
-number so tests can be run in an emacs compile window.
-* 2014-05-01: Created MixNStream that takes an arbitrary number of inputs
-to sum.  Created ut_mix_n_stream and debugged class.  Wrote a fun little
-musical bit mune10, reminiscent of Steve Reich's Violin Phase.  Factored
-MultiStream out of MixNStream to provide generalized N-source stream
-support.  Deleted MixStream.  Renamed MixNStream to AddStream.  Created
-MultiplyStream.
+* Create a morley pedal
 
-* 2014-05-01: Replaced Stream::frameCount() with Stream::getStart(),
-Stream::getEnd() and Stream::getDuration(), all measured in Ticks.
-Created CropStream to limit the extend of a source stream.  Created
-unit tests (including getStart() and getStop() tests) for stream
-classes: CropStream, DelayStream, IdentityStream, MixStream, Stream.
+* Experiment in adding 6th harmonic to make a metal string out of nylon
 
-* 2014-04-30: Stream::streamDuration() => Stream::frameCount().  Created
-MixStream and DelayStream and corresponding unit tests.  Created a unit
-test for IdentityStream.  Created a simple test/assert.c file to help
-with unit testing (could be better, but it's already useful).
-
-* 2014-04-30: Refactoring: Node => Stream.  All subclasses are now
-named XxxStream.  
-
-* 2014-04-29: With the help of MapSteam and mune09, tested and
-debugged Looper.  Looping is now clean.  
-
-* 2014-04-29: Rename ValidatorStream=>MapStream, includes Player
-argument so user-supplied function can stop playback (for example).
-Needed to lose the const declaration on Player.  TODO: understand
-const arg for member functions.
-
-* 2014-04-29: step() now passes a frame counter (of type Tick) rather
-than a time (type MuTime).  This permits sample-accurate calculations.
-Node::streamDuration() returns value in frames rather than time, 
-Looper::set/getLoopDuration is also in frames.  Renamed Player's
-sampleRate to frameRate.  mune08 tests the chain of TestStream =>
-ValidatorStream => NrtPlayer.
-
-* 2014-04-29: Renamed Transport to Player, now a virtual superclass,
-with sub-classes RtPlayer and NrtPlayer.  Flushed SampleBuffer since
-C++ semantics won't let me overload a non-virtual library class.
-Created Looper and test/mune08 to test it.  Glitchy, but starting to
-work.  Created TestStream that outputs value N at time N -- not yet
-tested.  Got everything working to "as well as it worked before" --
-seems like a good checkpoint.
-
-* 2014-04-28: Created SampleBuffer object that subclasses and mimics
-stk::StkFrames, but creates an offset into the underlying data buffer.
-
-* 2014-04-27: Removed the seek(), acquireResources() and
-releaseResources() methods until I decide what they should do.
-
-* 2014-04-27: Created a FileReader subclass of Node that provides a
-step() interface to a sound file.  Needs more error checking, and we
-need to decide if and when to close the file, but it works.
-
-* 2014-04-27: Refactored step() to take different arguments:
-stk::StkFrames buffer (as before), MuTime time (current time at start
-of buffer), Transport& transport (so we can discover who is at the
-head of the graph, etc).  Ditch Node::framesRemaining() in favor of
-Node::duration().
-
-* 2014-04-27: Split monolithic mune04 file into src and include
-library directories, created test directory for test executables.
-Created src/Makefile to remake library, test/Makefile to remake test
-files.
-
-* 2014-04-26: Rename project to mu.  Put changelog in reverse
-  chronologial order.  Tested pushing to new repo.
-
-* 2014-04-25: mune04 defines a Transport object that allocates and
-controls an RtAudio object, and interfaces its callback method to the
-step() method of a generalized Node class.  The TestNode class simply
-writes a pulse train into the buffers passed to it.
-
-* 2014-04-17: mune03 reads a sound file via FileRead and streams it a
-buffer at a time to the DAC via RtAudio.  There's an outstanding bug:
-it will stop playback after the last buffer is queued, not after the
-last buffer is played.  But this part of the code will change in the
-next version, so it's not not worth fixing today.
-
-* 2014-04-15: mune02 is a tweaked copy of stk's examples/bethree.cpp to
-verify linking against the STK library.  Plays a note.  Yay.
-
-* 2014-04-14: Simple "play a sine tone in each channel" real-time app.
-Mostly written as a "hello, world" test to exercise RtAudio and
-Makefile structure.
-
+* State-variable filter with stream control inputs
+  
 ## design notes
 
 ### Stateless vs Stateful Streams
@@ -735,3 +693,283 @@ much progress I can make with the existing structure.  Created a good
 sounding strummed multi-string instrument with hammer-on, hammer-off.
 See mune33.cpp.
 
+=== Client / Server Split
+
+It's time to split the system into a Server and a Client.  The Server
+is a synthesis engine, responsible for generating audio.  The Client
+runs as a separate process (possibly on a different machine) and feed
+feeds "gestural" directives to the Server.
+
+=== Four Boxes
+
+Client generates Events on demand for the Renderer.
+
+Renderer generates buffers of audio samples on demand for the Transport.
+
+Transport passes buffers of audio samples on demand to the Player.
+
+Player passes buffes of audio samples to the system DAC.
+
+All time-critical code, i.e. sample level synthesis, runs in the
+Renderer/Transport/Player (hereafter the Server).  Timing is
+determined by RTAudio requests for buffers which are in turn tied to
+the DAC.
+
+The Server is written in pure C++, the Client is written in the
+language du jour -- I'm leaning towards Ruby or Python, but any
+language that can push JSON over an IPC port is fair game.
+
+The Server contains a Transport and publishes an API for commands such
+as start, stop, seek_to(time), pause.  When the Transport is running,
+it passes buffers of audio data to the Renderer to get filled with
+data.  Each buffer has a start time (inclusive) and an end time
+(exclusive).
+
+The Renderer asks the Client for any events that fall between the 
+start time and end time and processes those events.  These events
+will typically allocate and configure processing elements and link
+them into the processing graph, or else remove processing elements
+from the graph if their work is done.
+
+==== Some example events
+
+Here's a hypothetical example of playing a 2.5 second sine tone
+starting at t=10.0 and ending at t=12.5 with a linear gain ramp from
+1.0 down to 0.0:
+
+```
+t=0.0, a = SinePE.allocate()
+t=0.0, a.setFreq(440.0)
+
+t=0.0, b = RampPE.allocate()
+t=0.0, b.setValue(1.0)
+t=0.0, b.setdVdT(-1.0/2.5)
+
+t=0.0, c = MultPE.allocate()
+t=0.0, c.addInput(a)
+t=0.0, c.addInput(b)
+
+t=10.0, DAC.setInput(c)
+t=12.5, DAC.setInput(NULL)
+```
+
+If we wanted to go a bit crazy:
+```
+(before-run
+  (setq a ((SinePE :allocate) :setFreq 440.0))
+  (setq b (((RampPE :allocate) :setValue 1.0) :setDVDT -0.4))
+  (setq c (((MultPE :allocate) :addInput a) :addInput b)))
+
+(at 10.0 (dac :setInput c))
+(at 12.5 (dac :setInput null))
+
+(after-run (c :deallocate))
+```
+
+But those are still too complicated.  Assuming JSON as a transport
+language, let's see how far we can get with a simple syntax:
+
+time : t, target : x, method : y, args : z
+
+Assume that 'x' can always be mapped to a NamedObject (found in a
+symbol table / dictionary / hash ).  That object has an `eval` method
+that accepts and evaluates y (the method) and z (the args).
+
+The Mu object can handle meta tasks, such as:
+
+{ target : Mu, method : set, :args { name : a, value : { ... }}
+
+or more concisely:
+
+["Mu", "set", { name : a, [["SinePE", "alloc", {}], "setFreq", { "value" : 440 }]}]
+
+At the heart of this is an eval method that reads JSON forms:
+
+def json_eval(form) {
+  first = json_array_get(form, 0);
+  if (json_string?(first)) {
+     obj = symbol_table_lookup(json_string_value(first));
+     obj.eval(json_array_get(form, 1, -1));
+  } else if (json_array?(json_array_get(form, 0))) {
+     obj = json_eval(first);
+     obj.eval(json_array_get(form, 1, -1));
+  }
+
+}
+
+==== Something fun
+
+The object that contains a timed_queue and interprets commands therein
+can be an ordinary RenderStream subclass.  It will normally(?) be the
+root of the rendering stream graph, but it doesn't have to be (e.g. if
+there's a sound file writing object between the Transport and it).
+
+==== Interface language.  
+
+As a first step, I'm defining the messages to be JSON based.  For
+starters, assume each message to be an array of three JSON entities:
+
+     [target method arguments]
+
+where +target+ is a named object, +method+ is a verb and +arguments+
+is either a JSON NULL or a JSON Object with the arguments for the
+target.
+
+For now, I've downloaded and tested the jansson JSON library
+(https://github.com/akheron/jansson) -- it has a sane compile / 
+install approach that works well with Mu's sandbox model.
+
+==== IPC 
+
+For Client / Server linkage, I'm starting with Redis and using the C++
+bindings from HiRedis: https://github.com/redis/hiredis.  An alternative
+to consider is ZeroMQ, but Redis feels good enough for now.
+
+
+==== Cold feet (again)
+
+So I've implemented a simple scheduler and integrated it into
+processing streams (see mune43).  Works.  But I'm getting stuck on how
+to intepret events from the Client side into C++ calls in the server.
+
+What if instead I simply generated C++ code from a high level language
+and compiled that in order to create complex compositions?  Since I'm 
+not really interested in real-time performance, that would serve the 
+same purpose.
+
+And besides, I'm beginning to suspect all this client / server stuff
+is simply another way to avoid creating the actual music.  Grumph.  I'll
+write some music sketches right now with what I've got.
+
+=== New Rules of render()
+
+Every MuStream defines:
+
+    bool render(buffer, start_tick);
+
+We define "the span of the buffer" to be start_tick (inclusive) to start_tick
++ buffer.frames (exclusive).
+
+The contract of render() is as follows:
+
+* If the intersection of the span of the stream and the span of the buffer
+  equals the span of the buffer, render() overwrites all samples in the
+  buffer and returns true.
+
+* If the intersection of the span of the stream and the span of the buffer
+  is empty, render() does not touch the buffer and returns false.
+
+* Otherwise (the intersection fo the span of the stream and the span of the
+  buffer is non-empty but less than the span of the buffer, render() writes the
+  defined samples into buffer and writes zeros everywhere else and returns true;
+
+Design ponder: should I define a MuExtent class that captures the start and end
+times of a stream with a number of predicates on them (contains, intersects)?
+The only two streams I can think of that need to know the extent are Crop and
+Loop, and they can take extent arguments.  I'll try without for starters.
+
+=== On LoopStream
+
+We should be able to loop a strem repeatedly:
+
+   loop_sp.set_loop_duration(MuTick duration)
+   loop_sp.set_source_start(MuTick s0)
+   loop_sp.set_source_end(MuTick e0)
+
+where s0 and e0 defined the start and stop points of the source stream.
+
+
+== Decreed
+
+bool mu::Stream.render(mu::FrameBuffer buffer, 
+                       mu::Tick start_tick, 
+                       bool is_new_event)
+
+instructs the receiver to write up to buffer.frames() samples into `buffer`,
+where buffer[0] corresponds to time `start_tick`.  For any given tick, the
+receiver may not write a sample if the stream has an undefined value at that
+time.
+
+The method returns true if any samples were written into `buffer, false
+otherwise.
+
+== Motifs
+
+Now that I'm playing with discrete time events.  Meta question: is there
+a reason I'm not using stl containers directly?  The only new components
+would be MotifEvent and MotifEventProperty classes.
+
+// essentially, an std::iterator
+// see:
+// http://stackoverflow.com/questions/3582608/how-to-correctly-implement-custom-iterators-and-const-iterators
+// http://stackoverflow.com/questions/7758580/writing-your-own-stl-container/7759622
+
+class MotifEnumerator {
+
+  MotifEvent get_next_event();
+
+};
+
+// A generalized motif, whose events are fetched via the
+// MotifEnumerator
+class Motif {
+
+  MotifEnumerator seek_to(MuTime t);
+
+  // return a new motif in which each MotifEvent has
+  // been replaced by fn(motif_event)
+  Motif map(MotifEventMethod fn);
+  
+};
+
+// essentially, contains an std::vector
+class MotifSequence : public Motif {
+
+  void add_event(MotifEvent e);
+
+};
+
+// essentially, an std::unordered_set with a time field
+class MotifEvent {
+
+  MuTick time();
+  void setTime(MuTick time);
+
+  MotifEventProperty get_property(std::string property_name);
+  void set_property(std::string property_name, MotifEventProperty property);
+
+};
+
+// a container for heterogeneous data types, initially int, double and string
+// Chet recommends protocol buffers:
+// https://developers.google.com/protocol-buffers/docs/cpptutorial
+// See also:
+// http://stackoverflow.com/questions/3559412/how-to-store-different-data-types-in-one-list-c
+// Also interesting:
+// http://www.progdoc.de/papers/nseq/nseq/nseq.html
+
+class MotifEventProperty {
+}
+
+=== for example...
+
+// create a three-note motif 
+Motif a = new FixedMotif(new MotifEvent(0.0, "pitch", 60.0),
+                         new MotifEvent(1.0, "pitch", 62.0),
+                         new MotifEvent(2.0, "pitch", 64.0));
+
+// create a variant of motif a, transposed one octave up
+// and delayed by a half beat.
+Motif b = new MapMotif(a, [](MotifEvent e) {
+    MotifEvent e1 = offset(e, "pitch", 12.0);
+    MotifEvent e2 = delay(e1, 0.5);
+    return e2; });
+
+// merge the original motif and its variant
+Motif c = new MergeMotif(a, b);
+
+// add a time-varying legato property
+Motif d = new MapMotif(c, [this](MotifEvent e) {
+    double legato = e.time() / this.duration();
+    return e.add_property("legato", legato);
+}

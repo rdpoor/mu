@@ -1,6 +1,7 @@
 # Download, unpack, compile and install all external packages required by Mu
 #
-MU_ROOT=/Users/r/Projects/Mu/usr
+MU_ROOT = /Users/r/Projects/Mu/usr
+GMOCK_DIR ?= /Users/r/Projects/Mu/packages/gmock-1.7.0
 
 TAR=/usr/bin/tar
 
@@ -14,7 +15,7 @@ GSL-TARBALL := ./gsl-1.16.tar.gz
 GSL-SOURCES := ./gsl-1.16
 GSL-DISTRO := http://mirrors.zerg.biz/gnu/gsl/gsl-1.16.tar.gz
 
-STK-TARGET := $(MU_ROOT)/lib/libstk.a
+STK-TARGET := $(MU_ROOT)/lib/libstk.dylib
 STK-TARBALL := ./stk-4.5.0.tar.gz
 STK-SOURCES := ./stk-4.5.0
 STK-DISTRO := https://ccrma.stanford.edu/software/stk/release/stk-4.5.0.tar.gz
@@ -24,20 +25,51 @@ FFTW-TARBALL := ./fftw-3.3.4.tar.gz
 FFTW-SOURCES := ./fftw-3.3.4
 FFTW-DISTRO := http://www.fftw.org/fftw-3.3.4.tar.gz
 
+HIREDIS-TARGET := $(MU_ROOT)/lib/libhiredis.dylib
+HIREDIS-TARBALL := ./hiredis-0.11.0.tar.gz
+HIREDIS-SOURCES := ./hiredis-0.11.0
+HIREDIS-DISTRO := https://github.com/redis/hiredis/archive/v0.11.0.tar.gz
+
+JANSSON-TARGET := $(MU_ROOT)/lib/libjansson.a
+JANSSON-SOURCES := ./jansson-2.7
+JANSSON-TARBALL := ./jansson-2.7.tar.gz
+JANSSON-DISTRO := http://www.digip.org/jansson/releases/jansson-2.7.tar.gz
+
+CMAKE-TARGET := $(MU_ROOT)/bin/cmake
+CMAKE-SOURCES := ./cmake-3.1.0
+CMAKE-TARBALL := ./cmake-3.1.0.tar.gz
+CMAKE-DISTRO := http://www.cmake.org/files/v3.1/cmake-3.1.0.tar.gz
+
+GMOCK-TARGET := $(MU_ROOT)/lib/libgmock.a
+GMOCK-MAIN-TARGET := $(MU_ROOT)/lib/gmock_main.a
+GMOCK-SOURCES := ./gmock-1.7.0
+GMOCK-TARBALL := ./gmock-1.7.0.zip
+GMOCK-DISTRO := https://googlemock.googlecode.com/files/gmock-1.7.0.zip
+
+BOOST-ROOT := $(MU_ROOT)/boost_1_57_0
+BOOST-TARGET := $(BOOST-ROOT)/stage/lib
+BOOST-SOURCES := ./boost_1_57_0
+BOOST-TARBALL := ./boost_1_57_0.tar.gz
+BOOST-DISTRO := http://downloads.sourceforge.net/project/boost/boost/1.57.0/boost_1_57_0.tar.gz
+
 # ================================================================
 # standard targets
 
-all:  wget gsl stk fftw
+all:  wget gsl stk fftw hiredis jansson gmock
 
+# remove build artifacts, but keep tarballs
 clean:
 	(test -e $(WGET-SOURCES) && cd $(WGET-SOURCES) && make clean)
 	(test -e $(GSL-SOURCES) && cd $(GSL-SOURCES) && make clean)
 	(test -e $(STK-SOURCES) && cd $(STK-SOURCES) && make clean)
 	(test -e $(FFTW-SOURCES) && cd $(FFTW-SOURCES) && make clean)
+	(test -e $(GMOCK-SOURCES) && cd $(GMOCK-SOURCES) && make clean)
+	(test -e $(BOOST-SOURCES) && cd $(BOOST-SOURCES) && make clean)
 
 # reset everything.
 scour:
-	rm -rf $(WGET-SOURCES) $(WGET-TARBALL) $(GSL-SOURCES) $(GSL-TARBALL) $(STK-SOURCES) $(STK-TARBALL) $(FFTW-SOURCES) $(FFTW-TARBALL)
+	make clean
+	rm -rf $(WGET-TARBALL) $(GSL-TARBALL) $(STK-TARBALL) $(FFTW-TARBALL) $(GMOCK-TARBALL)
 
 # ================================================================
 # MU_ROOT is the install directory
@@ -76,21 +108,25 @@ $(GSL-TARBALL) : | wget
 
 # ================================================================
 # stk: synthesis tool kit
+# 
+# BUG: As written, fails with:
+# install -m 644 libstk.dylib.4.4.4 /Users/r/Projects/Mu/usr/lib
+# install: libstk.dylib.4.4.4: No such file or directory
+# (should be install -m libstk.4.4.4.dylib /Users/r/Projects/Mu/usr/lib)
 
 stk : 	$(STK-TARGET)
 
 # final "touch -c" is to make sure target has newer date than the source directory
 # monkey patch the Makefile after creating it to create an absolute path in the dylib
 $(STK-TARGET) : $(STK-SOURCES) | $(MU_ROOT)
-	(cd $(<) && ./configure --prefix=$(MU_ROOT))
-	(cd $(STK-SOURCES)/src && cp -p Makefile Makefile.orig && sed -f ../../patch-stk-src-makefile.sed Makefile.orig > Makefile )
+	(cd $(<) && ./configure --prefix=$(MU_ROOT) --enable-debug)
+	# (cd $(STK-SOURCES)/src && cp -p Makefile Makefile.orig && sed -f ../../patch-stk-src-makefile.sed Makefile.orig > Makefile )
 	(cd $(<) && make && make install && make clean && touch -c $(STK-TARGET))
 
 # monkey patch configure.ac to get the right name in the .dylib file
 $(STK-SOURCES) : $(STK-TARBALL)
 	$(TAR) xf $(STK-TARBALL)
-	cd $(STK-SOURCES) && cp -p configure.ac configure.ac.orig && sed -f ../patch-stk-configure.sed configure.ac.orig > configure.ac
-	cd $(STK-SOURCES) && autoconf
+	# cd $(STK-SOURCES) && cp -p configure.ac configure.ac.orig && sed -f ../patch-stk-configure.sed configure.ac.orig > configure.ac
 
 $(STK-TARBALL) : | wget
 	wget -O $(STK-TARBALL) $(STK-DISTRO)
@@ -109,4 +145,108 @@ $(FFTW-SOURCES) : $(FFTW-TARBALL)
 
 $(FFTW-TARBALL) : | wget
 	wget -O $(FFTW-TARBALL) $(FFTW-DISTRO)
+
+# ================================================================
+# Redis for pub/sub ipc
+
+hiredis : 	$(HIREDIS-TARGET)
+
+# final "touch -c" is to make sure target has newer date than the source directory
+$(HIREDIS-TARGET) : $(HIREDIS-SOURCES) | $(MU_ROOT)
+	(cd $< && \
+	PREFIX=$(MU_ROOT) make && \
+	PREFIX=$(MU_ROOT) make install && \
+	PREFIX=$(MU_ROOT) make clean && \
+	touch -c $(HIREDIS-TARGET))
+
+$(HIREDIS-SOURCES) : $(HIREDIS-TARBALL)
+	$(TAR) xf $(HIREDIS-TARBALL)
+
+$(HIREDIS-TARBALL) : | wget
+	wget -O $(HIREDIS-TARBALL) $(HIREDIS-DISTRO)
+
+# ================================================================
+# JANSSON JSON->C parser
+
+jansson : 	$(JANSSON-TARGET)
+
+$(JANSSON-TARGET) : $(JANSSON-SOURCES) | $(MU_ROOT)
+	(cd $< && ./configure --prefix=$(MU_ROOT) && make && make install && make clean && touch -c $(JANSSON-TARGET))
+
+$(JANSSON-SOURCES) : $(JANSSON-TARBALL)
+	$(TAR) xf $(JANSSON-TARBALL)
+
+$(JANSSON-TARBALL) : | wget
+	wget -O $(JANSSON-TARBALL) $(JANSSON-DISTRO)
+
+# ================================================================
+# CMAKE neo-make facility
+
+cmake : 	$(CMAKE-TARGET)
+
+$(CMAKE-TARGET) : $(CMAKE-SOURCES) | $(MU_ROOT)
+	(cd $< && ./bootstrap --prefix=$(MU_ROOT) && make && make install && make clean && touch -c $(CMAKE-TARGET))
+
+$(CMAKE-SOURCES) : $(CMAKE-TARBALL)
+	$(TAR) xf $(CMAKE-TARBALL)
+
+$(CMAKE-TARBALL) : | wget
+	wget -O $(CMAKE-TARBALL) $(CMAKE-DISTRO)
+
+# ================================================================
+# GMOCK Google Test unit test framework
+
+# Slightly nonstandard.  Ends up creating:
+#   $(MU_ROOT)/lib/libgmock.a
+#   $(MU_ROOT)/lib/gmock_main.a
+#   $(MU_ROOT)/include/gmock/*.h
+#   $(MU_ROOT)/include/gtest/*.h
+#
+# To compile a test (note inclusion of gmock_main.a from lib directory):
+#
+# g++ -isystem ${MU_ROOT}/include -L${MU_ROOT}/lib -g -Wall -Wextra -pthread \
+# 	my_test.cc -o my_test -lgmock ${MU_ROOT}/lib/gmock_main.a
+#
+gmock : 	$(GMOCK-TARGET) $(GMOCK-MAIN-TARGET)
+
+$(GMOCK-TARGET) : $(GMOCK-SOURCES) | $(MU_ROOT)
+	g++ -isystem $(GTEST_DIR)/include -I$(GTEST_DIR) -isystem $(GMOCK_DIR)/include -I$(GMOCK_DIR) \
+		-pthread -c $(GTEST_DIR)/src/gtest-all.cc -o /tmp/gtest-all.o
+	g++ -isystem $(GTEST_DIR)/include -I$(GTEST_DIR) -isystem $(GMOCK_DIR)/include -I$(GMOCK_DIR) \
+		-pthread -c $(GMOCK_DIR)/src/gmock-all.cc -o /tmp/gmock-all.o
+	cp -rp $(GTEST_DIR)/include/gtest $(MU_ROOT)/include
+	cp -rp $(GMOCK_DIR)/include/gmock $(MU_ROOT)/include
+	ar -rv $@ /tmp/gtest-all.o /tmp/gmock-all.o
+
+$(GMOCK-SOURCES) : $(GMOCK-TARBALL)
+	$(TAR) xf $(GMOCK-TARBALL)
+
+$(GMOCK-TARBALL) : | wget
+	wget -O $(GMOCK-TARBALL) $(GMOCK-DISTRO)
+
+$(GMOCK-MAIN-TARGET) : $(GMOCK-SOURCES) | $(MU_ROOT)
+	g++ -isystem $(GTEST_DIR)/include -I$(GTEST_DIR) -isystem $(GMOCK_DIR)/include -I$(GMOCK_DIR) \
+		-pthread -c $(GMOCK_DIR)/src/gmock_main.cc -o /tmp/gmock_main.o
+	ar -rv $@ /tmp/gmock_main.o
+
+# ================================================================
+# C++ Boost libraries
+#
+# The following directory should be added to compiler include paths:
+#    /Users/r/Projects/Mu/usr/boost_1_57_0
+# The following directory should be added to linker library paths:
+#    /Users/r/Projects/Mu/usr/boost_1_57_0/stage/lib
+
+boost : 	$(BOOST-TARGET)
+
+$(BOOST-TARGET) : $(BOOST-ROOT)
+	(cd $(BOOST-ROOT) && \
+	 ./bootstrap.sh --prefix=$(MU_ROOT) && \
+	 ./b2)
+
+$(BOOST-ROOT) : $(BOOST-TARBALL) | $(MU_ROOT)
+	$(TAR) xf $(BOOST-TARBALL) && mv $(BOOST-SOURCES) $(BOOST-ROOT)
+
+$(BOOST-TARBALL) : | wget
+	wget -O $(BOOST-TARBALL) $(BOOST-DISTRO)
 

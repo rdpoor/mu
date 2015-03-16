@@ -5,10 +5,16 @@
 
 export SANDBOX_NAME='Mu'
 export MU_ROOT=/Users/r/Projects/Mu/usr
+export BOOST_ROOT=${MU_ROOT}/boost_1_57_0
+
+# GMOCK / GTEST live in the packages dir
+export GMOCK_DIR=/Users/r/Projects/Mu/Packages/gmock-1.7.0
+export GTEST_DIR=${GMOCK_DIR}/gtest
 
 # ================================================================
-# set the path
+# set the paths
 export PATH=${MU_ROOT}/bin:${PATH}
+export DYLD_LIBRARY_PATH=${MU_ROOT}/lib:${BOOST_ROOT}/stage/lib:$DYLD_LIBRARY_PATH
 
 # ================================================================
 # set the prompt so we know we're in the sandbox

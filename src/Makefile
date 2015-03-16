@@ -1,39 +1,51 @@
-MU_ROOT = ../usr
+MU_ROOT ?= /Users/r/Projects/Mu/usr
+
 RELEASE = 0.0.1
 
+# .cpp files to include in /usr/lib/libmu.a, corresponding .h files
+# are copied to /usr/include directory
 SOURCES := \
-	add_sp.cpp \
-	channelizer_sp.cpp \
-	constant_sp.cpp \
-	crop_sp.cpp \
-	delay_sp.cpp \
-	fade_sp.cpp \
-	file_read_sp.cpp \
-	file_write_sp.cpp \
-	identity_sp.cpp \
-	linseg_sp.cpp \
-	loop_sp.cpp \
-	map_sp.cpp \
-	mu.cpp \
-	multi_source_sp.cpp \
-	multiply_sp.cpp \
-	nrt_player.cpp \
-	null_sp.cpp \
-	pitch_utilities.cpp \
+	constant_stream.cpp \
+	crop_stream.cpp \
+	delay_stream.cpp \
+	dirac_stream.cpp \
+	file_read_stream.cpp \
+	file_write_stream.cpp \
+	fuzz_stream.cpp \
+	identity_stream.cpp \
+	gain_stream.cpp \
+	loop_stream.cpp \
+	map_stream.cpp \
+	mu_scheduler.cpp \
+	mu_sink.cpp \
+	mu_stream.cpp \
+	mu_utils.cpp \
+	multi_source_stream.cpp \
+	null_stream.cpp \
+	piecewise_linear_stream.cpp \
 	player.cpp \
-	probability_sp.cpp \
-	psi_sp.cpp \
+	player_rt.cpp \
+	pluck_inst.cpp \
+	product_stream.cpp \
+	psi_stream.cpp \
 	psi_waveform.cpp \
-	random_select_sp.cpp \
-	resample_sp.cpp \
-	reverb_sp.cpp \
-	rt_player.cpp \
-	sample_processor.cpp \
-	sequence_sp.cpp \
-	sine_sp.cpp \
-	single_source_sp.cpp \
-	splice_sp.cpp \
-	tick_utils.cpp
+	random_select_stream.cpp \
+	resample_stream.cpp \
+	scheduled_stream.cpp \
+	sequence_stream.cpp \
+	sine_stream.cpp \
+	single_source_stream.cpp \
+	sound_library.cpp \
+	step_stream.cpp \
+	sum_stream.cpp \
+	transport.cpp
+
+# .h files that lack a corresponding .cpp file but should be
+# copied to /usr/include directory
+INCLUDES := \
+	mu.h \
+	mu_inst.h \
+	mu_types.h
 
 OBJECTS := $(patsubst %.cpp,%.o,$(SOURCES))
 HEADERS := $(patsubst %.cpp,%.h,$(SOURCES))
@@ -59,14 +71,14 @@ endif
 
 IFLAGS = -I$(MU_ROOT)/include/mu -I$(MU_ROOT)/include/stk -I$(MU_ROOT)/include
 
-%.o : %.cpp %.h mu.h
+%.o : %.cpp %.h $(INCLUDES)
 	$(CC) $(CFLAGS) $(IFLAGS) -c $(<) -o $@
 
 all: $(OBJECTS)
 
-install: $(STATICLIB) $(LIB_DIR) $(HEADER_DIR) # $(SHAREDLIB) -- sharedlib doesn't work yet
+install: $(STATICLIB) $(LIB_DIR) $(HEADER_DIR) $(INCLUDES) # $(SHAREDLIB) -- sharedlib doesn't work yet
 	mv $(STATICLIB) $(MU_ROOT)/lib
-	cp -p $(HEADERS) $(HEADER_DIR)
+	cp -p $(INCLUDES) $(HEADERS) $(HEADER_DIR)
 
 clean:
 	rm -f $(OBJECTS)

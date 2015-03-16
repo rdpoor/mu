@@ -1,51 +1,38 @@
-/*
-  ================================================================
-  Copyright (C) 2014 Robert D. Poor
-  
-  Permission is hereby granted, free of charge, to any person obtaining
-  a copy of this software and associated documentation files (the
-  "Software"), to deal in the Software without restriction, including
-  without limitation the rights to use, copy, modify, merge, publish,
-  distribute, sublicense, and/or sell copies of the Software, and to
-  permit persons to whom the Software is furnished to do so, subject to
-  the following conditions:
-  
-  The above copyright notice and this permission notice shall be
-  included in all copies or substantial portions of the Software.
-  
-  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-  MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
-  LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-  OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-  ================================================================
-*/
+#ifndef MU_H
+#define MU_H
 
-#ifndef MU_MU_H
-#define MU_MU_H
-
-#include <stdio.h>
-#include "Stk.h"
-#include <math.h>
-
-namespace mu {
-
-// resolve circular dependencies
-class SampleProcessor;
-class Player;
-
-// define a type for a general vector of SampleProcessors
-typedef std::vector<SampleProcessor *> SPVector;
-
-// TODO: should be in a units.h or utilities.h file
-double dbToValue(double db);
-
-};
+#include "constant_stream.h"
+#include "crop_stream.h"
+#include "delay_stream.h"
+#include "dirac_stream.h"
+#include "file_read_stream.h"
+#include "file_write_stream.h"
+#include "fuzz_stream.h"
+#include "gain_stream.h"
+#include "identity_stream.h"
+#include "loop_stream.h"
+#include "map_stream.h"
+#include "mu_sink.h"
+#include "mu_stream.h"
+#include "mu_types.h"
+#include "mu_utils.h"
+#include "multi_source_stream.h"
+#include "null_stream.h"
+#include "piecewise_linear_stream.h"
+#include "player.h"
+#include "player_rt.h"
+#include "pluck_inst.h"
+#include "product_stream.h"
+#include "psi_stream.h"
+#include "random_select_stream.h"
+#include "resample_stream.h"
+#include "scheduled_stream.h"
+#include "sequence_stream.h"
+#include "sine_stream.h"
+#include "single_source_stream.h"
+#include "sound_library.h"
+#include "step_stream.h"
+#include "sum_stream.h"
+#include "transport.h"
 
 #endif
-
-// Local Variables:
-// mode: c++
-// End:
