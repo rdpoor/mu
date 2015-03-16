@@ -892,3 +892,84 @@ time.
 
 The method returns true if any samples were written into `buffer, false
 otherwise.
+
+== Motifs
+
+Now that I'm playing with discrete time events.  Meta question: is there
+a reason I'm not using stl containers directly?  The only new components
+would be MotifEvent and MotifEventProperty classes.
+
+// essentially, an std::iterator
+// see:
+// http://stackoverflow.com/questions/3582608/how-to-correctly-implement-custom-iterators-and-const-iterators
+// http://stackoverflow.com/questions/7758580/writing-your-own-stl-container/7759622
+
+class MotifEnumerator {
+
+  MotifEvent get_next_event();
+
+};
+
+// A generalized motif, whose events are fetched via the
+// MotifEnumerator
+class Motif {
+
+  MotifEnumerator seek_to(MuTime t);
+
+  // return a new motif in which each MotifEvent has
+  // been replaced by fn(motif_event)
+  Motif map(MotifEventMethod fn);
+  
+};
+
+// essentially, contains an std::vector
+class MotifSequence : public Motif {
+
+  void add_event(MotifEvent e);
+
+};
+
+// essentially, an std::unordered_set with a time field
+class MotifEvent {
+
+  MuTick time();
+  void setTime(MuTick time);
+
+  MotifEventProperty get_property(std::string property_name);
+  void set_property(std::string property_name, MotifEventProperty property);
+
+};
+
+// a container for heterogeneous data types, initially int, double and string
+// Chet recommends protocol buffers:
+// https://developers.google.com/protocol-buffers/docs/cpptutorial
+// See also:
+// http://stackoverflow.com/questions/3559412/how-to-store-different-data-types-in-one-list-c
+// Also interesting:
+// http://www.progdoc.de/papers/nseq/nseq/nseq.html
+
+class MotifEventProperty {
+}
+
+=== for example...
+
+// create a three-note motif 
+Motif a = new FixedMotif(new MotifEvent(0.0, "pitch", 60.0),
+                         new MotifEvent(1.0, "pitch", 62.0),
+                         new MotifEvent(2.0, "pitch", 64.0));
+
+// create a variant of motif a, transposed one octave up
+// and delayed by a half beat.
+Motif b = new MapMotif(a, [](MotifEvent e) {
+    MotifEvent e1 = offset(e, "pitch", 12.0);
+    MotifEvent e2 = delay(e1, 0.5);
+    return e2; });
+
+// merge the original motif and its variant
+Motif c = new MergeMotif(a, b);
+
+// add a time-varying legato property
+Motif d = new MapMotif(c, [this](MotifEvent e) {
+    double legato = e.time() / this.duration();
+    return e.add_property("legato", legato);
+}
