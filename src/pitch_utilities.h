@@ -29,7 +29,7 @@
 #include <string>
 #include <map>
 #include <math.h>
-#include <regex>
+#include <regex.h>
 
 namespace mu {
   class PitchUtilities {
