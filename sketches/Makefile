@@ -1,5 +1,5 @@
 MU_ROOT ?= ../usr
-BOOST_ROOT ?= $(MU_ROOT)/boost_1_57_0
+# BOOST_ROOT ?= $(MU_ROOT)/boost_1_57_0
 
 SOURCES := $(wildcard *.cpp)
 TARGETS := $(patsubst %.cpp,%,$(SOURCES))
@@ -12,8 +12,8 @@ CFLAGS   = -O3 -Wall -std=c++11
 endif
 
 DEFS     = 
-INCLUDES = -I $(BOOST_ROOT)
-LIBRARY  = -L$(BOOST_ROOT)/stage/lib -lboost_regex
+INCLUDES = 
+LIBRARY  = 
 
 .PHONY:	clean
 

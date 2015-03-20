@@ -13,7 +13,7 @@ strconv.lo: strconv.c /usr/include/assert.h /usr/include/sys/cdefs.h \
   /usr/include/string.h /usr/include/sys/_types/_rsize_t.h \
   /usr/include/strings.h /usr/include/secure/_string.h \
   /usr/include/math.h jansson_private.h \
-  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stddef.h \
+  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stddef.h \
   jansson.h /usr/include/stdlib.h /usr/include/sys/wait.h \
   /usr/include/sys/_types/_pid_t.h /usr/include/sys/_types/_id_t.h \
   /usr/include/sys/signal.h /usr/include/sys/appleapiopts.h \
@@ -25,7 +25,7 @@ strconv.lo: strconv.c /usr/include/assert.h /usr/include/sys/cdefs.h \
   /usr/include/sys/_types/_ucontext.h \
   /usr/include/sys/_types/_sigset_t.h /usr/include/sys/_types/_uid_t.h \
   /usr/include/sys/resource.h \
-  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdint.h \
+  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdint.h \
   /usr/include/stdint.h /usr/include/sys/_types/_int8_t.h \
   /usr/include/sys/_types/_int16_t.h /usr/include/sys/_types/_int32_t.h \
   /usr/include/sys/_types/_int64_t.h /usr/include/_types/_uint8_t.h \
@@ -40,7 +40,7 @@ strconv.lo: strconv.c /usr/include/assert.h /usr/include/sys/cdefs.h \
   /usr/include/sys/_types/_wchar_t.h /usr/include/machine/types.h \
   /usr/include/i386/types.h /usr/include/sys/_types/_dev_t.h \
   /usr/include/sys/_types/_mode_t.h \
-  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdarg.h \
+  /Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdarg.h \
   jansson_config.h hashtable.h strbuffer.h ../jansson_private_config.h \
   /usr/include/locale.h /usr/include/_locale.h
 
@@ -102,7 +102,7 @@ strconv.lo: strconv.c /usr/include/assert.h /usr/include/sys/cdefs.h \
 
 jansson_private.h:
 
-/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stddef.h:
+/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stddef.h:
 
 jansson.h:
 
@@ -140,7 +140,7 @@ jansson.h:
 
 /usr/include/sys/resource.h:
 
-/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdint.h:
+/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdint.h:
 
 /usr/include/stdint.h:
 
@@ -196,7 +196,7 @@ jansson.h:
 
 /usr/include/sys/_types/_mode_t.h:
 
-/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stdarg.h:
+/Library/Developer/CommandLineTools/usr/bin/../lib/clang/6.0/include/stdarg.h:
 
 jansson_config.h:
 
