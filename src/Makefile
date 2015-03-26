@@ -9,6 +9,7 @@ SOURCES := \
 	crop_stream.cpp \
 	delay_stream.cpp \
 	dirac_stream.cpp \
+	estream.cpp \
 	file_read_stream.cpp \
 	file_write_stream.cpp \
 	fuzz_stream.cpp \
@@ -64,9 +65,9 @@ HEADER_DIR := $(MU_ROOT)/include/mu
 CC      = g++
 DEFS    = 
 ifdef MU_DEBUG
-  CFLAGS = -g -O0 -Wall  
+  CFLAGS = -g -O0 -Wall -std=c++11
 else
-  CFLAGS  = -O3 -Wall
+  CFLAGS  = -O3 -Wall -std=c++11
 endif
 
 IFLAGS = -I$(MU_ROOT)/include/mu -I$(MU_ROOT)/include/stk -I$(MU_ROOT)/include

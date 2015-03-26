@@ -7,15 +7,24 @@
 
 #define NULL_ESTREAM nullptr
 #define IS_NULL_ESTREAM(s) ((s) == NULL_ESTREAM)
+#define DEFER(form, T) [=]()->EStream<T>*{return (form);}
+#define FORCE(deferred_form) (deferred_form())
 #define CREATE_STREAM(first, rest, T) \
-  new EStream<T>((first), [=]()->EStream<T>*{return (rest);})
+  new EStream<T>((first), DEFER(rest, T))
 
 template <typename T>class EStream {
 public:
   EStream(T first, std::function<EStream<T> *()> rest) :
     first_(first), rest_(rest) {}
-  T first() { return first_; }
-  EStream<T> *rest() { return IS_NULL_ESTREAM(rest_) ? NULL_ESTREAM : rest_(); }
+
+  T first() { 
+    return first_; 
+  }
+
+  EStream<T> *rest() { 
+    return IS_NULL_ESTREAM(rest_) ? NULL_ESTREAM : FORCE(rest_); 
+  }
+
 protected:
   T first_;
   std::function<EStream<T> *()> rest_;
@@ -67,25 +76,56 @@ EStream <T> *DropES(EStream<T> *s0, int n) {
 }
 
 template <typename T>
-EStream<T> *AlternateES(EStream<T> *s0, EStream<T> *s1) {
+EStream<T> *FilterES(EStream<T> *s, bool (*predicate)(T)) {
+  if (IS_NULL_ESTREAM(s)) {
+    return NULL_ESTREAM;
+  } else if (predicate(s->first())) {
+    return CREATE_STREAM(s->first(),
+                         FilterES(s->rest(), predicate),
+                         T);
+  } else {
+    return FilterES(s->rest(), predicate);
+  }
+}
+
+template <typename T>
+EStream<T> *InterleaveES(EStream<T> *s0, EStream<T> *s1) {
   if (IS_NULL_ESTREAM(s0)) {
     return s1;
   } else if (IS_NULL_ESTREAM(s1)) {
     return s0;
   } else {
     return CREATE_STREAM(s0->first(),
-                         AlternateES(s1, s0->rest()),
+                         InterleaveES(s1, s0->rest()),
                          T);
   }
 }
 
-template <typename T>
-EStream<T> *TakeES(EStream<T> *s, int n) {
-  if ((IS_NULL_ESTREAM(s)) || (n <= 0)) {
+// apply lambda or function to each element of stream
+template <typename T, typename MapFn>
+EStream<T> *MapES(EStream<T> *s, MapFn mapfn) {
+  if (IS_NULL_ESTREAM(s)) {
     return NULL_ESTREAM;
   } else {
-    return CREATE_STREAM(s->first(),
-                         TakeES(s->rest(), n-1),
+    return CREATE_STREAM(mapfn(s->first()),
+                         MapES(s->rest(), mapfn),
+                         T);
+  }
+}
+
+template <typename T, typename PredFn>
+EStream<T> *MergeES(EStream<T> *s0, EStream<T> *s1, PredFn predicate) {
+  if (IS_NULL_ESTREAM(s0)) {
+    return s1;
+  } else if (IS_NULL_ESTREAM(s1)) {
+    return s0;
+  } else if (predicate(s0->first(), s1->first())) {
+    return CREATE_STREAM(s0->first(),
+                         MergeES(s0->rest(), s1, predicate),
+                         T);
+  } else {
+    return CREATE_STREAM(s1->first(),
+                         MergeES(s0, s1->rest(), predicate),
                          T);
   }
 }
@@ -96,15 +136,13 @@ EStream<T> *NullES() {
 }
 
 template <typename T>
-EStream<T> *FilterES(EStream<T> *s, bool (*predicate)(T)) {
-  if (IS_NULL_ESTREAM(s)) {
+EStream<T> *TakeES(EStream<T> *s, int n) {
+  if ((IS_NULL_ESTREAM(s)) || (n <= 0)) {
     return NULL_ESTREAM;
-  } else if (predicate(s->first())) {
-    return CREATE_STREAM(s->first(),
-                         FilterES(s->rest(), predicate),
-                         T);
   } else {
-    return FilterES(s->rest(), predicate);
+    return CREATE_STREAM(s->first(),
+                         TakeES(s->rest(), n-1),
+                         T);
   }
 }
 
@@ -121,34 +159,6 @@ template <typename T>T ReferenceES(EStream<T> *s, int n) {
     return s->first();
   } else {
     return ReferenceES(s->rest(), n-1);
-  }
-}
-
-template <typename T>
-EStream<T> *MapES(EStream<T> *s, T (*function)(T)) {
-  if (IS_NULL_ESTREAM(s)) {
-    return NULL_ESTREAM;
-  } else if (predicate(s)) {
-    return CREATE_STREAM(function(s->first()),
-                         MapES(s->rest(), function),
-                         T);
-  }
-}
-
-template <typename T>
-EStream<T> *MergeES(EStream<T> *s0, EStream<T> *s1, bool (*predicate)()) {
-  if (IS_NULL_ESTREAM(s0)) {
-    return s1;
-  } else if (IS_NULL_ESTREAM(s1)) {
-    return s0;
-  } else if (predicate(s0, s1)) {
-    return CREATE_STREAM(s0->first(),
-                         MergeES(s0->rest(), s1, predicate),
-                         T);
-  } else {
-    return CREATE_STREAM(s1->first(),
-                         MergeES(s0, s1->rest(), predicate),
-                         T);
   }
 }
 
@@ -187,6 +197,10 @@ void test(EStream<int> *s,
   printf("\n");
 }
 
+int dbl(int v) { return 2 * v; }
+
+bool sort_ints(int v0, int v1) { return v0 < v1; }
+
 int main( void ) {
 
   EStream<int> *append = AppendES(TakeES(IntegersES(10), 3),
@@ -205,12 +219,38 @@ int main( void ) {
   EStream<int> *ints = IntegersES(22);
   test(ints, "IntegersES", "22 23 24 25 26", 5);
 
-  EStream<int> *interleave = AlternateES(TakeES(IntegersES(10), 3),
+  EStream<int> *interleave = InterleaveES(TakeES(IntegersES(10), 3),
                                          TakeES(IntegersES(20), 3));
-  test(interleave, "AlternateES", "10 20 11 21 12 22");
+  test(interleave, "InterleaveES", "10 20 11 21 12 22");
     
   EStream<int> *take = TakeES(IntegersES(0), 5);
   test(take, "TakeES", "0 1 2 3 4");
+
+  // map using a function pointer
+  EStream<int> *map = MapES(TakeES(IntegersES(10), 3), dbl);
+  test(map, "MapES (with fn pointer)", "20 22 24");
+
+  // map using a lambda
+  EStream<int> *map2 = MapES(TakeES(IntegersES(30), 3), 
+                             [=](int v)->int { return 2 * v; });
+  test(map2, "MapES (with lambda)", "60 62 64");
+
+  // merge using function pointer
+  EStream<int> *merge1 = MergeES(MapES(TakeES(IntegersES(1), 5),
+                                       [=](int v) { return 4 * v; }),
+                                 MapES(TakeES(IntegersES(1), 5),
+                                       [=](int v) { return 5 * v; }),
+                                 sort_ints);
+  test(merge1, "MergeES (with fn pointer)", "4 5 8 10 12 15 16 20 20 25");
+
+  // merge using lambda
+  EStream<int> *merge2 = MergeES(MapES(TakeES(IntegersES(1), 5),
+                                       [=](int v) { return 4 * v; }),
+                                 MapES(TakeES(IntegersES(1), 5),
+                                       [=](int v) { return 5 * v; }),
+                                 [=](int v0, int v1) { return v0 < v1; });
+  test(merge2, "MergeES (with lambda)", "4 5 8 10 12 15 16 20 20 25");
+
 
   return 0;
 }

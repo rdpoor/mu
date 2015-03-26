@@ -6,7 +6,10 @@ namespace motif {
 #define TEST_POLYMORPHIC_EVENTS
 #ifdef TEST_POLYMORPHIC_EVENTS
   // ================================================================
-  // the following compiles, but do I want it?
+  // the following compiles, but do I want it?  The idea is that a compound
+  // event can contain a placed atomic event or a placed compount event (turtles
+  // all the way down).
+  //
   // see also
   // https://github.com/petermichaux/bootstrap-scheme/blob/v0.21/scheme.c
 
@@ -43,8 +46,25 @@ namespace motif {
   
 #define TEST_INFINITE_SEQUENCES
 #ifdef TEST_INFINITE_SEQUENCES
+
+#include <iterator>
+
   // ================================================================
   // create iterators for infinite sequences
+  //
+  // Good examples of custom iterator:
+  // http://codereview.stackexchange.com/questions/57351/custom-iterator-implementation-returning-opencv-mat
+  // http://www.cprogramming.com/c++11/c++11-ranged-for-loop.html
+  //
+  // Aha: the seek_to() method is really just a factory that generates an
+  // iterator.  The iterator embodies all the logic for head (*) and next (++).
+  //
+  // General form:
+  //   it = specialized_stream.seek_to(time);
+  //   while (it != specialized_stream.end()) {
+  //     std::cout << *it << std::endl;
+  //     ++it;
+  //   }
     
   class Properties {
   };
