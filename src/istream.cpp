@@ -1,4 +1,4 @@
-#include "estream.h"
+#include "istream.h"
 
 namespace mu {
   int dummy;

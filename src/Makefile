@@ -9,11 +9,11 @@ SOURCES := \
 	crop_stream.cpp \
 	delay_stream.cpp \
 	dirac_stream.cpp \
-	estream.cpp \
 	file_read_stream.cpp \
 	file_write_stream.cpp \
 	fuzz_stream.cpp \
 	identity_stream.cpp \
+	istream.cpp \
 	gain_stream.cpp \
 	loop_stream.cpp \
 	map_stream.cpp \
