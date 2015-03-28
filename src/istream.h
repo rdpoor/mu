@@ -64,7 +64,9 @@ namespace mu {
   public:
     IStream(T first, std::function<IStream<T> *()> rest) :
       first_(first), rest_(rest) {}
-    
+
+    virtual ~IStream() { }
+
     T first() { 
       return first_; 
     }
@@ -95,82 +97,82 @@ namespace mu {
     
     // Static methods from here on
     
-    static IStream<T> *AppendIS(IStream<T> *s0, IStream<T> *s1) {
+    static IStream<T> *Append(IStream<T> *s0, IStream<T> *s1) {
       if (IS_NULL_ISTREAM(s0)) {
         return s1;
       } else if (IS_NULL_ISTREAM(s1)) {
         return s0;
       } else {
-        return ISTREAM_CREATE(s0->first(), AppendIS(s0->rest(), s1), T);
+        return ISTREAM_CREATE(s0->first(), Append(s0->rest(), s1), T);
       }
     }
 
     template <typename PredFn>
-    static IStream<T> *FilterIS(IStream<T> *s, PredFn predfn) {
+    static IStream<T> *Filter(IStream<T> *s, PredFn predfn) {
       if (IS_NULL_ISTREAM(s)) {
         return NULL_ISTREAM;
       } else if (predfn(s->first())) {
         return ISTREAM_CREATE(s->first(), 
-                             FilterIS(s->rest(), predfn), 
+                             Filter(s->rest(), predfn), 
                              T);
       } else {
-        return FilterIS(s->rest(), predfn);
+        return Filter(s->rest(), predfn);
       }
     }
 
-    static IStream<T> *IncrementIS(T initial) {
-      return ISTREAM_CREATE(initial, IncrementIS(initial + 1), T);
+    static IStream<T> *Increment(T initial) {
+      return ISTREAM_CREATE(initial, Increment(initial + 1), T);
     }
 
     template <typename MapFn>
-    static IStream<T> *MapIS(IStream<T> *s, MapFn mapfn) {
+    static IStream<T> *Map(IStream<T> *s, MapFn mapfn) {
       if (IS_NULL_ISTREAM(s)) {
         return NULL_ISTREAM;
       } else {
-        return ISTREAM_CREATE(mapfn(s->first()), MapIS(s->rest(), mapfn), T);
+        return ISTREAM_CREATE(mapfn(s->first()), Map(s->rest(), mapfn), T);
       }
     }
     
     template <typename SortFn>
-    static IStream<T> *MergeIS(IStream<T> *s0, IStream<T> *s1, SortFn sortfn) {
+    static IStream<T> *Merge(IStream<T> *s0, IStream<T> *s1, SortFn sortfn) {
       if (IS_NULL_ISTREAM(s0)) {
         return s1;
       } else if (IS_NULL_ISTREAM(s1)) {
         return s0;
       } else if (sortfn(s0->first(), s1->first())) {
         return ISTREAM_CREATE(s0->first(),
-                             MergeIS(s0->rest(), s1, sortfn),
+                             Merge(s0->rest(), s1, sortfn),
                              T);
       } else {
         return ISTREAM_CREATE(s1->first(),
-                             MergeIS(s0, s1->rest(), sortfn),
+                             Merge(s0, s1->rest(), sortfn),
                              T);
       }
     }
     
-    static IStream<T> *RepeatIS(IStream<T> *s) {
+    static IStream<T> *Repeat(IStream<T> *s) {
       if (IS_NULL_ISTREAM(s)) {
         return NULL_ISTREAM;
       } else {
-        return RepeatIS_aux(s, s);
+        return RepeatAux(s, s);
       }
     }
 
   private:
-    static IStream<T> *RepeatIS_aux(IStream<T> *s, IStream *s0) {
+    static IStream<T> *RepeatAux(IStream<T> *s, IStream *s0) {
       if (IS_NULL_ISTREAM(s)) {
-        return RepeatIS_aux(s0, s0);
+        return RepeatAux(s0, s0);
       } else {
-        return ISTREAM_CREATE(s->first(), RepeatIS_aux(s->rest(), s0), T);
+        return ISTREAM_CREATE(s->first(), RepeatAux(s->rest(), s0), T);
       }
     }
 
   public:
-    static IStream<T> *TakeIS(IStream<T> *s, int n) {
+    static IStream<T> *Take(IStream<T> *s, int n) {
       if ((IS_NULL_ISTREAM(s)) || (n <= 0)) {
         return NULL_ISTREAM;
       } else {
-        return ISTREAM_CREATE(s->first(), TakeIS(s->rest(), n-1), T);
+        return ISTREAM_CREATE(s->first(), Take(s->rest(), n-1), T);
       }
     }
     

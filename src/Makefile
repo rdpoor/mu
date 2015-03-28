@@ -9,6 +9,8 @@ SOURCES := \
 	crop_stream.cpp \
 	delay_stream.cpp \
 	dirac_stream.cpp \
+	estream.cpp \
+	event.cpp \
 	file_read_stream.cpp \
 	file_write_stream.cpp \
 	fuzz_stream.cpp \
