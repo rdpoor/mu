@@ -973,3 +973,49 @@ Motif d = new MapMotif(c, [this](MotifEvent e) {
     double legato = e.time() / this.duration();
     return e.add_property("legato", legato);
 }
+
+=== Hmmm.
+
+How about this:
+
+Use Ruby to generate C++ source code, so the score becomes:
+
+    int main() {
+    #include "score.cpp"
+    return 0;
+    }
+
+In fact, why not dispense with the call to main and have Ruby generate the
+entire file?
+
+A Makefile would handle the execution of the ruby script to generate the .cpp
+file, and then compile the cpp file into an executable, then run the executable
+to generate the sound file, perhaps like this:
+
+score.wav:  score
+        ./score score.wav
+
+score:  score.cpp
+        cc -o score score.cpp
+
+score.cpp: score.rb
+       ruby -E score.rb score.cpp
+
+After the setup code, a single line in the score.cpp is:
+
+    AT(time, lambda)
+
+All of the lambdas are stuffed into a time-ordered list or (if we guarantee that
+times are strictly increasing) a simple vector.  The playback system is handed
+DAC buffers and fills up each buffer to the point of the next time in the queue.
+The queue element is removed, the lambda is evaluated and the process continues.
+
+Here's a stab at what goes in the lambda:
+
+    inst1.file_name("thump.wav").gain(0.2)
+
+...OR
+
+Forget the idea of a time-ordered queue and lambdas.  As with FOTU, just set up
+delay objects and string everything together.  No new signal-level code needs to
+be written; just the "gestural" level code, and that gets written in Ruby.

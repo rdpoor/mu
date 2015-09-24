@@ -107,6 +107,8 @@ namespace mu {
       }
     }
 
+    // Can there be an Each() method, i.e. a side-effect only Map() method?
+
     template <typename PredFn>
     static IStream<T> *Filter(IStream<T> *s, PredFn predfn) {
       if (IS_NULL_ISTREAM(s)) {
