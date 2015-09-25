@@ -36,3 +36,5 @@
 # Soundsets is now too large to go on github
 /SoundSets
 
+# Easing into Python
+*.pyc

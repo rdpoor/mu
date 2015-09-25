@@ -5,6 +5,52 @@ synthesis.  It comprises a software library of digital audio processing modules
 and the means to render audio in real time to a computer's sound card or to a
 file.
 
+## quick start
+
+### example 01
+
+```python
+import mu
+
+sin_osc = new mu.SinOsc().frequency(440)
+transport = new mu.RTAudioTransport()
+transport.source(sin_osc)
+
+transport.run()
+input("Press Enter to quit...")
+transport.stop()
+```
+
+```python
+import mu
+
+sin_osc = new mu.SinOsc().frequency(440)
+crop_stream = new mu.CropStream().start_tic(0).end_tic(mu.Utils.sec(1.0))
+crop_stream.source(sin_osc)
+transport = new mu.RTAudioTransport()
+transport.source(crop_stream)
+
+transport.run()
+```
+
+```python
+import mu
+
+# A globally accessible mu.Configuration class sets system-wide defaults.  For
+# example, mu.Configuration.frame_rate() controls the default behavior of the
+# Transport object and mu.Utils.seconds_to_frame() methods.
+
+mu.Configuration.frame_rate(48000).channel_count(1)
+
+sin_0 = new mu.SinOsc().frequency(440)
+sin_1 = new mu.SinOsc().frequency(661)
+mix_0 = new mu.MixStream().add_source(sin_0).add_source(sin_1)
+crop_0 = new CropStream().start_frame(0).end_frame(mu.Utils.seconds_to_frame(1.0)).source(mix_0)
+transport = new mu.RTAudioTransport().source(crop_0)
+
+transport.run()
+```
+
 Each digital audio processing module (called a "stream") exposes a method `bool
 render(MuBuffer buffer, MuTick buffer_start)`, whose contract is to fill the
 `buffer` with audio samples, whose first sample is at time `buffer_start`.
