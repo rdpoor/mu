@@ -1,0 +1,6 @@
+#!/bin/sh
+
+PYTHON=python
+export PYTHONPATH='./lib'
+${PYTHON} -m unittest discover $* tests
+

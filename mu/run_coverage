@@ -1,0 +1,7 @@
+#!/bin/sh
+
+COVERAGE=/Users/r/Developer/Quince/usr/bin/coverage
+export PYTHONPATH='./lib'
+${COVERAGE} run -m unittest discover tests
+${COVERAGE} html
+open ./htmlcov/index.html
